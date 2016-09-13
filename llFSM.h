@@ -2,10 +2,11 @@
 #define __LLFSM_H__
 
 #include "llState.h"
+#include "llRef.h"
 
 NS_LL_BEGIN
 
-class FSM : public State
+class FSM : public State, public Ref
 {
 
 
