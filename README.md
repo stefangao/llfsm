@@ -9,7 +9,9 @@ lianli::State (llState.h .cpp)
 lianli::Context (llContext.h .cpp)
 
 
-e.g.
+
+it's an example of fsm below:
+
 fsm1:
 -------------------------------------------------------
                  ROOT (hiden state, non programmable) 
