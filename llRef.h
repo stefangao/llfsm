@@ -1,12 +1,13 @@
-#ifndef __LLSTATE_H__
-#define __LLSTATE_H__
+#ifndef __LLREF_H__
+#define __LLREF_H__
 
 #include "llConst.h"
 
 NS_LL_BEGIN
 
-class State
+class Ref
 {
+
 
 };
 
