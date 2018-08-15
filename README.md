@@ -14,7 +14,7 @@ it's an example of fsm below:
 
 fsm1:
 -------------------------------------------------------
-                 ROOT (hiden state, non programmable) 
+                 ROOT (hidden state, non programmable) 
                  state0 (real root state, programmable)
                     |
        state1               state2   
