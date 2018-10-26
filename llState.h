@@ -1,5 +1,13 @@
-#ifndef __LLSTATE_H__
-#define __LLSTATE_H__
+//============================================================================
+// Name        : llState.h
+// Author      : Stefan Gao (stefan.gao@gmail.com)
+// Version     :
+// Copyright   : Your copyright notice
+// Description :
+//============================================================================
+
+#ifndef __LL_STATE_H__
+#define __LL_STATE_H__
 
 #include <string>
 #include <vector>
@@ -34,7 +42,7 @@ typedef struct _StateNode_t
     int modemaxticks;      //the tick count for onMode
     int modedelayticks;    //the first onMode time
 
-    int sopflag;           //flag indicate on which procedure the state is
+    unsigned int sopFlag;  //flag indicate on which procedure the state is
 
 } StateNode_t;
 
@@ -45,29 +53,23 @@ public:
     State();
     bool sendEvent(const std::string& evtName, const EvtData& evtData = EvtData::EMPTY);
     bool postEvent(const std::string& evtName, const EvtData& evtData = EvtData::EMPTY);
+    const char* getName() const;
 
 protected:
     virtual ~State()
     {
     }
     virtual State* newInstance() = 0;
-    virtual void onEnter()
-    {
-    }
-    virtual void onBeat()
-    {
-    }
-    virtual void onExit()
-    {
-    }
-    virtual bool onEventProc(const std::string& evtName, const EvtData& evtData)
-    {
-        return true;
-    }
+
+    virtual void onEnter();
+    virtual void onBeat();
+    virtual void onExit();
+    virtual bool onEventProc(const std::string& evtName, const EvtData& evtData);
 
 protected:
     sid mID;
     FSM* mThisFSM;
+    StateNode_t* mStateNode;
 };
 
 NS_LL_END

@@ -1,5 +1,13 @@
-#ifndef __LLEVTDATA_H__
-#define __LLEVTDATA_H__
+//============================================================================
+// Name        : llEvtData.h
+// Author      : Stefan Gao (stefan.gao@gmail.com)
+// Version     :
+// Copyright   : Your copyright notice
+// Description :
+//============================================================================
+
+#ifndef __LL_EVTDATA_H__
+#define __LL_EVTDATA_H__
 
 #include "llConst.h"
 

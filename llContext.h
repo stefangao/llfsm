@@ -1,5 +1,13 @@
-#ifndef __LLCONTEXT_H__
-#define __LLCONTEXT_H__
+//============================================================================
+// Name        : llContext.h
+// Author      : Stefan Gao (stefan.gao@gmail.com)
+// Version     :
+// Copyright   : Your copyright notice
+// Description :
+//============================================================================
+
+#ifndef __LL_CONTEXT_H__
+#define __LL_CONTEXT_H__
 
 #include <string>
 #include "llConst.h"
