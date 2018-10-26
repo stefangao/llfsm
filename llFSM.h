@@ -1,5 +1,13 @@
-#ifndef __LLFSM_H__
-#define __LLFSM_H__
+//============================================================================
+// Name        : llFSM.h
+// Author      : Stefan Gao (stefan.gao@gmail.com)
+// Version     :
+// Copyright   : Your copyright notice
+// Description :
+//============================================================================
+
+#ifndef __LL_FSM_H__
+#define __LL_FSM_H__
 
 #include <string>
 #include "llState.h"
@@ -35,6 +43,7 @@ protected:
     virtual void setTransCount(int) { }
 
     StateNode_t& getStateNode(sid sID);
+    bool enterState(sid sID);
 
     virtual int getX_onlyForTest() const {return 0;}
 
@@ -87,6 +96,19 @@ protected:
     const Context *mContext;
     std::vector<StateNode_t> mStateNodeTable;
     StateNode_t mRootNode;
+
+public:
+    static const sid ROOT;
+    static const sid INVAL;
+
+    static const unsigned int SFL_ZERO;
+    static const unsigned int SFL_ACTIVE;
+
+    static const StateEntry_t ROOT_ENTRY;
+
+    static const unsigned int SOP_ENTER;
+    static const unsigned int SOP_BEAT;
+    static const unsigned int SOP_EXIT;
 };
 
 #define DECLARE_STATE_TABLE() \
