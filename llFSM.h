@@ -25,68 +25,32 @@ public:
     };
 
 protected:
-    static const FSM* __getBuilder()
-    {
-        return nullptr;
-    }
-    ;
-    virtual const FSM* __getSuperBuilder() const
-    {
-        return nullptr;
-    }
-    ;
-    virtual const StateEntry_t* getStateTable() const
-    {
-        return nullptr;
-    }
-    ;
-    virtual const TransEntry_t* getTransTable() const
-    {
-        return nullptr;
-    }
-    ;
-    virtual int getStateCount() const
-    {
-        return 0;
-    }
-    ;
-    virtual void setStateCount(int count)
-    {
-    }
-    ;
-    virtual int getTransCount() const
-    {
-        return 0;
-    }
-    ;
-    virtual void setTransCount(int)
-    {
-    }
-    ;
+    static const FSM* __getBuilder() {return nullptr;}
+    virtual const FSM* __getSuperBuilder() const {return nullptr;}
+    virtual const StateEntry_t* getStateTable() const {return nullptr;}
+    virtual const TransEntry_t* getTransTable() const {return nullptr;}
+    virtual int getStateCount() const {return 0;}
+    virtual void setStateCount(int count) { }
+    virtual int getTransCount() const {return 0;}
+    virtual void setTransCount(int) { }
+
     StateNode_t& getStateNode(sid sID);
 
-    virtual int getX() const
-    {
-        return 0;
-    }
-    ;
+    virtual int getX_onlyForTest() const {return 0;}
 
 public:
     virtual ~FSM()
     {
     }
-    bool create(const std::string& name, const Context& context =
-            Context::DEFAULT);
+    bool create(const std::string& name, const Context& context = Context::DEFAULT);
     bool start();
     bool pause();
     bool resume();
     bool stop();
     bool destroy();
 
-    bool sendEvent(const std::string& evtName, const EvtData& evtData =
-            EvtData::EMPTY);
-    bool postEvent(const std::string& evtName, const EvtData& evtData =
-            EvtData::EMPTY);
+    bool sendEvent(const std::string& evtName, const EvtData& evtData = EvtData::EMPTY);
+    bool postEvent(const std::string& evtName, const EvtData& evtData = EvtData::EMPTY);
 
     void printX();
 
@@ -114,7 +78,7 @@ protected:
     {
         return new FSM();
     }
-    ;
+
     bool buildStateTree(sid parent);
 
 protected:
@@ -158,7 +122,7 @@ private: \
 protected: \
     static  const FSM* __getBuilder(); \
     virtual const FSM* __getSuperBuilder() const override; \
-    virtual int getX() const override; \
+    virtual int getX_onlyForTest() const override; \
     static const TransEntry_t mTransEntries[]; \
 	static int mTransCount; \
 	virtual const TransEntry_t* getTransTable() const override; \
@@ -171,7 +135,7 @@ protected: \
 		{ return fsmClass::__builder; } \
 	const FSM* fsmClass::__getSuperBuilder() const \
 	    { return superClass::__getBuilder(); } \
-	int fsmClass::getX() const \
+	int fsmClass::getX_onlyForTest() const \
 	    {return mX;}; \
 	int fsmClass::mTransCount = 0; \
 	int fsmClass::getTransCount() const \

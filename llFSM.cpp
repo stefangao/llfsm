@@ -125,7 +125,7 @@ void FSM::printX()
     const FSM* fsm = this;
     do
     {
-        std::cout << fsm->getX() << std::endl;
+        std::cout << fsm->getX_onlyForTest() << std::endl;
         fsm = fsm->__getSuperBuilder();
     } while (fsm);
 }
