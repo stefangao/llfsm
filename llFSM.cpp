@@ -5,56 +5,57 @@ NS_LL_BEGIN
 
 bool FSM::create(const std::string& name, const Context& context)
 {
-	mContext = &context;
+    mContext = &context;
 
-	const StateEntry_t* stateEntry = getStateTable();
-	if (stateEntry == nullptr)
-		return false; //no state table is also a reasonable case
+    const StateEntry_t* stateEntry = getStateTable();
+    if (stateEntry == nullptr)
+        return false; //no state table is also a reasonable case
 
-	int stateCount = getStateCount();
-	if (stateCount == 0)
-	{
-		while (stateEntry++->id != -1)
-			stateCount++;
+    int stateCount = getStateCount();
+    if (stateCount == 0)
+    {
+        while (stateEntry++->id != -1)
+            stateCount++;
 
-		LLASSERT(stateCount > 0, "error");
+        LLASSERT(stateCount > 0, "error");
 
-		mStateNodeTable.resize(stateCount);
+        mStateNodeTable.resize(stateCount);
 
-		stateEntry = getStateTable();
-		for (int i = 0; i < stateCount; i++)
-		{
-			mStateNodeTable[i].stateEntry = stateEntry;
-			mStateNodeTable[i].stateObject = stateEntry->object->newInstance();
-			mStateNodeTable[i].stateObject->mThisFSM = this;
-			mStateNodeTable[i].stateObject->mID = stateEntry->id;
-			stateEntry++;
-		}
-		setStateCount(stateCount);
-	}
+        stateEntry = getStateTable();
+        for (int i = 0; i < stateCount; i++)
+        {
+            mStateNodeTable[i].stateEntry = stateEntry;
+            mStateNodeTable[i].stateObject = stateEntry->object->newInstance();
+            mStateNodeTable[i].stateObject->mThisFSM = this;
+            mStateNodeTable[i].stateObject->mID = stateEntry->id;
+            stateEntry++;
+        }
+        setStateCount(stateCount);
+    }
 
-	int transCount = getTransCount();
-	if (transCount == 0)
-	{
-		const FSM* builder = this;
-		do {
-			const TransEntry_t* transEntry = builder->getTransTable();
-			if (transEntry != NULL)
-			{
-				while (transEntry++->fromstate != -1)
-					transCount++;
-			}
-			builder = builder->__getSuperBuilder();
-		} while (builder);
+    int transCount = getTransCount();
+    if (transCount == 0)
+    {
+        const FSM* builder = this;
+        do
+        {
+            const TransEntry_t* transEntry = builder->getTransTable();
+            if (transEntry != NULL)
+            {
+                while (transEntry++->fromState != -1)
+                    transCount++;
+            }
+            builder = builder->__getSuperBuilder();
+        } while (builder);
 
-		if (transCount > 0)
-		{
+        if (transCount > 0)
+        {
 
-			setTransCount(transCount);
-		}
-	}
+            setTransCount(transCount);
+        }
+    }
 
-	return true;
+    return true;
 }
 
 StateNode_t& FSM::getStateNode(sid sID)
@@ -86,37 +87,37 @@ bool FSM::buildStateTree(sid parent)
 
 bool FSM::start()
 {
-	return true;
+    return true;
 }
 
 bool FSM::pause()
 {
-	return true;
+    return true;
 }
 
 bool FSM::resume()
 {
-	return true;
+    return true;
 }
 
 bool FSM::stop()
 {
-	return true;
+    return true;
 }
 
 bool FSM::destroy()
 {
-	return true;
+    return true;
 }
 
 bool FSM::sendEvent(const std::string& evtName, const EvtData& evtData)
 {
-	return true;
+    return true;
 }
 
 bool FSM::postEvent(const std::string& evtName, const EvtData& evtData)
 {
-	return true;
+    return true;
 }
 
 void FSM::printX()

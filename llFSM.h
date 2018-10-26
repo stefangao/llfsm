@@ -10,60 +10,111 @@ NS_LL_BEGIN
 
 typedef struct
 {
-    int fromstate;
-    const char* eventname;
-    int tostate;
+    sid fromState;
+    const char* eventName;
+    sid toState;
     unsigned int flag;
 } TransEntry_t;
 
-class FSM : public State, public Ref
+class FSM: public State, public Ref
 {
 public:
-	enum class S
-	{
-        Stop,
-        Start,
-        Run,
-        Pause,
-		Max,
-	};
+    enum class S
+    {
+        Stop, Start, Run, Pause, Max,
+    };
 
 protected:
-    static const FSM* __getBuilder() {return nullptr;};
-    virtual const FSM* __getSuperBuilder() const {return nullptr;};
-    virtual const StateEntry_t* getStateTable() const {return nullptr;};
-    virtual const TransEntry_t* getTransTable() const {return nullptr;};
-    virtual int getStateCount() const {return 0;};
-    virtual void setStateCount(int count) {};
-    virtual int getTransCount() const {return 0;};
-    virtual void setTransCount(int) {};
+    static const FSM* __getBuilder()
+    {
+        return nullptr;
+    }
+    ;
+    virtual const FSM* __getSuperBuilder() const
+    {
+        return nullptr;
+    }
+    ;
+    virtual const StateEntry_t* getStateTable() const
+    {
+        return nullptr;
+    }
+    ;
+    virtual const TransEntry_t* getTransTable() const
+    {
+        return nullptr;
+    }
+    ;
+    virtual int getStateCount() const
+    {
+        return 0;
+    }
+    ;
+    virtual void setStateCount(int count)
+    {
+    }
+    ;
+    virtual int getTransCount() const
+    {
+        return 0;
+    }
+    ;
+    virtual void setTransCount(int)
+    {
+    }
+    ;
     StateNode_t& getStateNode(sid sID);
 
-	virtual int getX() const {return 0;};
+    virtual int getX() const
+    {
+        return 0;
+    }
+    ;
 
 public:
-	virtual ~FSM() {}
-    bool create(const std::string& name, const Context& context = Context::DEFAULT);
+    virtual ~FSM()
+    {
+    }
+    bool create(const std::string& name, const Context& context =
+            Context::DEFAULT);
     bool start();
     bool pause();
     bool resume();
     bool stop();
     bool destroy();
 
-    bool sendEvent(const std::string& evtName, const EvtData& evtData = EvtData::EMPTY);
-    bool postEvent(const std::string& evtName, const EvtData& evtData = EvtData::EMPTY);
+    bool sendEvent(const std::string& evtName, const EvtData& evtData =
+            EvtData::EMPTY);
+    bool postEvent(const std::string& evtName, const EvtData& evtData =
+            EvtData::EMPTY);
 
     void printX();
 
 protected:
-    virtual void onCreate() {}
-    virtual void onStart() {}
-    virtual void onPause() {}
-    virtual void onResume() {}
-    virtual void onStop() {}
-    virtual void onDestroy() {}
+    virtual void onCreate()
+    {
+    }
+    virtual void onStart()
+    {
+    }
+    virtual void onPause()
+    {
+    }
+    virtual void onResume()
+    {
+    }
+    virtual void onStop()
+    {
+    }
+    virtual void onDestroy()
+    {
+    }
 
-    virtual State* newInstance() override {return new FSM();};
+    virtual State* newInstance() override
+    {
+        return new FSM();
+    }
+    ;
     bool buildStateTree(sid parent);
 
 protected:
