@@ -61,9 +61,11 @@ protected:
     }
     virtual State* newInstance() = 0;
 
+    virtual void onCreate();
     virtual void onEnter();
     virtual void onBeat();
     virtual void onExit();
+    virtual void onDestroy();
     virtual bool onEventProc(const std::string& evtName, const EvtData& evtData);
 
 protected:

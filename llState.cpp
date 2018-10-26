@@ -19,6 +19,13 @@ State::State()
     mStateNode = nullptr;
 }
 
+void State::onCreate()
+{
+    std::string msg;
+    msg = std::string("onCreate(): ") + getName();
+    Utils::log(msg);
+}
+
 void State::onEnter()
 {
     std::string msg;
@@ -37,6 +44,11 @@ void State::onBeat()
 
 void State::onExit()
 {
+}
+
+void State::onDestroy()
+{
+
 }
 
 bool State::sendEvent(const std::string& evtName, const EvtData& evtData)
