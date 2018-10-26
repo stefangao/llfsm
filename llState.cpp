@@ -23,7 +23,7 @@ void State::onEnter()
 {
     std::string msg;
     msg = std::string("onEnter(): ") + getName();
-    Utils::Log(msg);
+    Utils::log(msg);
 }
 
 bool State::onEventProc(const std::string& evtName, const EvtData& evtData)

@@ -27,7 +27,7 @@ extern const char* LL_STRING_EMPTY;
 class Utils
 {
 public:
-    static void Log(const std::string& msg);
+    static void log(const std::string& msg);
 };
 
 NS_LL_END
