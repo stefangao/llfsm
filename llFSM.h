@@ -37,6 +37,7 @@ protected:
     virtual void setStateCount(int count) {};
     virtual int getTransCount() const {return 0;};
     virtual void setTransCount(int) {};
+    StateNode_t& getStateNode(sid sID);
 
 	virtual int getX() const {return 0;};
 
@@ -55,7 +56,6 @@ public:
     void printX();
 
 protected:
-    virtual State* newInstance() override {return new FSM();};
     virtual void onCreate() {}
     virtual void onStart() {}
     virtual void onPause() {}
@@ -63,13 +63,15 @@ protected:
     virtual void onStop() {}
     virtual void onDestroy() {}
 
+    virtual State* newInstance() override {return new FSM();};
+    bool buildStateTree(sid parent);
+
 protected:
     std::string mName;
     S mS;
     const Context *mContext;
-    StateNode_t *mStateNodeTable;
-    int mStateNodeTableSize;
-    StateNode_t* mRootNode;
+    std::vector<StateNode_t> mStateNodeTable;
+    StateNode_t mRootNode;
 };
 
 #define DECLARE_STATE_TABLE() \
