@@ -24,9 +24,20 @@ const unsigned int FSM::SOP_EXIT = 0x04;
 
 const StateEntry_t FSM::ROOT_ENTRY = {FSM::ROOT, nullptr, FSM::INVAL, FSM::SFL_ZERO, "FSM::ROOT"};
 
+FSM::FSM()
+{
+    mContext = nullptr;
+}
+
+FSM::~FSM()
+{
+
+}
+
 bool FSM::create(const std::string& name, const Context& context)
 {
     mContext = &context;
+    mName = name;
 
     mRootNode.stateObject = nullptr;
     mRootNode.stateEntry = &ROOT_ENTRY;
@@ -78,9 +89,15 @@ bool FSM::create(const std::string& name, const Context& context)
 
         if (transCount > 0)
         {
-
             setTransCount(transCount);
         }
+    }
+
+    onCreate();
+
+    for (int i = 0; i < stateCount; i++)
+    {
+        mStateNodeTable[i].stateObject->onCreate();
     }
 
     return true;
@@ -150,6 +167,7 @@ bool FSM::start()
     if (!enterState(FSM::ROOT))
         return false;
 
+    onStart();
     return true;
 }
 
@@ -181,6 +199,36 @@ bool FSM::sendEvent(const std::string& evtName, const EvtData& evtData)
 bool FSM::postEvent(const std::string& evtName, const EvtData& evtData)
 {
     return true;
+}
+
+void FSM::onCreate()
+{
+    Utils::log(getName() + ".onCreate");
+}
+
+void FSM::onStart()
+{
+    Utils::log(getName() + ".onStart");
+}
+
+void FSM::onPause()
+{
+    Utils::log(getName() + ".onPause");
+}
+
+void FSM::onResume()
+{
+    Utils::log(getName() + ".onResume");
+}
+
+void FSM::onStop()
+{
+    Utils::log(getName() + ".onStop");
+}
+
+void FSM::onDestroy()
+{
+    Utils::log(getName() + ".onDestroy");
 }
 
 void FSM::printX()

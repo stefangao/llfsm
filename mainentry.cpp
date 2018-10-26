@@ -15,10 +15,17 @@ class FSMA: public FSM
 public:
     FSMA()
     {
-        mX = 1;
+        mX_onlyForTest = 1;
     }
 
 protected:
+    void onStart()
+    {
+        FSM::onStart();
+
+        printX();
+    }
+
     DECLARE_STATE_TABLE()
     DECLARE_TRANS_TABLE()
 
@@ -128,7 +135,7 @@ class FSMB: public FSMA
 public:
     FSMB()
     {
-        mX = 2;
+        mX_onlyForTest = 2;
     }
 
     DECLARE_TRANS_TABLE()
@@ -144,7 +151,7 @@ class FSMC: public FSMB
 public:
     FSMC()
     {
-        mX = 3;
+        mX_onlyForTest = 3;
     }
 
     DECLARE_TRANS_TABLE()
@@ -160,7 +167,7 @@ class FSMD: public FSMC
 public:
     FSMD()
     {
-        mX = 4;
+        mX_onlyForTest = 4;
     }
 
     int & getValue()
@@ -180,12 +187,10 @@ END_TRANS_TABLE()
 
 int main()
 {
-    FSMA *a = new FSMA();
-    a->create("TestFsmA");
-    a->start();
 
-    //FSMD *d = new FSMD();
-    //d->printX();
+    FSM *fsm = new FSMD();
+    fsm->create("TestFsm");
+    fsm->start();
 
     return 0;
 }

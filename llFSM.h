@@ -33,6 +33,7 @@ public:
     };
 
 protected:
+    virtual ~FSM();
     static const FSM* __getBuilder() {return nullptr;}
     virtual const FSM* __getSuperBuilder() const {return nullptr;}
     virtual const StateEntry_t* getStateTable() const {return nullptr;}
@@ -48,9 +49,7 @@ protected:
     virtual int getX_onlyForTest() const {return 0;}
 
 public:
-    virtual ~FSM()
-    {
-    }
+    FSM();
     bool create(const std::string& name, const Context& context = Context::DEFAULT);
     bool start();
     bool pause();
@@ -61,33 +60,18 @@ public:
     bool sendEvent(const std::string& evtName, const EvtData& evtData = EvtData::EMPTY);
     bool postEvent(const std::string& evtName, const EvtData& evtData = EvtData::EMPTY);
 
+    inline const std::string& getName() const {return mName;};
+
     void printX();
 
 protected:
-    virtual void onCreate()
-    {
-    }
-    virtual void onStart()
-    {
-    }
-    virtual void onPause()
-    {
-    }
-    virtual void onResume()
-    {
-    }
-    virtual void onStop()
-    {
-    }
-    virtual void onDestroy()
-    {
-    }
-
-    virtual State* newInstance() override
-    {
-        return new FSM();
-    }
-
+    virtual void onCreate();
+    virtual void onStart();
+    virtual void onPause();
+    virtual void onResume();
+    virtual void onStop();
+    virtual void onDestroy();
+    virtual State* newInstance() override {return new FSM();}
     bool buildStateTree(sid parent);
 
 protected:
@@ -139,7 +123,7 @@ private: \
 #define DECLARE_TRANS_TABLE() \
 private: \
     static const FSM* __builder; \
-    int mX; \
+    int mX_onlyForTest; \
 protected: \
     static  const FSM* __getBuilder(); \
     virtual const FSM* __getSuperBuilder() const override; \
@@ -157,7 +141,7 @@ protected: \
     const FSM* fsmClass::__getSuperBuilder() const \
         { return superClass::__getBuilder(); } \
     int fsmClass::getX_onlyForTest() const \
-        {return mX;}; \
+        {return mX_onlyForTest;}; \
     int fsmClass::mTransCount = 0; \
     int fsmClass::getTransCount() const \
         { return mTransCount;}; \
