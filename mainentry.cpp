@@ -20,9 +20,8 @@ public:
     }
 
 protected:
-DECLARE_STATE_TABLE()
-    ;DECLARE_TRANS_TABLE()
-    ;
+    DECLARE_STATE_TABLE()
+    DECLARE_TRANS_TABLE()
 
 public:
     enum
@@ -89,10 +88,7 @@ public:
         mX = 2;
     }
 
-protected:
-DECLARE_TRANS_TABLE()
-    ;
-
+    DECLARE_TRANS_TABLE()
 };
 
 BEGIN_TRANS_TABLE(FSMB, FSMA)
@@ -108,10 +104,7 @@ public:
         mX = 3;
     }
 
-protected:
-DECLARE_TRANS_TABLE()
-    ;
-
+    DECLARE_TRANS_TABLE()
 };
 
 BEGIN_TRANS_TABLE(FSMC, FSMB)
@@ -133,10 +126,7 @@ public:
         return ZERO;
     }
 
-protected:
-DECLARE_TRANS_TABLE()
-    ;
-
+    DECLARE_TRANS_TABLE()
 };
 
 BEGIN_TRANS_TABLE(FSMD, FSMC)
