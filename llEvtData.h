@@ -8,13 +8,17 @@ NS_LL_BEGIN
 class EvtData
 {
 public:
-	EvtData(int bufLen = 0) {}
+    EvtData(int bufLen = 0)
+    {
+    }
 
 protected:
-	virtual ~EvtData() {}
+    virtual ~EvtData()
+    {
+    }
 
 public:
-	static const EvtData EMPTY;
+    static const EvtData EMPTY;
 };
 
 NS_LL_END

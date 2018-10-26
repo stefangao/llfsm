@@ -15,7 +15,7 @@ typedef int sid;
 
 typedef struct
 {
-	sid id;
+    sid id;
     State* object;
     int parent;
     unsigned int flag;
@@ -24,39 +24,49 @@ typedef struct
 
 typedef struct _StateNode_t
 {
-	const StateEntry_t *stateEntry;
-	State *stateObject;
+    const StateEntry_t *stateEntry;
+    State *stateObject;
 
-	std::vector<const _StateNode_t*> childNodes;
-	sid activeChild;       //current active child state id
+    std::vector<const _StateNode_t*> childNodes;
+    sid activeChild;       //current active child state id
 
-	int modeticks;         //the last ticks when onMode was triggered
-	int modemaxticks;      //the tick count for onMode
-	int modedelayticks;    //the first onMode time
+    int modeticks;         //the last ticks when onMode was triggered
+    int modemaxticks;      //the tick count for onMode
+    int modedelayticks;    //the first onMode time
 
-	int sopflag;           //flag indicate on which procedure the state is
+    int sopflag;           //flag indicate on which procedure the state is
 
 } StateNode_t;
 
 class State
 {
-	friend class FSM;
+    friend class FSM;
 public:
-	State();
-
+    State();
     bool sendEvent(const std::string& evtName, const EvtData& evtData = EvtData::EMPTY);
     bool postEvent(const std::string& evtName, const EvtData& evtData = EvtData::EMPTY);
 
 protected:
-	virtual ~State() {}
-	virtual State* newInstance() = 0;
-    virtual void onEnter() {}
-    virtual void onBeat() {}
-    virtual void onExit() {}
-    virtual bool onEventProc(const std::string& evtName, const EvtData& evtData) {return true;}
+    virtual ~State()
+    {
+    }
+    virtual State* newInstance() = 0;
+    virtual void onEnter()
+    {
+    }
+    virtual void onBeat()
+    {
+    }
+    virtual void onExit()
+    {
+    }
+    virtual bool onEventProc(const std::string& evtName, const EvtData& evtData)
+    {
+        return true;
+    }
 
 protected:
-    int mID;
+    sid mID;
     FSM* mThisFSM;
 };
 

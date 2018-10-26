@@ -9,13 +9,13 @@ NS_LL_BEGIN
 class Context
 {
 public:
-	Context(const std::string& name);
+    Context(const std::string& name);
 
 protected:
-	std::string mName;
+    std::string mName;
 
 public:
-	static const Context DEFAULT;
+    static const Context DEFAULT;
 };
 
 NS_LL_END
