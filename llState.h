@@ -2,6 +2,7 @@
 #define __LLSTATE_H__
 
 #include <string>
+#include <vector>
 #include "llConst.h"
 #include "llEvtData.h"
 
@@ -10,27 +11,30 @@ NS_LL_BEGIN
 class FSM;
 class State;
 
+typedef int sid;
+
 typedef struct
 {
-    int id;
+	sid id;
     State* object;
     int parent;
     unsigned int flag;
     const char* name;
 } StateEntry_t;
 
-typedef struct _CNTT_STATENODE_T
+typedef struct _StateNode_t
 {
-	const StateEntry_t    *stateEntry;
-	State            *stateObject;
+	const StateEntry_t *stateEntry;
+	State *stateObject;
 
-	int              activeChild;       //current active child state
+	std::vector<const _StateNode_t*> childNodes;
+	sid activeChild;       //current active child state id
 
-	int              modeticks;         //the last ticks when onMode was triggered
-	int              modemaxticks;      //the tick count for onMode
-	int              modedelayticks;    //the first onMode time
+	int modeticks;         //the last ticks when onMode was triggered
+	int modemaxticks;      //the tick count for onMode
+	int modedelayticks;    //the first onMode time
 
-	int              sopflag;           //状态当前所处的过程state on which procedure
+	int sopflag;           //flag indicate on which procedure the state is
 
 } StateNode_t;
 
