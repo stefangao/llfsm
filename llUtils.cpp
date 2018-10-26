@@ -19,7 +19,7 @@ void __ll_assert(const char* msg, const char* file, int lineno)
     abort();
 }
 
-void Utils::Log(const std::string& msg)
+void Utils::log(const std::string& msg)
 {
     std::cout << msg << std::endl;
 }

@@ -113,7 +113,7 @@ public:
 
 #define DECLARE_STATE_TABLE() \
 private: \
-	static const StateEntry_t mStateEntries[]; \
+    static const StateEntry_t mStateEntries[]; \
     static int mStateCount; \
     virtual const StateEntry_t* getStateTable() const override; \
     virtual int getStateCount() const override; \
@@ -128,14 +128,13 @@ private: \
     const StateEntry_t* fsmClass::getStateTable() const \
         { return &fsmClass::mStateEntries[0]; } \
     const StateEntry_t fsmClass::mStateEntries[] = \
-	    {
+        {
 
 #define STATE_ENTRY(stateID, stateClass, parent, flag) \
     {stateID, new stateClass, parent, flag, #stateID},
 
 #define END_STATE_TABLE() \
-		{-1, 0, 0} \
-	};
+    {-1, 0, 0}}; \
 
 #define DECLARE_TRANS_TABLE() \
 private: \
@@ -146,31 +145,31 @@ protected: \
     virtual const FSM* __getSuperBuilder() const override; \
     virtual int getX_onlyForTest() const override; \
     static const TransEntry_t mTransEntries[]; \
-	static int mTransCount; \
-	virtual const TransEntry_t* getTransTable() const override; \
-	virtual int getTransCount() const override; \
-	virtual void setTransCount(int) override; \
+    static int mTransCount; \
+    virtual const TransEntry_t* getTransTable() const override; \
+    virtual int getTransCount() const override; \
+    virtual void setTransCount(int) override; \
 
 #define BEGIN_TRANS_TABLE(fsmClass, superClass) \
     const FSM* fsmClass::__builder = new fsmClass(); \
     const FSM* fsmClass::__getBuilder() \
-		{ return fsmClass::__builder; } \
-	const FSM* fsmClass::__getSuperBuilder() const \
-	    { return superClass::__getBuilder(); } \
-	int fsmClass::getX_onlyForTest() const \
-	    {return mX;}; \
-	int fsmClass::mTransCount = 0; \
-	int fsmClass::getTransCount() const \
-		{ return mTransCount;}; \
-	void fsmClass::setTransCount(int transCount) \
-		{ mTransCount = transCount;}; \
-	const TransEntry_t* fsmClass::getTransTable() const \
-		{ return &fsmClass::mTransEntries[0]; } \
-	const TransEntry_t fsmClass::mTransEntries[] = \
-		{ \
+        { return fsmClass::__builder; } \
+    const FSM* fsmClass::__getSuperBuilder() const \
+        { return superClass::__getBuilder(); } \
+    int fsmClass::getX_onlyForTest() const \
+        {return mX;}; \
+    int fsmClass::mTransCount = 0; \
+    int fsmClass::getTransCount() const \
+        { return mTransCount;}; \
+    void fsmClass::setTransCount(int transCount) \
+        { mTransCount = transCount;}; \
+    const TransEntry_t* fsmClass::getTransTable() const \
+        { return &fsmClass::mTransEntries[0]; } \
+    const TransEntry_t fsmClass::mTransEntries[] = \
+        { \
 
 #define END_TRANS_TABLE() \
-		{-1, nullptr, 0, 0}}; \
+    {-1, nullptr, 0, 0}}; \
 
 #define DECLARE_STATE_NEWINSTANCE(stateClass, fsmClass) \
 protected: \
