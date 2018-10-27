@@ -77,7 +77,7 @@ bool FSM::createInternal(const std::string& name, Context& context)
         {
             LLASSERT(stateEntry->id == i, "State ID is disordered!");
             mStateNodeTable[i].stateEntry = stateEntry;
-            mStateNodeTable[i].stateObject = stateEntry->object->newInstance();
+            mStateNodeTable[i].stateObject = stateEntry->createInstance();
             mStateNodeTable[i].stateObject->mThisFSM = this;
             mStateNodeTable[i].stateObject->mID = stateEntry->id;
             mStateNodeTable[i].stateObject->mStateNode = &mStateNodeTable[i];
