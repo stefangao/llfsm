@@ -20,11 +20,12 @@ class FSM;
 class State;
 
 typedef int sid;
+typedef State* (*StateFactoryFunc)();
 
 typedef struct
 {
     sid id;
-    State* object;
+    StateFactoryFunc createInstance;
     int parent;
     unsigned int flag;
     const char* name;
@@ -57,7 +58,7 @@ public:
 
 protected:
     virtual ~State() {}
-    virtual State* newInstance() = 0;
+    static State* createInstance() {return nullptr;}
 
     virtual void onCreate();
     virtual void onEnter();
