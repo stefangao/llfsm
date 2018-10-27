@@ -53,7 +53,7 @@ public:
             return true;
         }
 
-        DECLARE_STATE_NEWINSTANCE(Daemon, FSMA)
+        DECLARE_STATE_FACTORY(Daemon, FSMA)
     };
 
     class Test1: public State
@@ -73,7 +73,7 @@ public:
             return true;
         }
 
-        DECLARE_STATE_NEWINSTANCE(Test1, FSMA)
+        DECLARE_STATE_FACTORY(Test1, FSMA)
     };
 
     class Test2: public State
@@ -93,7 +93,7 @@ public:
             return true;
         }
 
-        DECLARE_STATE_NEWINSTANCE(Test2, FSMA)
+        DECLARE_STATE_FACTORY(Test2, FSMA)
     };
 
     class Test3: public State
@@ -113,7 +113,7 @@ public:
             return true;
         }
 
-        DECLARE_STATE_NEWINSTANCE(Test3, FSMA)
+        DECLARE_STATE_FACTORY(Test3, FSMA)
     };
 
 };
@@ -203,7 +203,7 @@ public:
             return true;
         }
 
-        DECLARE_STATE_NEWINSTANCE(Daemon, FSMX)
+        DECLARE_STATE_FACTORY(Daemon, FSMX)
     };
 
     class Test1: public State
@@ -223,7 +223,7 @@ public:
             return true;
         }
 
-        DECLARE_STATE_NEWINSTANCE(Test1, FSMX)
+        DECLARE_STATE_FACTORY(Test1, FSMX)
     };
 
     class Test2: public State
@@ -243,7 +243,7 @@ public:
             return true;
         }
 
-        DECLARE_STATE_NEWINSTANCE(Test2, FSMX)
+        DECLARE_STATE_FACTORY(Test2, FSMX)
     };
 };
 
