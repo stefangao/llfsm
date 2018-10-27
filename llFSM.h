@@ -165,7 +165,7 @@ protected:\
 #define END_TRANS_TABLE()\
     {-1, nullptr, 0, 0}};\
 
-#define DECLARE_STATE_NEWINSTANCE(stateClass, fsmClass)\
+#define DECLARE_STATE_FACTORY(stateClass, fsmClass)\
 public:\
     static State* createInstance() {return new stateClass();}\
     inline fsmClass* me() {return (fsmClass*)mThisFSM;};\
