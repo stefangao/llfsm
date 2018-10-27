@@ -29,7 +29,7 @@ class FSM: public State, public Ref
 public:
     enum class S
     {
-        Stop, Start, Run, Pause, Max,
+        IDLE, RUN, PAUSED, INVAL = -1,
     };
 
 protected:
@@ -44,13 +44,14 @@ protected:
     virtual void setTransCount(int) { }
 
     StateNode_t& getStateNode(sid sID);
+    const State& getState(sid sID) const;
     bool enterState(sid sID);
 
     virtual int getX_onlyForTest() const {return 0;}
 
 public:
     FSM();
-    bool create(const std::string& name, const Context& context = Context::DEFAULT);
+    bool create(const std::string& name, Context& context = Context::DEFAULT);
     bool start();
     bool pause();
     bool resume();
@@ -61,23 +62,30 @@ public:
     bool postEvent(const std::string& evtName, const EvtData& evtData = EvtData::EMPTY);
 
     inline const std::string& getName() const {return mName;};
+    inline void setName(const std::string& name) {mName = name;}
+
+    inline S getS() const {return mS;}
 
     void printX();
 
 protected:
-    virtual void onCreate();
+    virtual void onCreate(const Context& context);
     virtual void onStart();
     virtual void onPause();
     virtual void onResume();
     virtual void onStop();
-    virtual void onDestroy();
+    virtual void onDestroy(const Context& context);
     virtual State* newInstance() override {return new FSM();}
     bool buildStateTree(sid parent);
+
+private:
+    bool createInternal(const std::string& name, Context& context = Context::DEFAULT);
+    void onCreateInternal(Context& context);
 
 protected:
     std::string mName;
     S mS;
-    const Context *mContext;
+    Context *mContext;
     std::vector<StateNode_t> mStateNodeTable;
     StateNode_t mRootNode;
 

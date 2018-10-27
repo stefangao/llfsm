@@ -27,6 +27,8 @@ const StateEntry_t FSM::ROOT_ENTRY = {FSM::ROOT, nullptr, FSM::INVAL, FSM::SFL_Z
 FSM::FSM()
 {
     mContext = nullptr;
+    mS = S::INVAL;
+    mName = LL_STRING_EMPTY;
 }
 
 FSM::~FSM()
@@ -34,18 +36,27 @@ FSM::~FSM()
 
 }
 
-bool FSM::create(const std::string& name, const Context& context)
+bool FSM::create(const std::string& name, Context& context)
 {
+    if (!createInternal(name, context))
+        return false;
+
+    onCreateInternal(context);
+    return true;
+}
+
+bool FSM::createInternal(const std::string& name, Context& context)
+{
+    const StateEntry_t* stateEntry = getStateTable();
+    if (stateEntry == nullptr)
+        return false;
+
     mContext = &context;
     mName = name;
 
     mRootNode.stateObject = nullptr;
     mRootNode.stateEntry = &ROOT_ENTRY;
     mRootNode.activeChild = FSM::INVAL;
-
-    const StateEntry_t* stateEntry = getStateTable();
-    if (stateEntry == nullptr)
-        return false; //no state table is also a reasonable case
 
     int stateCount = getStateCount();
     if (stateCount == 0)
@@ -54,7 +65,11 @@ bool FSM::create(const std::string& name, const Context& context)
             stateCount++;
 
         LLASSERT(stateCount > 0, "error");
+        setStateCount(stateCount);
+    }
 
+    if ((int)mStateNodeTable.size() != stateCount)
+    {
         mStateNodeTable.resize(stateCount);
 
         stateEntry = getStateTable();
@@ -68,7 +83,6 @@ bool FSM::create(const std::string& name, const Context& context)
             mStateNodeTable[i].stateObject->mStateNode = &mStateNodeTable[i];
             stateEntry++;
         }
-        setStateCount(stateCount);
     }
     buildStateTree(FSM::ROOT);
 
@@ -93,14 +107,43 @@ bool FSM::create(const std::string& name, const Context& context)
         }
     }
 
-    onCreate();
+    mS = S::IDLE;
+    mContext->insert(this);
 
+    for (int i = 0; i < stateCount; i++)
+    {
+        FSM* fsm = dynamic_cast<FSM*>(mStateNodeTable[i].stateObject);
+        if (fsm)
+        {
+            std::string fsmName = fsm->getName();
+            if (fsmName.empty())
+                fsmName = name + "." + mStateNodeTable[i].stateObject->getName();
+
+            fsm->createInternal(fsmName, context);
+        }
+    }
+
+    return true;
+}
+
+void FSM::onCreateInternal(Context& context)
+{
+    onCreate(context);
+
+    int stateCount = getStateCount();
     for (int i = 0; i < stateCount; i++)
     {
         mStateNodeTable[i].stateObject->onCreate();
     }
 
-    return true;
+    for (int i = 0; i < stateCount; i++)
+    {
+        FSM* fsm = dynamic_cast<FSM*>(mStateNodeTable[i].stateObject);
+        if (fsm)
+        {
+            fsm->onCreateInternal(context);
+        }
+    }
 }
 
 StateNode_t& FSM::getStateNode(sid sID)
@@ -111,6 +154,14 @@ StateNode_t& FSM::getStateNode(sid sID)
     LLASSERT(sID >= 0 && sID < (int)mStateNodeTable.size(), "error");
 
     return mStateNodeTable[sID];
+}
+
+const State& FSM::getState(sid sID) const
+{
+    LLASSERT(sID >= 0 && sID < (int)mStateNodeTable.size(), "error");
+    LLASSERT(mStateNodeTable[sID].stateObject, "error");
+
+    return *mStateNodeTable[sID].stateObject;
 }
 
 bool FSM::buildStateTree(sid parent)
@@ -140,7 +191,24 @@ bool FSM::enterState(sid sID)
         stateNode.sopFlag |= SOP_ENTER;
         stateNode.stateObject->onEnter();
         stateNode.sopFlag &= ~SOP_ENTER;
-        //stateNode.modeticks = cntt_GetTickCount() - statenode->modemaxticks + statenode->modedelayticks;
+
+        FSM* fsm = dynamic_cast<FSM*>(stateNode.stateObject);
+        if (fsm)
+        {
+            switch (fsm->getS())
+            {
+                case S::IDLE:
+                    fsm->start();
+                    break;
+
+                case S::PAUSED:
+                    fsm->resume();
+                    break;
+
+                default:
+                    break;
+            }
+        }
     }
 
     if (stateNode.activeChild == FSM::INVAL)
@@ -167,27 +235,51 @@ bool FSM::start()
     if (!enterState(FSM::ROOT))
         return false;
 
+    mS = S::RUN;
     onStart();
     return true;
 }
 
 bool FSM::pause()
 {
+    mS = S::PAUSED;
     return true;
 }
 
 bool FSM::resume()
 {
+    mS = S::RUN;
     return true;
 }
 
 bool FSM::stop()
 {
+    mS = S::IDLE;
     return true;
 }
 
 bool FSM::destroy()
 {
+    onDestroy(*mContext);
+
+    mContext->remove(this);
+
+    for (auto &stateNode : mStateNodeTable)
+    {
+        FSM* fsm = dynamic_cast<FSM*>(stateNode.stateObject);
+        if (!fsm)
+        {
+            delete stateNode.stateObject;
+        }
+        else
+        {
+            fsm->destroy();
+        }
+    }
+    mStateNodeTable.clear();
+    mS = S::INVAL;
+
+    release();
     return true;
 }
 
@@ -201,14 +293,18 @@ bool FSM::postEvent(const std::string& evtName, const EvtData& evtData)
     return true;
 }
 
-void FSM::onCreate()
+void FSM::onCreate(const Context& context)
 {
-    Utils::log(getName() + ".onCreate");
+    std::string msg;
+    msg = std::string("FSM::onCreate(): ") + getName();
+    Utils::log(msg);
 }
 
 void FSM::onStart()
 {
-    Utils::log(getName() + ".onStart");
+    std::string msg;
+    msg = std::string("FSM::onStart(): ") + getName();
+    Utils::log(msg);
 }
 
 void FSM::onPause()
@@ -226,9 +322,11 @@ void FSM::onStop()
     Utils::log(getName() + ".onStop");
 }
 
-void FSM::onDestroy()
+void FSM::onDestroy(const Context& context)
 {
-    Utils::log(getName() + ".onDestroy");
+    std::string msg;
+    msg = std::string("FSM::onDestroy(): ") + getName();
+    Utils::log(msg);
 }
 
 void FSM::printX()

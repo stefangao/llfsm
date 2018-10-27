@@ -15,8 +15,16 @@ NS_LL_BEGIN
 
 class Ref
 {
+protected:
+    Ref();
 
+public:
+    virtual ~Ref(); //necessary although it is empty
+    void retain();
+    void release();
 
+protected:
+    int mRefCount;
 };
 
 NS_LL_END

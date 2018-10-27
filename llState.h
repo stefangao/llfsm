@@ -56,9 +56,7 @@ public:
     const char* getName() const;
 
 protected:
-    virtual ~State()
-    {
-    }
+    virtual ~State() {}
     virtual State* newInstance() = 0;
 
     virtual void onCreate();
