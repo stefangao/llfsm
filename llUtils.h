@@ -9,6 +9,7 @@
 #ifndef __LL_UTILS_H__
 #define __LL_UTILS_H__
 
+#include <string>
 #include "llConst.h"
 
 NS_LL_BEGIN

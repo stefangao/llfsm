@@ -22,14 +22,14 @@ State::State()
 void State::onCreate()
 {
     std::string msg;
-    msg = std::string("onCreate(): ") + getName();
+    msg = std::string("State::onCreate(): ") + mThisFSM->getName() + "." + getName();
     Utils::log(msg);
 }
 
 void State::onEnter()
 {
     std::string msg;
-    msg = std::string("onEnter(): ") + getName();
+    msg = std::string("State::onEnter(): ") + mThisFSM->getName() + "." + getName();
     Utils::log(msg);
 }
 

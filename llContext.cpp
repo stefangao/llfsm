@@ -10,12 +10,29 @@
 
 NS_LL_BEGIN
 
-const Context Context::DEFAULT = Context("defaultContext");
+Context Context::DEFAULT = Context("defaultContext");
 
 Context::Context(const std::string& name) :
         mName(name)
 {
 
+}
+
+void Context::insert(const FSM* fsm)
+{
+    mFsmList.push_back(fsm);
+}
+
+void Context::remove(const FSM* fsm)
+{
+    for (auto iter = mFsmList.begin(); iter != mFsmList.end(); iter++)
+    {
+        if (*iter == fsm)
+        {
+            mFsmList.erase(iter);
+            break;
+        }
+    }
 }
 
 NS_LL_END

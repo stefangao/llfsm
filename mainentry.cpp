@@ -19,7 +19,7 @@ public:
     }
 
 protected:
-    void onStart()
+    void onStart() override
     {
         FSM::onStart();
 
@@ -28,6 +28,7 @@ protected:
 
     DECLARE_STATE_TABLE()
     DECLARE_TRANS_TABLE()
+    DECLARE_STATE_NEWINSTANCE(FSMA, FSMA)
 
 public:
     enum
@@ -122,7 +123,7 @@ BEGIN_STATE_TABLE(FSMA)
     STATE_ENTRY(DAEMON, Daemon, FSM::ROOT, FSM::SFL_ACTIVE)
     STATE_ENTRY(TEST1,  Test1,  DAEMON,    FSM::SFL_ACTIVE)
     STATE_ENTRY(TEST2,  Test2,  DAEMON,    FSM::SFL_ZERO)
-    STATE_ENTRY(TEST3,  Test2,  TEST1,     FSM::SFL_ACTIVE)
+    STATE_ENTRY(TEST3,  Test3,  TEST1,     FSM::SFL_ACTIVE)
 END_STATE_TABLE()
 
 BEGIN_TRANS_TABLE(FSMA, FSM)
@@ -162,35 +163,121 @@ BEGIN_TRANS_TABLE(FSMC, FSMB)
 END_TRANS_TABLE()
 
 //////////////////////////////////
-class FSMD: public FSMC
+
+class FSMX: public FSM
 {
 public:
-    FSMD()
+    FSMX()
     {
-        mX_onlyForTest = 4;
+        mX_onlyForTest = 1;
     }
 
-    int & getValue()
+protected:
+    void onStart() override
     {
-        static int ZERO = 0;
-        return ZERO;
+        FSM::onStart();
+        printX();
     }
 
+    DECLARE_STATE_TABLE()
     DECLARE_TRANS_TABLE()
+public:
+    enum
+    {
+        X0, X1, X2, X3
+    };
+
+    class Daemon: public State
+    {
+    protected:
+        virtual void onEnter() override
+        {
+            State::onEnter();
+        }
+        virtual void onExit() override
+        {
+
+        }
+        virtual bool onEventProc(const std::string& evtName,
+                                 const EvtData& evtData) override
+        {
+            return true;
+        }
+
+        DECLARE_STATE_NEWINSTANCE(Daemon, FSMX)
+    };
+
+    class Test1: public State
+    {
+    protected:
+        virtual void onEnter() override
+        {
+            State::onEnter();
+        }
+        virtual void onExit() override
+        {
+
+        }
+        virtual bool onEventProc(const std::string& evtName,
+                                 const EvtData& evtData) override
+        {
+            return true;
+        }
+
+        DECLARE_STATE_NEWINSTANCE(Test1, FSMX)
+    };
+
+    class Test2: public State
+    {
+    protected:
+        virtual void onEnter() override
+        {
+            State::onEnter();
+        }
+        virtual void onExit() override
+        {
+
+        }
+        virtual bool onEventProc(const std::string& evtName,
+                                 const EvtData& evtData) override
+        {
+            return true;
+        }
+
+        DECLARE_STATE_NEWINSTANCE(Test2, FSMX)
+    };
 };
 
-BEGIN_TRANS_TABLE(FSMD, FSMC)
+BEGIN_STATE_TABLE(FSMX)
+STATE_ENTRY(X0, Daemon, FSM::ROOT, FSM::SFL_ACTIVE)
+STATE_ENTRY(X1, Test1,  X0,    FSM::SFL_ACTIVE)
+STATE_ENTRY(X2, Test2,  X0,    FSM::SFL_ZERO)
+STATE_ENTRY(X3, FSMA,   X1,    FSM::SFL_ACTIVE)
+END_STATE_TABLE()
+
+BEGIN_TRANS_TABLE(FSMX, FSM)
 
 END_TRANS_TABLE()
 
 //////////////////////////////////////////////////////////////////////////
 
-int main()
+class Test0
 {
 
-    FSM *fsm = new FSMD();
-    fsm->create("TestFsm");
-    fsm->start();
+};
+
+int main(int argc, const char * argv[])
+{
+    FSM *fsm1 = new FSMA();
+    fsm1->create("TestFsmA");
+    fsm1->start();
+
+    FSM *fsm2 = new FSMX();
+    fsm2->create("TestFsmX");
+    fsm2->start();
+
+    fsm1->destroy();
+    fsm2->destroy();
 
     return 0;
 }
