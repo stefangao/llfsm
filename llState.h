@@ -10,42 +10,12 @@
 #define __LL_STATE_H__
 
 #include <string>
-#include <vector>
 #include "llConst.h"
 #include "llEvtData.h"
 
 NS_LL_BEGIN
 
 class FSM;
-class State;
-
-typedef int sid;
-typedef State* (*StateFactoryFunc)();
-
-typedef struct
-{
-    sid id;
-    StateFactoryFunc createInstance;
-    int parent;
-    unsigned int flag;
-    const char* name;
-} StateEntry_t;
-
-typedef struct _StateNode_t
-{
-    const StateEntry_t *stateEntry;
-    State *stateObject;
-
-    std::vector<const _StateNode_t*> childNodes;
-    sid activeChild;       //current active child state id
-
-    int modeticks;         //the last ticks when onMode was triggered
-    int modemaxticks;      //the tick count for onMode
-    int modedelayticks;    //the first onMode time
-
-    unsigned int sopFlag;  //flag indicate on which procedure the state is
-
-} StateNode_t;
 
 class State
 {

@@ -267,15 +267,15 @@ class Test0
 
 int main(int argc, const char * argv[])
 {
-    FSM *fsm1 = new FSMA();
-    fsm1->create("TestFsmA");
-    fsm1->start();
+    //FSM *fsm1 = new FSMA();
+    //fsm1->create("TestFsmA");
+    //fsm1->start();
 
     FSM *fsm2 = new FSMX();
     fsm2->create("TestFsmX");
     fsm2->start();
 
-    fsm1->destroy();
+    //fsm1->destroy();
     fsm2->destroy();
 
     return 0;
