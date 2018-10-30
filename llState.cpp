@@ -44,6 +44,9 @@ void State::onBeat()
 
 void State::onExit()
 {
+    std::string msg;
+    msg = std::string("State::onExit(): ") + mThisFSM->getName() + "." + getName();
+    Utils::log(msg);
 }
 
 void State::onDestroy()

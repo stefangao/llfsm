@@ -98,7 +98,6 @@ private:\
 protected:\
     static  const FSM* __getBuilder();\
     virtual const FSM* __getSuperBuilder() const override;\
-    virtual int getX_onlyForTest() const override;\
     static const TransEntry_t mTransEntries[];\
     static int mTransCount;\
     virtual const TransEntry_t* getTransTable() const override;\
@@ -111,8 +110,6 @@ protected:\
         { return fsmClass::__builder; }\
     const FSM* fsmClass::__getSuperBuilder() const\
         { return superClass::__getBuilder(); }\
-    int fsmClass::getX_onlyForTest() const\
-        {return mX_onlyForTest;};\
     int fsmClass::mTransCount = 0;\
     int fsmClass::getTransCount() const\
         { return mTransCount;};\

@@ -8,7 +8,6 @@
 
 #include "llFSM.h"
 #include "llUtils.h"
-#include <iostream> //TBD
 
 NS_LL_BEGIN
 
@@ -56,7 +55,7 @@ bool FSM::createInternal(const std::string& name, Context& context)
 
     mRootNode.stateObject = nullptr;
     mRootNode.stateEntry = &ROOT_ENTRY;
-    mRootNode.activeChild = FSM::INVAL;
+    mRootNode.activeChild = INVAL;
 
     int stateCount = getStateCount();
     if (stateCount == 0)
@@ -84,7 +83,7 @@ bool FSM::createInternal(const std::string& name, Context& context)
             stateEntry++;
         }
     }
-    buildStateTree(FSM::ROOT);
+    buildStateTree(ROOT);
 
     int transCount = getTransCount();
     if (transCount == 0)
@@ -146,9 +145,19 @@ void FSM::onCreateInternal(Context& context)
     }
 }
 
+const StateNode_t& FSM::getStateNode(sid sID) const
+{
+    if (sID == ROOT)
+        return mRootNode;
+
+    LLASSERT(sID >= 0 && sID < (int)mStateNodeTable.size(), "error");
+
+    return mStateNodeTable[sID];
+}
+
 StateNode_t& FSM::getStateNode(sid sID)
 {
-    if (sID == FSM::ROOT)
+    if (sID == ROOT)
         return mRootNode;
 
     LLASSERT(sID >= 0 && sID < (int)mStateNodeTable.size(), "error");
@@ -167,7 +176,7 @@ const State& FSM::getState(sid sID) const
 bool FSM::buildStateTree(sid parent)
 {
     StateNode_t& parentNode = getStateNode(parent);
-    parentNode.activeChild = FSM::INVAL;
+    parentNode.activeChild = INVAL;
     for (int i = 0; i < (int) mStateNodeTable.size(); i++)
     {
         StateNode_t& stateNode = mStateNodeTable[i];
@@ -181,11 +190,25 @@ bool FSM::buildStateTree(sid parent)
     return true;
 }
 
-bool FSM::enterState(sid sID)
+bool FSM::enterState(sid sID, bool enterDefaultActive)
 {
     StateNode_t& stateNode = getStateNode(sID);
+    sid parent = stateNode.stateEntry->parent;
+    if (parent != INVAL)
+    {
+        StateNode_t& parentNode = getStateNode(parent);
+        if (parentNode.activeChild == sID)
+        {
+            if (!enterDefaultActive)
+                return true;
+            else
+                parentNode.activeChild = INVAL;
+        }
 
-    stateNode.activeChild = FSM::INVAL;
+        LLASSERT(parentNode.activeChild == INVAL, "the state must be inactive");
+        parentNode.activeChild = sID;
+    }
+
     if (stateNode.stateObject && (stateNode.sopFlag & SOP_ENTER) != SOP_ENTER)
     {
         stateNode.sopFlag |= SOP_ENTER;
@@ -211,20 +234,56 @@ bool FSM::enterState(sid sID)
         }
     }
 
-    if (stateNode.activeChild == FSM::INVAL)
+    if (enterDefaultActive && stateNode.activeChild == INVAL)
     {
+        sid activeChild = INVAL;
         for (auto childNode : stateNode.childNodes)
         {
             if (childNode->stateEntry->flag & SFL_ACTIVE)
             {
-                stateNode.activeChild = childNode->stateEntry->id;
+                activeChild = childNode->stateEntry->id;
                 break;
             }
         }
-        if (stateNode.activeChild != FSM::INVAL)
+        if (activeChild != INVAL)
         {
-            enterState(stateNode.activeChild);
+            enterState(activeChild, enterDefaultActive);
         }
+    }
+
+    return true;
+}
+
+bool FSM::exitState(sid sID)
+{
+    if (!isStateActive(sID))
+        return true;
+
+    sid activeLeaf = sID;
+    StateNode_t* stateNode = &getStateNode(sID);
+    while (stateNode->activeChild != INVAL)
+    {
+        activeLeaf = stateNode->activeChild;
+        stateNode = &getStateNode(activeLeaf);
+    }
+
+    while (stateNode->stateEntry->id != ROOT)
+    {
+        if (stateNode->stateObject && (stateNode->sopFlag & SOP_EXIT) != SOP_EXIT)
+        {
+            stateNode->sopFlag |= SOP_EXIT;
+            stateNode->stateObject->onExit();
+            stateNode->sopFlag &= ~SOP_EXIT;
+        }
+
+        sid parent = stateNode->stateEntry->parent;
+        StateNode_t* parentNode = &getStateNode(parent);
+        parentNode->activeChild = INVAL;
+
+        if (stateNode->stateEntry->id == sID)
+            break;
+
+        stateNode = parentNode;
     }
 
     return true;
@@ -232,7 +291,7 @@ bool FSM::enterState(sid sID)
 
 bool FSM::start()
 {
-    if (!enterState(FSM::ROOT))
+    if (!enterState(ROOT, true))
         return false;
 
     mS = S::RUN;
@@ -254,6 +313,7 @@ bool FSM::resume()
 
 bool FSM::stop()
 {
+    exitState(ROOT);
     mS = S::IDLE;
     return true;
 }
@@ -329,14 +389,126 @@ void FSM::onDestroy(const Context& context)
     Utils::log(msg);
 }
 
-void FSM::printX()
+bool FSM::isInvalid() const
 {
-    const FSM* fsm = this;
-    do
+    return getS() == S::INVAL;
+}
+
+bool FSM::isStateInvalid(sid sID) const
+{
+    return (sID < 0 || sID >= (int)mStateNodeTable.size()) && sID != ROOT;
+}
+
+bool FSM::isStateActive(sid sID) const
+{
+    const StateNode_t& stateNode = getStateNode(sID);
+    if (stateNode.stateEntry == mRootNode.stateEntry)
+        return  getS() == S::RUN;
+
+    sid parent = stateNode.stateEntry->parent;
+    const StateNode_t& parentNode = getStateNode(parent);
+    return parentNode.activeChild == sID;
+}
+
+sid FSM::getActiveLeafState() const
+{
+    const StateNode_t* stateNode = &mRootNode;
+    while (stateNode->activeChild != INVAL)
     {
-        std::cout << fsm->getX_onlyForTest() << std::endl;
-        fsm = fsm->__getSuperBuilder();
-    } while (fsm);
+        stateNode = &getStateNode(stateNode->activeChild);
+    }
+    return stateNode->stateEntry->id;
+}
+
+int FSM::getStateLevel(sid sID) const
+{
+    int level = 0;
+    const StateNode_t* stateNode = &getStateNode(sID);
+    sid parent = stateNode->stateEntry->parent;
+    while (parent != INVAL)
+    {
+        level++;
+        stateNode = &getStateNode(parent);
+        parent = stateNode->stateEntry->parent;
+    }
+    return level;
+}
+
+sid FSM::seekParent(sid sID, int level)
+{
+    if (level < 0)
+        return INVAL;
+
+    if (isStateInvalid(sID))
+        return INVAL;
+
+    sid parent = sID;
+    const StateNode_t* stateNode = nullptr;
+    while (level > 0)
+    {
+        stateNode = &getStateNode(parent);
+        parent = stateNode->stateEntry->parent;
+        level--;
+    }
+    return parent;
+}
+
+sid FSM::seekCommonParent(sid sID1, sid sID2)
+{
+    int level1 = getStateLevel(sID1);
+    int level2 = getStateLevel(sID2);
+    if (level1 < level2)
+        sID2 = seekParent(sID2, level2-level1);
+    else if (level1 > level2)
+        sID1 = seekParent(sID1, level1-level2);
+
+    while (sID1 != sID2)
+    {
+        sID1 = seekParent(sID1, 1);
+        sID2 = seekParent(sID2, 1);
+    }
+    return sID1;
+}
+
+bool FSM::switchState(sid dstState)
+{
+    sid activeLeaf = getActiveLeafState();
+    if (activeLeaf == dstState)
+        return true;
+
+    sid parent = seekCommonParent(activeLeaf, dstState);
+    int parentLevel = getStateLevel(parent);
+
+    int deltaLevel = getStateLevel(activeLeaf) - parentLevel;
+    if (deltaLevel > 0)
+    {
+        int srcState = seekParent(activeLeaf, deltaLevel - 1);
+        if (!exitState(srcState))
+            return false;
+    }
+
+    StateNode_t* parentNode = &getStateNode(parent);
+    deltaLevel = getStateLevel(dstState) - parentLevel - 1;
+    while (deltaLevel > 0)
+    {
+        LLASSERT(parentNode->activeChild == INVAL, "The state should be inactive");
+
+        parentNode->activeChild = seekParent(dstState, deltaLevel);
+        StateNode_t* stateNode = &getStateNode(parentNode->activeChild);
+        if (stateNode->stateObject && (stateNode->sopFlag & SOP_ENTER) != SOP_ENTER)
+        {
+            stateNode->sopFlag |= SOP_ENTER;
+            stateNode->stateObject->onEnter();
+            stateNode->sopFlag &= ~SOP_ENTER;
+        }
+        parentNode = stateNode;
+        deltaLevel--;
+    }
+
+    if (!enterState(dstState, false))
+        return false;
+
+    return true;
 }
 
 NS_LL_END

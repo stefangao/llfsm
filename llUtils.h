@@ -14,22 +14,22 @@
 
 NS_LL_BEGIN
 
-#ifdef LL_DEBUG
-    void __ll_assert(const char* msg, const char* file, int lineno);
-    #define LLASSERT(x, msg) \
-        if (!(x)) \
-            __ll_assert(msg, __FILE__, __LINE__)
-#else
-    #define LLASSERT(x, msg)
-#endif
-
-extern const char* LL_STRING_EMPTY;
-
 class Utils
 {
 public:
     static void log(const std::string& msg);
+    static void assert(const char* msg, const char* file, int lineno);
 };
+
+extern const char* LL_STRING_EMPTY;
+
+#ifdef LL_DEBUG
+    #define LLASSERT(x, msg)\
+        if (!(x))\
+            Utils::assert(msg, __FILE__, __LINE__)
+#else
+    #define LLASSERT(x, msg)
+#endif
 
 NS_LL_END
 

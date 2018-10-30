@@ -35,11 +35,12 @@ protected:
     virtual int getTransCount() const {return 0;}
     virtual void setTransCount(int) { }
 
+    const StateNode_t& getStateNode(sid sID) const;
     StateNode_t& getStateNode(sid sID);
-    const State& getState(sid sID) const;
-    bool enterState(sid sID);
 
-    virtual int getX_onlyForTest() const {return 0;}
+    const State& getState(sid sID) const;
+    bool enterState(sid sID, bool enterDefaultActive = false);
+    bool exitState(sid sID);
 
 public:
     FSM();
@@ -55,10 +56,15 @@ public:
 
     inline const std::string& getName() const {return mName;};
     inline void setName(const std::string& name) {mName = name;}
-
     inline S getS() const {return mS;}
 
-    void printX();
+    bool isInvalid() const;
+    bool isStateActive(sid sID) const;
+    sid getActiveLeafState() const;
+    int getStateLevel(sid sID) const;
+
+    bool isStateInvalid(sid sID) const;
+    bool switchState(sid dstState);
 
 protected:
     virtual void onCreate(const Context& context);
@@ -68,6 +74,10 @@ protected:
     virtual void onStop();
     virtual void onDestroy(const Context& context);
     bool buildStateTree(sid parent);
+
+
+    sid seekParent(sid sID, int level);
+    sid seekCommonParent(sid sID1, sid sID2);
 
 private:
     bool createInternal(const std::string& name, Context& context = Context::DEFAULT);
