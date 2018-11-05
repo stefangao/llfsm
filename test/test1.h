@@ -6,7 +6,6 @@
 // Description :
 //============================================================================
 
-#include "../core/lianli.h"
 #include "TestCase.h"
 
 class TestCase1 : public TestCase

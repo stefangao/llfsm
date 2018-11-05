@@ -9,6 +9,8 @@
 #ifndef __TEST_CASE_H__
 #define __TEST_CASE_H__
 
+#include "../core/lianli.h"
+
 #define DECLARE_TESTCASE_FACTORY(testCaseClass)\
 public:\
 static testCaseClass* create()\
