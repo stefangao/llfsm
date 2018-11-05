@@ -107,7 +107,7 @@ bool FSM::createInternal(const std::string& name, Context& context)
     }
 
     mS = S::IDLE;
-    mContext->insert(this);
+    mContext->add(this);
 
     for (int i = 0; i < stateCount; i++)
     {
@@ -314,6 +314,7 @@ bool FSM::resume()
 bool FSM::stop()
 {
     exitState(ROOT);
+    onStop();
     mS = S::IDLE;
     return true;
 }

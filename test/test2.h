@@ -1,5 +1,5 @@
 //============================================================================
-// Name        : test1.cpp
+// Name        : test2.cpp
 // Author      : Stefan Gao (stefan.gao@gmail.com)
 // Version     :
 // Copyright   : Your copyright notice
@@ -9,19 +9,19 @@
 #include "../core/lianli.h"
 #include "TestCase.h"
 
-class TestCase1 : public TestCase
+class TestCase2 : public TestCase
 {
 public:
-    TestCase1();
+    TestCase2();
 
 protected:
-    virtual ~TestCase1();
+    virtual ~TestCase2();
     virtual bool onInit();
 
-    DECLARE_TESTCASE_FACTORY(TestCase1)
+    DECLARE_TESTCASE_FACTORY(TestCase2)
 };
 
-namespace test1 {
+namespace test2 {
 
 class FSMA: public FSM
 {

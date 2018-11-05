@@ -1,29 +1,38 @@
 //============================================================================
-// Name        : test1.cpp
+// Name        : test2.cpp
 // Author      : Stefan Gao (stefan.gao@gmail.com)
 // Version     :
 // Copyright   : Your copyright notice
 // Description :
 //============================================================================
 
-#include "test1.h"
-using namespace test1;
+#include "test2.h"
+using namespace test2;
 
-TestCase1::TestCase1()
+TestCase2::TestCase2()
 {
 
 }
 
-TestCase1::~TestCase1()
+TestCase2::~TestCase2()
 {
 
 }
 
-bool TestCase1::onInit()
+bool TestCase2::onInit()
 {
     FSM *fsm = new FSMA();
     fsm->create("TestFsmA");
     fsm->start();
+
+    Utils::log("switch to DAEMON");
+    fsm->switchState(FSMA::DAEMON);
+
+    Utils::log("switch to TEST1");
+    fsm->switchState(FSMA::TEST1);
+
+    Utils::log("switch to TEST4");
+    fsm->switchState(FSMA::TEST4);
 
     Utils::log("stop...");
     fsm->stop();
@@ -31,7 +40,7 @@ bool TestCase1::onInit()
     return true;
 }
 
-namespace test1 {
+namespace test2 {
 /////////// FSMA ///////////
 BEGIN_STATE_TABLE(FSMA)
     STATE_ENTRY(DAEMON, Daemon, FSM::ROOT, FSM::SFL_ACTIVE)

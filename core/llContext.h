@@ -23,7 +23,7 @@ public:
     Context(const std::string& name);
 
 protected:
-    void insert(const FSM* fsm);
+    void add(const FSM* fsm);
     void remove(const FSM* fsm);
 
 protected:

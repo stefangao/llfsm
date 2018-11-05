@@ -18,7 +18,7 @@ Context::Context(const std::string& name) :
 
 }
 
-void Context::insert(const FSM* fsm)
+void Context::add(const FSM* fsm)
 {
     mFsmList.push_back(fsm);
 }
