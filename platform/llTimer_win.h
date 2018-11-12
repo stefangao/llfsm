@@ -1,26 +1,28 @@
 //============================================================================
-// Name        : mainentry.cpp
+// Name        : llTimer_shell.h
 // Author      : Stefan Gao (stefan.gao@gmail.com)
 // Version     :
 // Copyright   : Your copyright notice
 // Description :
 //============================================================================
 
-#include "test/test1.h"
-#include "test/test2.h"
-#include "platform/shell/msgloop.h"
+NS_LL_BEGIN
 
-int main(int argc, const char * argv[])
+int setTimer(int interval, std::function<void(void*)> func, bool once)
 {
-    /*
-    auto* testCase = TestCase2::create();
-    if (testCase)
-    {
-
-    }*/
-
-    llshell::main();
 
     return 0;
 }
 
+bool killTimer(int tid)
+{
+
+    return true;
+}
+
+void postCallback(std::function<void(void*)> func)
+{
+
+}
+
+NS_LL_END

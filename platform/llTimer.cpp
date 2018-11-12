@@ -1,26 +1,16 @@
 //============================================================================
-// Name        : mainentry.cpp
+// Name        : llRef.h
 // Author      : Stefan Gao (stefan.gao@gmail.com)
 // Version     :
 // Copyright   : Your copyright notice
 // Description :
 //============================================================================
 
-#include "test/test1.h"
-#include "test/test2.h"
-#include "platform/shell/msgloop.h"
+#include "../core/llTimer.h"
 
-int main(int argc, const char * argv[])
-{
-    /*
-    auto* testCase = TestCase2::create();
-    if (testCase)
-    {
-
-    }*/
-
-    llshell::main();
-
-    return 0;
-}
+#if LL_PLATFORM_SHELL == 1
+    #include "llTimer_shell.h"
+#elif LL_PLATFORM_WIN == 1
+    #include "llTimer_win.h"
+#endif
 
