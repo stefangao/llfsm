@@ -37,7 +37,7 @@ static bool gFinished = false;
 static std::queue<MsgInfo> gMsgQueue;
 static std::list<TimerInfo> gTimerList;
 
-void postMsg(const MsgInfo& msg)
+static void postMsg(const MsgInfo& msg)
 {
     std::unique_lock < std::mutex > lck(gMainMtx);
     gMsgQueue.push(msg);
@@ -52,7 +52,7 @@ void postCallback(std::function<void(void*)> func)
     postMsg(msg);
 }
 
-void setTimer(int interval, bool once, std::function<void(void*)> func)
+void setTimer(int interval, std::function<void(void*)> func, bool once)
 {
     TimerInfo timer;
     timer.interval = interval;
@@ -169,12 +169,12 @@ static void onCommand(const std::string& cmd, std::vector<std::string> params)
 
             auto timeStart = std::chrono::system_clock::now();
             //std::cout << interval << "," << once << std::endl;
-            setTimer(interval, once, [timeStart](void* p)
+            setTimer(interval, [timeStart](void* p)
                     {
                         auto timeEnd = std::chrono::system_clock::now();
                         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart);
                         std::cout << "---time out---" << duration.count() << "\n";
-                    });
+                    }, once);
         }
     }
     else if (cmd == "exit")
@@ -210,7 +210,7 @@ static void do_input_thread()
 
 int main()
 {
-    std::cout << "main start\n";
+    std::cout << "msgloop start\n";
     std::thread timerThread, inputThread;
     timerThread = std::thread(do_timer_thread);
     inputThread = std::thread(do_input_thread);
@@ -232,7 +232,7 @@ int main()
     timerThread.join();
     inputThread.join();
 
-    std::cout << "main exit\n";
+    std::cout << "msgloop exit\n";
     return 0;
 }
 

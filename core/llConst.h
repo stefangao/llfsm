@@ -23,12 +23,6 @@
 
 NS_LL_BEGIN
 
-#define LL_PLATFORM_SHELL    1
-#define LL_PLATFORM_WIN      0
-#define LL_PLATFORM_IOS      0
-#define LL_PLATFORM_ANDROID  0
-#define LL_PLATFORM_COCOS2DX 0
-
 #define LL_DEBUG
 
 typedef int sid;

@@ -1,5 +1,5 @@
 //============================================================================
-// Name        : llTimer_shell.h
+// Name        : llTimer_win.h
 // Author      : Stefan Gao (stefan.gao@gmail.com)
 // Version     :
 // Copyright   : Your copyright notice
