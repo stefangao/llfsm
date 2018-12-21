@@ -1,6 +1,6 @@
 # llfsm
 It is a fsm whose states are tree structure.
-A fsm has states which ared composed by hierarchy format.
+A fsm has states which are composed by hierarchy format.
 A fsm is also a state type, which can be a part of another fsm.
 
 the project namespace is lianli. we have several most basical classes, which are most frequently used in programming:
