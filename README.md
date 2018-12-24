@@ -3,7 +3,7 @@ It is a fsm whose states are tree structure.
 A fsm has states which are composed by hierarchy format.
 A fsm is also a state type, which can be a part of another fsm.
 
-The project namespace is lianli. We have several most basical classes, which are most frequently used in programming:
+The project namespace is lianli. We have several basical classes, which are most frequently used in programming:
 lianli::FSM  (llFSM.h .cpp)
 lianli::State (llState.h .cpp)
 lianli::Context (llContext.h .cpp)
