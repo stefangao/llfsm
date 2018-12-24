@@ -26,6 +26,7 @@ NS_LL_BEGIN
 #define LL_DEBUG
 
 typedef int sid;
+typedef unsigned char* pbyte;
 
 class State;
 typedef State* (*StateFactoryFunc)();

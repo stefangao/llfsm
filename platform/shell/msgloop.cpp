@@ -52,7 +52,7 @@ void postCallback(std::function<void(void*)> func)
     postMsg(msg);
 }
 
-void setTimer(int interval, std::function<void(void*)> func, bool once)
+int setTimer(int interval, std::function<void(void*)> func, bool once)
 {
     TimerInfo timer;
     timer.interval = interval;
@@ -65,6 +65,7 @@ void setTimer(int interval, std::function<void(void*)> func, bool once)
     std::unique_lock < std::mutex > lck(gTimerMtx);
     gTimerList.push_back(timer);
     gTimerCv.notify_one();
+    return timer.id;
 }
 
 static void exitApp()
