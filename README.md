@@ -23,10 +23,10 @@ fsm1:
 -------------------------------------------------------
 
 If fsm1 is created in context1, then
-context1 {fsm1}
-fsm1 {fsm2, fsm3}
+the uri of fsm1 is context1:fsm1
 
-The uri of fsm2 is /context1/fsm1/fsm2
-The uri of fsm3 is /context1/fsm1/fsm3
+fsm2 and fsm3 are the states of fsm1. So their context are also context1.
+The uri of fsm2 is context1:fsm2
+The uri of fsm3 is context1:fsm3
 
-We can locate every fsm by its uri, which is unique in a context.
+The name of fsm must be unique in a context. So we can locate every fsm by its uri.
