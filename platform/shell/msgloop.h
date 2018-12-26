@@ -5,8 +5,12 @@
 
 namespace llshell {
 
-int setTimer(int interval, std::function<void(void*)> func, bool once);
-void postCallback(std::function<void(void*)> func);
+typedef std::function<void(int id, const void*)> MsgCallbackFunc;
+
+int setTimer(int interval, const MsgCallbackFunc& func, const void* userData, bool once);
+bool killTimer(int tid);
+void postCallback(const void* userData, const MsgCallbackFunc& func);
+
 int main();
 
 }

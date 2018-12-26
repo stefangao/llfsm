@@ -8,6 +8,7 @@
 
 #include "test2.h"
 using namespace test2;
+USING_NS_LL;
 
 TestCase2::TestCase2()
 {
@@ -43,11 +44,11 @@ bool TestCase2::onInit()
 namespace test2 {
 /////////// FSMA ///////////
 BEGIN_STATE_TABLE(FSMA)
-    STATE_ENTRY(DAEMON, Daemon, FSM::ROOT, FSM::SFL_ACTIVE)
-    STATE_ENTRY(TEST1,  Test1,  DAEMON,    FSM::SFL_ACTIVE)
-    STATE_ENTRY(TEST2,  Test2,  DAEMON,    FSM::SFL_ZERO)
-    STATE_ENTRY(TEST3,  Test3,  TEST1,     FSM::SFL_ACTIVE)
-    STATE_ENTRY(TEST4,  Test3,  TEST2,     FSM::SFL_ACTIVE)
+    STATE_ENTRY(DAEMON, Daemon, S_ROOT,    SFL_ACTIVE)
+    STATE_ENTRY(TEST1,  Test1,  DAEMON,    SFL_ACTIVE)
+    STATE_ENTRY(TEST2,  Test2,  DAEMON,    SFL_ZERO)
+    STATE_ENTRY(TEST3,  Test3,  TEST1,     SFL_ACTIVE)
+    STATE_ENTRY(TEST4,  Test3,  TEST2,     SFL_ACTIVE)
 END_STATE_TABLE()
 
 BEGIN_TRANS_TABLE(FSMA, FSM)

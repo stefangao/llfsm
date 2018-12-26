@@ -16,12 +16,27 @@
 
 NS_LL_BEGIN
 
+#define CNTT_FSMR_CONTINUE          0
+#define CNTT_FSMR_BREAK             1
+#define CNTT_FSMR_REMOVE            2
+#define CNTT_FSMR_UNTOUCHED         3
+
 class FSM: public State, public Ref
 {
 public:
     enum class S
     {
         IDLE, RUN, PAUSED, INVAL = -1,
+    };
+
+private:
+    enum
+    {
+        EVTR_FAILED = -1,
+        EVTR_CONTINUE = 0,
+        EVTR_BREAK = 1,
+        EVTR_REMOVE = 2,
+        EVTR_UNTOUCHED = 3,
     };
 
 protected:
@@ -79,6 +94,8 @@ protected:
     sid seekParent(sid sID, int level);
     sid seekCommonParent(sid sID1, sid sID2);
 
+    int dispatchEvent(const std::string& evtName, const EvtData& evtData);
+
 private:
     bool createInternal(const std::string& name, Context& context = Context::DEFAULT);
     void onCreateInternal(Context& context);
@@ -91,12 +108,6 @@ protected:
     StateNode_t mRootNode;
 
 public:
-    static const sid ROOT;
-    static const sid INVAL;
-
-    static const unsigned int SFL_ZERO;
-    static const unsigned int SFL_ACTIVE;
-
     static const StateEntry_t ROOT_ENTRY;
 
     static const unsigned int SOP_ENTER;

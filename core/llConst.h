@@ -28,6 +28,19 @@ NS_LL_BEGIN
 typedef int sid;
 typedef unsigned char* pbyte;
 
+const sid S_ROOT = 1000000;
+const sid S_INVAL = -1;
+
+//state flag
+const unsigned int SFL_ZERO = 0;
+const unsigned int SFL_ACTIVE = 0x0001L;
+
+//transfer flag
+const unsigned int TFL_NEXTPROC = 0x0004L;
+const unsigned int TFL_ENQUEUE = 0x0008L;
+const unsigned int TFL_DEQUEUE = 0x0010L;
+const unsigned int TFL_OFFLINE = 0x0020L;
+
 class State;
 typedef State* (*StateFactoryFunc)();
 

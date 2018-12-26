@@ -9,20 +9,28 @@
 
 NS_LL_BEGIN
 
-int setTimer(int interval, std::function<void(void*)> func, bool once)
+int setTimer(unsigned int interval, const std::function<void(int tid, const void* userData)>& func, const void* userData)
 {
-    return llshell::setTimer(interval, func, once);
+    return llshell::setTimer(interval, func, userData, false);
 }
 
 bool killTimer(int tid)
 {
-
-    return true;
+    return llshell::killTimer(tid);
 }
 
-void postCallback(std::function<void(void*)> func)
+void postCallback(const void* userData, const std::function<void(const void* userData)>& func)
 {
-
+    llshell::postCallback(userData, [func](int, const void* userData) {
+        func(userData);
+    });
 }
 
 NS_LL_END
+
+//the app entry for shell
+int main(int argc, const char * argv[])
+{
+    return llshell::main();
+}
+

@@ -13,17 +13,11 @@
 
 NS_LL_BEGIN
 
-const sid FSM::INVAL = -1;
-const sid FSM::ROOT = 1000000;
-
-const unsigned int FSM::SFL_ZERO = 0;
-const unsigned int FSM::SFL_ACTIVE = 0x0001L;
-
 const unsigned int FSM::SOP_ENTER = 0x01;
 const unsigned int FSM::SOP_BEAT = 0x02;
 const unsigned int FSM::SOP_EXIT = 0x04;
 
-const StateEntry_t FSM::ROOT_ENTRY = {FSM::ROOT, nullptr, FSM::INVAL, FSM::SFL_ZERO, "FSM::ROOT"};
+const StateEntry_t FSM::ROOT_ENTRY = {S_ROOT, nullptr, S_INVAL, SFL_ZERO, "FSM::ROOT"};
 
 FSM::FSM()
 {
@@ -57,12 +51,12 @@ bool FSM::createInternal(const std::string& name, Context& context)
 
     mRootNode.stateObject = nullptr;
     mRootNode.stateEntry = &ROOT_ENTRY;
-    mRootNode.activeChild = INVAL;
+    mRootNode.activeChild = S_INVAL;
 
     int stateCount = getStateCount();
     if (stateCount == 0)
     {
-        while (stateEntry++->id != -1)
+        while (stateEntry++->id != S_INVAL)
             stateCount++;
 
         LLASSERT(stateCount > 0, "error");
@@ -85,7 +79,7 @@ bool FSM::createInternal(const std::string& name, Context& context)
             stateEntry++;
         }
     }
-    buildStateTree(ROOT);
+    buildStateTree(S_ROOT);
 
     int transCount = getTransCount();
     if (transCount == 0)
@@ -149,7 +143,7 @@ void FSM::onCreateInternal(Context& context)
 
 const StateNode_t& FSM::getStateNode(sid sID) const
 {
-    if (sID == ROOT)
+    if (sID == S_ROOT)
         return mRootNode;
 
     LLASSERT(sID >= 0 && sID < (int)mStateNodeTable.size(), "error");
@@ -159,7 +153,7 @@ const StateNode_t& FSM::getStateNode(sid sID) const
 
 StateNode_t& FSM::getStateNode(sid sID)
 {
-    if (sID == ROOT)
+    if (sID == S_ROOT)
         return mRootNode;
 
     LLASSERT(sID >= 0 && sID < (int)mStateNodeTable.size(), "error");
@@ -178,7 +172,7 @@ const State& FSM::getState(sid sID) const
 bool FSM::buildStateTree(sid parent)
 {
     StateNode_t& parentNode = getStateNode(parent);
-    parentNode.activeChild = INVAL;
+    parentNode.activeChild = S_INVAL;
     for (int i = 0; i < (int) mStateNodeTable.size(); i++)
     {
         StateNode_t& stateNode = mStateNodeTable[i];
@@ -196,7 +190,7 @@ bool FSM::enterState(sid sID, bool enterDefaultActive)
 {
     StateNode_t& stateNode = getStateNode(sID);
     sid parent = stateNode.stateEntry->parent;
-    if (parent != INVAL)
+    if (parent != S_INVAL)
     {
         StateNode_t& parentNode = getStateNode(parent);
         if (parentNode.activeChild == sID)
@@ -204,10 +198,10 @@ bool FSM::enterState(sid sID, bool enterDefaultActive)
             if (!enterDefaultActive)
                 return true;
             else
-                parentNode.activeChild = INVAL;
+                parentNode.activeChild = S_INVAL;
         }
 
-        LLASSERT(parentNode.activeChild == INVAL, "the state must be inactive");
+        LLASSERT(parentNode.activeChild == S_INVAL, "the state must be inactive");
         parentNode.activeChild = sID;
     }
 
@@ -236,9 +230,9 @@ bool FSM::enterState(sid sID, bool enterDefaultActive)
         }
     }
 
-    if (enterDefaultActive && stateNode.activeChild == INVAL)
+    if (enterDefaultActive && stateNode.activeChild == S_INVAL)
     {
-        sid activeChild = INVAL;
+        sid activeChild = S_INVAL;
         for (auto childNode : stateNode.childNodes)
         {
             if (childNode->stateEntry->flag & SFL_ACTIVE)
@@ -247,7 +241,7 @@ bool FSM::enterState(sid sID, bool enterDefaultActive)
                 break;
             }
         }
-        if (activeChild != INVAL)
+        if (activeChild != S_INVAL)
         {
             enterState(activeChild, enterDefaultActive);
         }
@@ -263,13 +257,13 @@ bool FSM::exitState(sid sID)
 
     sid activeLeaf = sID;
     StateNode_t* stateNode = &getStateNode(sID);
-    while (stateNode->activeChild != INVAL)
+    while (stateNode->activeChild != S_INVAL)
     {
         activeLeaf = stateNode->activeChild;
         stateNode = &getStateNode(activeLeaf);
     }
 
-    while (stateNode->stateEntry->id != ROOT)
+    while (stateNode->stateEntry->id != S_ROOT)
     {
         if (stateNode->stateObject && (stateNode->sopFlag & SOP_EXIT) != SOP_EXIT)
         {
@@ -280,7 +274,7 @@ bool FSM::exitState(sid sID)
 
         sid parent = stateNode->stateEntry->parent;
         StateNode_t* parentNode = &getStateNode(parent);
-        parentNode->activeChild = INVAL;
+        parentNode->activeChild = S_INVAL;
 
         if (stateNode->stateEntry->id == sID)
             break;
@@ -293,7 +287,7 @@ bool FSM::exitState(sid sID)
 
 bool FSM::start()
 {
-    if (!enterState(ROOT, true))
+    if (!enterState(S_ROOT, true))
         return false;
 
     mS = S::RUN;
@@ -315,7 +309,7 @@ bool FSM::resume()
 
 bool FSM::stop()
 {
-    exitState(ROOT);
+    exitState(S_ROOT);
     onStop();
     mS = S::IDLE;
     return true;
@@ -399,7 +393,7 @@ bool FSM::isInvalid() const
 
 bool FSM::isStateInvalid(sid sID) const
 {
-    return (sID < 0 || sID >= (int)mStateNodeTable.size()) && sID != ROOT;
+    return (sID < 0 || sID >= (int)mStateNodeTable.size()) && sID != S_ROOT;
 }
 
 bool FSM::isStateActive(sid sID) const
@@ -416,7 +410,7 @@ bool FSM::isStateActive(sid sID) const
 sid FSM::getActiveLeafState() const
 {
     const StateNode_t* stateNode = &mRootNode;
-    while (stateNode->activeChild != INVAL)
+    while (stateNode->activeChild != S_INVAL)
     {
         stateNode = &getStateNode(stateNode->activeChild);
     }
@@ -428,7 +422,7 @@ int FSM::getStateLevel(sid sID) const
     int level = 0;
     const StateNode_t* stateNode = &getStateNode(sID);
     sid parent = stateNode->stateEntry->parent;
-    while (parent != INVAL)
+    while (parent != S_INVAL)
     {
         level++;
         stateNode = &getStateNode(parent);
@@ -440,10 +434,10 @@ int FSM::getStateLevel(sid sID) const
 sid FSM::seekParent(sid sID, int level)
 {
     if (level < 0)
-        return INVAL;
+        return S_INVAL;
 
     if (isStateInvalid(sID))
-        return INVAL;
+        return S_INVAL;
 
     sid parent = sID;
     const StateNode_t* stateNode = nullptr;
@@ -494,7 +488,7 @@ bool FSM::switchState(sid dstState)
     deltaLevel = getStateLevel(dstState) - parentLevel - 1;
     while (deltaLevel > 0)
     {
-        LLASSERT(parentNode->activeChild == INVAL, "The state should be inactive");
+        LLASSERT(parentNode->activeChild == S_INVAL, "The state should be inactive");
 
         parentNode->activeChild = seekParent(dstState, deltaLevel);
         StateNode_t* stateNode = &getStateNode(parentNode->activeChild);
@@ -512,6 +506,154 @@ bool FSM::switchState(sid dstState)
         return false;
 
     return true;
+}
+
+int FSM::dispatchEvent(const std::string& evtName, const EvtData& evtData)
+{
+#if 0
+    cntt_uint32 userdata;
+    CNTT_RESULT result = CNTT_FSMR_UNTOUCHED;
+
+    if (smachine->smatrix->m_state_stevttree->Find(lpEvtName, userdata) && userdata != 0)
+    {
+        cntt_list_head *listhead = (cntt_list_head*)userdata;
+        TransItem_t *curritem;
+        cntt_list_t *curr;
+
+        //any state that is active when the event reaches, the event should be processed. (sometimes the previous event could change the state)
+        CNTT_LIST_FOREACH(curr, listhead)
+        {
+            curritem = CNTT_LIST_ENTRY(curr, TransItem_t, list);
+            if (fsm_IsStateActive(smachine->stree, curritem->transdef->curstate))
+                curritem->isactive = cntt_true;
+            else
+                curritem->isactive = cntt_false;
+        }
+
+        int level = -1;
+        CNTT_LIST_FOREACH(curr, listhead)
+        {
+            curritem = CNTT_LIST_ENTRY(curr, TransItem_t, list);
+
+            //add offline events in the queue of curstate. only queue once for the transfer items with same level (same curstate)
+            if ((curritem->transdef->flag & TFL_OFFLINE) == TFL_OFFLINE && curritem->level != level)
+            {
+                CNTT_STATENODE_T *statenode = fsm_StateNode(smachine->stree, curritem->transdef->curstate);
+                if (!curritem->isactive || cntt_QueueSize(statenode->evtqueue) > 0)
+                {
+                    if (statenode != NULL && statenode->evtqueue != NULL)
+                    {
+                        CNTT_QUEUEEVT_T queueevt = { NULL, NULL, 0 };
+                        queueevt.evtname = curritem->transdef->evtname;
+                        if (pEvtData != NULL && nEvtDataLen > 0)
+                        {
+                            queueevt.evtdata = (cntt_uint8*) cntt_malloc((cntt_size)nEvtDataLen);
+                            if (queueevt.evtdata != NULL)
+                            {
+                                memcpy(queueevt.evtdata, pEvtData, nEvtDataLen);
+                                queueevt.evtdatalen = (cntt_int)nEvtDataLen;
+                            }
+                        }
+                        cntt_QueueEnter(statenode->evtqueue, &queueevt, -1);
+                        level = curritem->level;
+                    }
+                    continue;
+                }
+            }
+
+            if (!curritem->isactive)
+                continue;
+
+            cntt_bool done = cntt_false;
+            if ((curritem->transdef->flag & TFL_ENQUEUE) == TFL_ENQUEUE)
+            {
+                CNTT_STATENODE_T *statenode = fsm_StateNode(smachine->stree, curritem->transdef->nextstate);
+                if (statenode != NULL && statenode->evtqueue != NULL)
+                {
+                    CNTT_QUEUEEVT_T queueevt = { NULL, NULL, 0 };
+                    queueevt.evtname = curritem->transdef->evtname;
+                    if (pEvtData != NULL && nEvtDataLen > 0)
+                    {
+                        queueevt.evtdata = (cntt_uint8*) cntt_malloc((cntt_size)nEvtDataLen);
+                        if (queueevt.evtdata != NULL)
+                        {
+                            memcpy(queueevt.evtdata, pEvtData, nEvtDataLen);
+                            queueevt.evtdatalen = (cntt_int)nEvtDataLen;
+                        }
+                    }
+                    cntt_QueueEnter(statenode->evtqueue, &queueevt, -1);
+                }
+                result = CNTT_FSMR_REMOVE;
+                done = cntt_true;
+            }
+
+            if (!done && (curritem->transdef->flag & TFL_DEQUEUE) == TFL_DEQUEUE)
+            {
+                CNTT_STATENODE_T *statenode = fsm_StateNode(smachine->stree, curritem->transdef->nextstate);
+                if (statenode != NULL && statenode->evtqueue != NULL)
+                {
+                    CNTT_QUEUEEVT_T queueevt = { NULL, NULL, 0 };
+                    if (cntt_QueueConsume(statenode->evtqueue, &queueevt, NULL))
+                    {
+                        lpEvtName = queueevt.evtname;
+                        pEvtData = queueevt.evtdata;
+                        nEvtDataLen = queueevt.evtdatalen;
+                    }
+                    else
+                    {
+                        done = cntt_true;
+                    }
+                }
+            }
+
+            if (done)
+                continue;
+
+            if ((curritem->transdef->flag & TFL_NEXTPROC) == TFL_NEXTPROC)
+            {
+                if (curritem->transdef->nextstate != CNTT_FSMS_INVAL)
+                {
+                    if (!fsm_SwitchState(smachine, curritem->transdef->curstate, curritem->transdef->nextstate))
+                        return CNTT_FSMR_FATALERR; //if machine has been deleted
+
+                    if (curritem->transdef->onEvtProc)
+                    {
+                        result = curritem->transdef->onEvtProc(smachine, curritem->transdef->nextstate, lpEvtName, pEvtData, nEvtDataLen, curritem->transdef->userdata);
+                        if (!fsm_IsMachine(smachine))
+                            return CNTT_FSMR_FATALERR;
+                    }
+                }
+            }
+            else
+            {
+                if (curritem->transdef->onEvtProc)
+                {
+                    result = curritem->transdef->onEvtProc(smachine, curritem->transdef->curstate, lpEvtName, pEvtData, nEvtDataLen, curritem->transdef->userdata);
+                    if (!fsm_IsMachine(smachine))
+                        return CNTT_FSMR_FATALERR;
+                }
+
+                if (curritem->transdef->nextstate != CNTT_FSMS_INVAL &&
+                    (curritem->transdef->flag & TFL_DEQUEUE) != TFL_DEQUEUE) //only read event instead switch state for TFL_DEQUEUE
+                {
+                    if (!fsm_SwitchState(smachine, curritem->transdef->curstate, curritem->transdef->nextstate))
+                        return CNTT_FSMR_FATALERR; //if machine has been deleted
+                }
+            }
+
+            if ((curritem->transdef->flag & TFL_DEQUEUE) == TFL_DEQUEUE)
+            {
+                if (pEvtData != NULL)
+                    cntt_free(pEvtData);
+            }
+
+            if (result != CNTT_FSMR_CONTINUE && result != CNTT_FSMR_UNTOUCHED)
+                break;
+        }
+    }
+
+    return result;
+#endif
 }
 
 NS_LL_END

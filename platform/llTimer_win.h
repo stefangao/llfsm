@@ -8,19 +8,17 @@
 
 NS_LL_BEGIN
 
-int setTimer(int interval, std::function<void(void*)> func, bool once)
+int setTimer(unsigned int interval, const std::function<void(int tid, const void* userData)>& func, const void* userData)
 {
-
     return 0;
 }
 
 bool killTimer(int tid)
 {
-
     return true;
 }
 
-void postCallback(std::function<void(void*)> func)
+void postCallback(const void* userData, const std::function<void(const void* userData)>& func)
 {
 
 }

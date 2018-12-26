@@ -6,24 +6,25 @@
 #include <list>
 #include <vector>
 #include <string.h>
+#include "msgloop.h"
 
 namespace llshell {
 
-typedef std::function<void(void*)> CallbackFunc;
-
 typedef struct _Msg
 {
-    CallbackFunc callback;
-    void* data;
+    MsgCallbackFunc callback;
+    const void* data;
+    int id;
 } MsgInfo;
 
 typedef struct _TimerMsg
 {
-    CallbackFunc callback;
+    MsgCallbackFunc callback;
     int interval;
     std::chrono::system_clock::time_point timepoint;
     bool once;
     int id;
+    const void* userData;
 } TimerInfo;
 
 static std::mutex gMainMtx;
@@ -36,6 +37,7 @@ static bool gFinished = false;
 
 static std::queue<MsgInfo> gMsgQueue;
 static std::list<TimerInfo> gTimerList;
+static int gNextTimerId = 0;
 
 static void postMsg(const MsgInfo& msg)
 {
@@ -44,22 +46,24 @@ static void postMsg(const MsgInfo& msg)
     gMainCv.notify_one();
 }
 
-void postCallback(std::function<void(void*)> func)
+void postCallback(const void* userData, const MsgCallbackFunc& func)
 {
     MsgInfo msg;
-    msg.data = nullptr;
+    msg.id = 0;
+    msg.data = userData;
     msg.callback = func;
     postMsg(msg);
 }
 
-int setTimer(int interval, std::function<void(void*)> func, bool once)
+int setTimer(int interval, const MsgCallbackFunc& func, const void* userData, bool once)
 {
     TimerInfo timer;
     timer.interval = interval;
     timer.timepoint = std::chrono::system_clock::now()
             + std::chrono::milliseconds(interval);
     timer.once = once;
-    timer.id = 0;
+    timer.id = gNextTimerId++;
+    timer.userData = userData;
     timer.callback = func;
 
     std::unique_lock < std::mutex > lck(gTimerMtx);
@@ -68,11 +72,25 @@ int setTimer(int interval, std::function<void(void*)> func, bool once)
     return timer.id;
 }
 
+bool killTimer(int tid)
+{
+    for (auto iter = gTimerList.begin(); iter != gTimerList.end(); iter++)
+    {
+        if (tid == (*iter).id)
+        {
+            gTimerList.erase(iter);
+            gTimerCv.notify_one();
+            return true;
+        }
+    }
+    return false;
+}
+
 static void exitApp()
 {
     gFinished = true;
     gTimerCv.notify_one();
-    postCallback(nullptr);
+    postCallback(nullptr, nullptr);
 }
 
 static void do_timer_thread()
@@ -100,7 +118,8 @@ static void do_timer_thread()
             if (cvsts == std::cv_status::timeout)
             {
                 MsgInfo msg;
-                msg.data = nullptr;
+                msg.data = timerInfo.userData;
+                msg.id = timerInfo.id;
                 msg.callback = timerInfo.callback;
                 postMsg(msg);
                 if (!timerInfo.once)
@@ -169,13 +188,35 @@ static void onCommand(const std::string& cmd, std::vector<std::string> params)
                 once = atoi(params[1].c_str());
 
             auto timeStart = std::chrono::system_clock::now();
-            //std::cout << interval << "," << once << std::endl;
-            setTimer(interval, [timeStart](void* p)
+            int tid = setTimer(interval, [timeStart](int id, const void* p)
                     {
                         auto timeEnd = std::chrono::system_clock::now();
                         auto duration = std::chrono::duration_cast<std::chrono::microseconds>(timeEnd - timeStart);
-                        std::cout << "---time out---" << duration.count() << "\n";
-                    }, once);
+                        std::cout << "---time out[" << id << "]---" << duration.count() << "\n";
+                    }, nullptr, once);
+            std::cout << "setTimer" << "[" << tid << "]:" << interval << "," << once << std::endl;
+        }
+    }
+    else if (cmd == "p")
+    {
+        int num = params.size();
+        if (num > 0)
+        {
+            long userData = atol(params[0].c_str());
+            postCallback((const void*)userData, [](int, const void* userData)
+                    {
+                        long value = (long)userData;
+                        std::cout << "postCallback: userData=" << "(" << value << ")"<< std::endl;
+                    });
+        }
+    }
+    else if (cmd == "k")
+    {
+        int num = params.size();
+        if (num > 0)
+        {
+            int tid = atoi(params[0].c_str());
+            killTimer(tid);
         }
     }
     else if (cmd == "exit")
@@ -225,7 +266,7 @@ int main()
         {
             MsgInfo& msg = gMsgQueue.front();
             if (msg.callback)
-                msg.callback(msg.data);
+                msg.callback(msg.id, msg.data);
 
             gMsgQueue.pop();
         }
