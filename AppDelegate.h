@@ -1,20 +1,22 @@
 //============================================================================
-// Name        : lianli.h
+// Name        : AppDelegate.h
 // Author      : Stefan Gao (stefan.gao@gmail.com)
 // Version     :
 // Copyright   : Your copyright notice
 // Description :
 //============================================================================
 
-#ifndef __LL_LIANLI_H__
-#define __LL_LIANLI_H__
+#ifndef __LL_APPDELEGATE_H__
+#define __LL_APPDELEGATE_H__
 
-#include "llConst.h"
-#include "llContext.h"
-#include "llState.h"
-#include "llFSM.h"
-#include "llUtils.h"
-#include "llEvtData.h"
-#include "llTimer.h"
+#include "core/lianli.h"
+USING_NS_LL;
+
+class AppDelegate
+{
+public:
+    AppDelegate();
+    virtual ~AppDelegate();
+};
 
 #endif

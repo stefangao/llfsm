@@ -6,10 +6,11 @@
 // Description :
 //============================================================================
 #include "shell/msgloop.h"
+#include "../AppDelegate.h"
 
 NS_LL_BEGIN
 
-int setTimer(unsigned int interval, const std::function<void(int tid, const void* userData)>& func, const void* userData)
+int setTimer(int interval, const std::function<void(int tid, const void* userData)>& func, const void* userData)
 {
     return llshell::setTimer(interval, func, userData, false);
 }
@@ -31,6 +32,10 @@ NS_LL_END
 //the app entry for shell
 int main(int argc, const char * argv[])
 {
-    return llshell::main();
+    lianli::postCallback(nullptr, [](const void* userData) {
+        new AppDelegate();
+    });
+    llshell::start_msgloop();
+    return 0;
 }
 

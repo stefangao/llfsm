@@ -19,13 +19,6 @@ State::State()
     mStateNode = nullptr;
 }
 
-void State::onCreate()
-{
-    std::string msg;
-    msg = std::string("State::onCreate(): ") + mThisFSM->getName() + "." + getName();
-    Utils::log(msg);
-}
-
 void State::onEnter()
 {
     std::string msg;
@@ -38,7 +31,7 @@ bool State::onEventProc(const std::string& evtName, const EvtData& evtData)
     return true;
 }
 
-void State::onBeat()
+void State::onHeartBeat()
 {
 }
 
@@ -47,11 +40,6 @@ void State::onExit()
     std::string msg;
     msg = std::string("State::onExit(): ") + mThisFSM->getName() + "." + getName();
     Utils::log(msg);
-}
-
-void State::onDestroy()
-{
-
 }
 
 bool State::sendEvent(const std::string& evtName, const EvtData& evtData)

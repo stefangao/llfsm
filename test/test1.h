@@ -7,6 +7,7 @@
 //============================================================================
 
 #include "TestCase.h"
+USING_NS_LL;
 
 class TestCase1 : public TestCase
 {

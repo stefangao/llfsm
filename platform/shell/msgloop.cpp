@@ -250,7 +250,7 @@ static void do_input_thread()
     std::cout << "input thread exit\n";
 }
 
-int main()
+int start_msgloop()
 {
     std::cout << "msgloop start\n";
     std::thread timerThread, inputThread;
@@ -262,7 +262,7 @@ int main()
     {
         gMainCv.wait(lck, []{return gMsgQueue.size() > 0;});
 
-        while (gMsgQueue.size() > 0)
+        if (gMsgQueue.size() > 0)
         {
             MsgInfo& msg = gMsgQueue.front();
             if (msg.callback)

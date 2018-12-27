@@ -11,7 +11,7 @@ int setTimer(int interval, const MsgCallbackFunc& func, const void* userData, bo
 bool killTimer(int tid);
 void postCallback(const void* userData, const MsgCallbackFunc& func);
 
-int main();
+int start_msgloop();
 
 }
 

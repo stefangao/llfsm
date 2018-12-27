@@ -128,11 +128,6 @@ void FSM::onCreateInternal(Context& context)
     int stateCount = getStateCount();
     for (int i = 0; i < stateCount; i++)
     {
-        mStateNodeTable[i].stateObject->onCreate();
-    }
-
-    for (int i = 0; i < stateCount; i++)
-    {
         FSM* fsm = dynamic_cast<FSM*>(mStateNodeTable[i].stateObject);
         if (fsm)
         {
@@ -510,6 +505,7 @@ bool FSM::switchState(sid dstState)
 
 int FSM::dispatchEvent(const std::string& evtName, const EvtData& evtData)
 {
+    return 0;
 #if 0
     cntt_uint32 userdata;
     CNTT_RESULT result = CNTT_FSMR_UNTOUCHED;

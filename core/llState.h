@@ -30,12 +30,10 @@ protected:
     virtual ~State() {}
     static State* createInstance() {return nullptr;}
 
-    virtual void onCreate();
     virtual void onEnter();
-    virtual void onBeat();
-    virtual void onExit();
-    virtual void onDestroy();
+    virtual void onHeartBeat();
     virtual bool onEventProc(const std::string& evtName, const EvtData& evtData);
+    virtual void onExit();
 
 protected:
     sid mID;

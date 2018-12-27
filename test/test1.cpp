@@ -8,7 +8,6 @@
 
 #include "test1.h"
 using namespace test1;
-USING_NS_LL;
 
 TestCase1::TestCase1()
 {

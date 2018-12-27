@@ -8,7 +8,7 @@
 
 NS_LL_BEGIN
 
-int setTimer(unsigned int interval, const std::function<void(int tid, const void* userData)>& func, const void* userData)
+int setTimer(int interval, const std::function<void(int tid, const void* userData)>& func, const void* userData)
 {
     return 0;
 }
