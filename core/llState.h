@@ -27,9 +27,10 @@ public:
     const char* getName() const;
 
 protected:
-    virtual ~State() {}
+    virtual ~State();
     static State* createInstance() {return nullptr;}
 
+    virtual void onInit();
     virtual void onEnter();
     virtual void onHeartBeat();
     virtual bool onEventProc(const std::string& evtName, const EvtData& evtData);

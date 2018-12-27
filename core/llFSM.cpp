@@ -128,6 +128,11 @@ void FSM::onCreateInternal(Context& context)
     int stateCount = getStateCount();
     for (int i = 0; i < stateCount; i++)
     {
+        mStateNodeTable[i].stateObject->onInit();
+    }
+
+    for (int i = 0; i < stateCount; i++)
+    {
         FSM* fsm = dynamic_cast<FSM*>(mStateNodeTable[i].stateObject);
         if (fsm)
         {
