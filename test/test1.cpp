@@ -28,6 +28,7 @@ bool TestCase1::onInit()
     Utils::log("stop...");
     fsm->stop();
     fsm->destroy();
+    Utils::log("destroy end...");
     return true;
 }
 

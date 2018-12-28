@@ -35,7 +35,9 @@ int main(int argc, const char * argv[])
     lianli::postCallback(nullptr, [](const void* userData) {
         new AppDelegate();
     });
-    llshell::start_msgloop();
+    llshell::run_msgloop();
+
+    lianli::Utils::log("main end");
     return 0;
 }
 

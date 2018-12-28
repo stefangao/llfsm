@@ -44,6 +44,7 @@ static void postMsg(const MsgInfo& msg)
     std::unique_lock < std::mutex > lck(gMainMtx);
     gMsgQueue.push(msg);
     gMainCv.notify_one();
+    lck.unlock();
 }
 
 void postCallback(const void* userData, const MsgCallbackFunc& func)
@@ -250,26 +251,28 @@ static void do_input_thread()
     std::cout << "input thread exit\n";
 }
 
-int start_msgloop()
+int run_msgloop()
 {
     std::cout << "msgloop start\n";
     std::thread timerThread, inputThread;
     timerThread = std::thread(do_timer_thread);
     inputThread = std::thread(do_input_thread);
-    std::unique_lock < std::mutex > lck(gMainMtx);
 
     while (!gFinished)
     {
+        std::unique_lock <std::mutex> lck(gMainMtx);
         gMainCv.wait(lck, []{return gMsgQueue.size() > 0;});
-
-        if (gMsgQueue.size() > 0)
+        int msgNum = gMsgQueue.size();
+        if (msgNum > 0)
         {
-            MsgInfo& msg = gMsgQueue.front();
+            MsgInfo msg = gMsgQueue.front();
+            gMsgQueue.pop();
+            lck.unlock();
+
             if (msg.callback)
                 msg.callback(msg.id, msg.data);
-
-            gMsgQueue.pop();
         }
+
     }
     timerThread.join();
     inputThread.join();

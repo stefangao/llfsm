@@ -21,9 +21,12 @@ State::State()
 
 State::~State()
 {
-    std::string msg;
-    msg = std::string("State::~State(): ") + mThisFSM->getName() + "." + getName();
-    Utils::log(msg);
+    if (mThisFSM)
+    {
+        std::string msg;
+        msg = std::string("State::~State(): ") + mThisFSM->getName() + "." + getName();
+        Utils::log(msg);
+    }
 }
 
 void State::onInit()
