@@ -1,3 +1,11 @@
+//============================================================================
+// Name        : msgloop.cpp
+// Author      : Stefan Gao (stefan.gao@gmail.com)
+// Version     :
+// Copyright   : Your copyright notice
+// Description :
+//============================================================================
+
 #include <iostream>
 #include <thread>
 #include <mutex>

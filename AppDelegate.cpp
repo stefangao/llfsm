@@ -9,7 +9,6 @@
 #include "AppDelegate.h"
 #include "test/test1.h"
 
-
 AppDelegate::AppDelegate()
 {
     //test the interfaces: postCallback and setTimer
