@@ -6,6 +6,7 @@
 // Description :
 //============================================================================
 
+#include <sstream>
 #include "TestCase.h"
 USING_NS_LL;
 
@@ -57,9 +58,9 @@ public:
         {
             State::onExit();
         }
-        virtual bool onEventProc(const std::string& evtName,
-                const EvtData& evtData) override
+        virtual bool onEventProc(const std::string& evtName, EvtData& evtData) override
         {
+            State::onEventProc(evtName, evtData);
             return true;
         }
 
@@ -77,9 +78,9 @@ public:
         {
             State::onExit();
         }
-        virtual bool onEventProc(const std::string& evtName,
-                const EvtData& evtData) override
+        virtual bool onEventProc(const std::string& evtName, EvtData& evtData) override
         {
+            State::onEventProc(evtName, evtData);
             return true;
         }
 
@@ -97,9 +98,9 @@ public:
         {
             State::onExit();
         }
-        virtual bool onEventProc(const std::string& evtName,
-                const EvtData& evtData) override
+        virtual bool onEventProc(const std::string& evtName, EvtData& evtData) override
         {
+            State::onEventProc(evtName, evtData);
             return true;
         }
 
@@ -117,9 +118,9 @@ public:
         {
             State::onExit();
         }
-        virtual bool onEventProc(const std::string& evtName,
-                const EvtData& evtData) override
+        virtual bool onEventProc(const std::string& evtName, EvtData& evtData) override
         {
+            State::onEventProc(evtName, evtData);
             return true;
         }
 
@@ -137,9 +138,15 @@ public:
         {
             State::onExit();
         }
-        virtual bool onEventProc(const std::string& evtName,
-                const EvtData& evtData) override
+        virtual bool onEventProc(const std::string& evtName, EvtData& evtData) override
         {
+            State::onEventProc(evtName, evtData);
+
+            int x, y;
+            evtData.read("%d %d", &x, &y);
+            std::stringstream msg;
+            msg << "Test4::onEventProc x=" << x << " y=" << y << std::endl;
+            Utils::log(msg.str());
             return true;
         }
 

@@ -75,6 +75,15 @@ public:
         return strcmp(this->c_str(), str) == 0;
     }
 
+    inline EvtData& operator= (const EvtData& other)
+    {
+        this->createBuffer(other.nWritePos);
+        memcpy(this->pBuf, other.pBuf, other.nWritePos);
+        this->nWritePos = other.nWritePos;
+        this->nReadPos = other.nReadPos;
+        return *this;
+    }
+
     int write(const char* fmt, ...);
     int read(const char* fmt, ...);
 

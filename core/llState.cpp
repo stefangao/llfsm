@@ -43,8 +43,11 @@ void State::onEnter()
     Utils::log(msg);
 }
 
-bool State::onEventProc(const std::string& evtName, const EvtData& evtData)
+bool State::onEventProc(const std::string& evtName, EvtData& evtData)
 {
+    std::string msg;
+    msg = std::string("State::onEventProc(): ") + mThisFSM->getName() + "." + getName();
+    Utils::log(msg);
     return true;
 }
 

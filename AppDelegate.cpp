@@ -11,6 +11,7 @@
 
 AppDelegate::AppDelegate()
 {
+#if 0
     //test the interfaces: postCallback and setTimer
     Utils::log("gwas: postCallback E1");
     lianli::postCallback(nullptr, [](const void* userData) {
@@ -25,6 +26,7 @@ AppDelegate::AppDelegate()
             Utils::log("time out");
         }, nullptr);
     });
+#endif
 
     //run test case1
     TestCase1::create();

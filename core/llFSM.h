@@ -10,6 +10,7 @@
 #define __LL_FSM_H__
 
 #include <string>
+#include <map>
 #include "llRef.h"
 #include "llState.h"
 #include "llContext.h"
@@ -79,7 +80,7 @@ public:
     int getStateLevel(sid sID) const;
 
     bool isStateInvalid(sid sID) const;
-    bool switchState(sid dstState);
+    bool changeTo(sid dstState);
 
 protected:
     virtual void onCreate(const Context& context);
@@ -106,6 +107,7 @@ protected:
     Context *mContext;
     std::vector<StateNode_t> mStateNodeTable;
     StateNode_t mRootNode;
+    std::map<std::string, std::vector<const TransEntry_t*>> mEventTransMap;
 
 public:
     static const StateEntry_t ROOT_ENTRY;

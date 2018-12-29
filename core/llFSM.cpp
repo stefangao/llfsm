@@ -6,8 +6,8 @@
 // Description :
 //============================================================================
 
+#include <algorithm>
 #include "llFSM.h"
-
 #include "llTimer.h"
 #include "llUtils.h"
 
@@ -90,8 +90,24 @@ bool FSM::createInternal(const std::string& name, Context& context)
             const TransEntry_t* transEntry = builder->getTransTable();
             if (transEntry != NULL)
             {
-                while (transEntry++->fromState != -1)
+                while (transEntry->fromState != -1)
+                {
+                    auto& evtName = transEntry->eventName;
+                    auto iter = mEventTransMap.find(evtName);
+                    if (iter != mEventTransMap.end())
+                    {
+                        auto& transVect = iter->second;
+                        transVect.push_back(transEntry);
+                    }
+                    else
+                    {
+                        std::vector<const TransEntry_t*> transVect;
+                        transVect.push_back(transEntry);
+                        mEventTransMap[evtName] = transVect;
+                    }
+                    transEntry++;
                     transCount++;
+                }
             }
             builder = builder->__getSuperBuilder();
         } while (builder);
@@ -99,6 +115,15 @@ bool FSM::createInternal(const std::string& name, Context& context)
         if (transCount > 0)
         {
             setTransCount(transCount);
+        }
+
+        for (auto iter = mEventTransMap.begin(); iter != mEventTransMap.end(); iter++)
+        {
+            auto& transVect = iter->second;
+            std::sort(transVect.begin(), transVect.end(), [this](const TransEntry_t* t1,const TransEntry_t* t2)->bool
+            {
+                return getStateLevel(t1->fromState) > getStateLevel(t2->fromState);
+            });
         }
     }
 
@@ -342,11 +367,19 @@ bool FSM::destroy()
 
 bool FSM::sendEvent(const std::string& evtName, const EvtData& evtData)
 {
+    dispatchEvent(evtName, evtData);
     return true;
 }
 
 bool FSM::postEvent(const std::string& evtName, const EvtData& evtData)
 {
+    auto copyEvtData = evtData.clone();
+    LLASSERT(copyEvtData, "postEvent: clone evtData failed");
+
+    lianli::postCallback((const void*)0, [this, evtName, copyEvtData](const void* userData) {
+        dispatchEvent(evtName, *copyEvtData);
+        delete copyEvtData;
+    });
     return true;
 }
 
@@ -467,7 +500,7 @@ sid FSM::seekCommonParent(sid sID1, sid sID2)
     return sID1;
 }
 
-bool FSM::switchState(sid dstState)
+bool FSM::changeTo(sid dstState)
 {
     sid activeLeaf = getActiveLeafState();
     if (activeLeaf == dstState)
@@ -510,151 +543,71 @@ bool FSM::switchState(sid dstState)
 
 int FSM::dispatchEvent(const std::string& evtName, const EvtData& evtData)
 {
-    return 0;
-#if 0
-    cntt_uint32 userdata;
-    CNTT_RESULT result = CNTT_FSMR_UNTOUCHED;
+    int result = EVTR_UNTOUCHED;
+    std::vector<const TransEntry_t*> activeTransEntries;
 
-    if (smachine->smatrix->m_state_stevttree->Find(lpEvtName, userdata) && userdata != 0)
+    auto iter = mEventTransMap.find(evtName);
+    if (iter == mEventTransMap.end())
+        return result;
+
+    auto& transVect = iter->second;
+    for (auto& entry : transVect)
     {
-        cntt_list_head *listhead = (cntt_list_head*)userdata;
-        TransItem_t *curritem;
-        cntt_list_t *curr;
-
-        //any state that is active when the event reaches, the event should be processed. (sometimes the previous event could change the state)
-        CNTT_LIST_FOREACH(curr, listhead)
+        sid fromSid = entry->fromState;
+        if (isStateActive(fromSid))
         {
-            curritem = CNTT_LIST_ENTRY(curr, TransItem_t, list);
-            if (fsm_IsStateActive(smachine->stree, curritem->transdef->curstate))
-                curritem->isactive = cntt_true;
-            else
-                curritem->isactive = cntt_false;
+            activeTransEntries.push_back(entry);
+        }
+        else if ((entry->flag & TFL_OFFLINE) != TFL_OFFLINE)
+        {
+            auto& stateNode = getStateNode(fromSid);
+            auto copyEvtData = evtData.clone();
+            stateNode.offlineEvents.push(std::make_pair(evtName, copyEvtData));
+        }
+    }
+
+    //call onEventProc of fromState
+    for (auto& entry : activeTransEntries)
+    {
+        sid fromSid = entry->fromState;
+        if ((entry->flag & TFL_TOPROC) != TFL_TOPROC)
+        {
+            auto& stateNode = getStateNode(fromSid);
+            int r = stateNode.stateObject->onEventProc(evtName, (EvtData&)evtData);
+            if (r)
+                result = EVTR_CONTINUE;
+        }
+    }
+
+    //call onEventProc of toState if TFL_TOPROC is marked
+    bool stateChanged = false;
+    for (auto& entry : activeTransEntries)
+    {
+        sid fromSid = entry->fromState;
+        if (!stateChanged)
+        {
+            sid toSid = entry->toState;
+            if (toSid != S_NONE && toSid != fromSid)
+            {
+                changeTo(toSid);
+            }
+            stateChanged = true;
         }
 
-        int level = -1;
-        CNTT_LIST_FOREACH(curr, listhead)
+        if ((entry->flag & TFL_TOPROC) == TFL_TOPROC)
         {
-            curritem = CNTT_LIST_ENTRY(curr, TransItem_t, list);
-
-            //add offline events in the queue of curstate. only queue once for the transfer items with same level (same curstate)
-            if ((curritem->transdef->flag & TFL_OFFLINE) == TFL_OFFLINE && curritem->level != level)
+            sid toSid = entry->toState;
+            if (isStateActive(toSid))
             {
-                CNTT_STATENODE_T *statenode = fsm_StateNode(smachine->stree, curritem->transdef->curstate);
-                if (!curritem->isactive || cntt_QueueSize(statenode->evtqueue) > 0)
-                {
-                    if (statenode != NULL && statenode->evtqueue != NULL)
-                    {
-                        CNTT_QUEUEEVT_T queueevt = { NULL, NULL, 0 };
-                        queueevt.evtname = curritem->transdef->evtname;
-                        if (pEvtData != NULL && nEvtDataLen > 0)
-                        {
-                            queueevt.evtdata = (cntt_uint8*) cntt_malloc((cntt_size)nEvtDataLen);
-                            if (queueevt.evtdata != NULL)
-                            {
-                                memcpy(queueevt.evtdata, pEvtData, nEvtDataLen);
-                                queueevt.evtdatalen = (cntt_int)nEvtDataLen;
-                            }
-                        }
-                        cntt_QueueEnter(statenode->evtqueue, &queueevt, -1);
-                        level = curritem->level;
-                    }
-                    continue;
-                }
+                auto& stateNode = getStateNode(toSid);
+                int r = stateNode.stateObject->onEventProc(evtName, (EvtData&)evtData);
+                if (r)
+                    result = EVTR_CONTINUE;
             }
-
-            if (!curritem->isactive)
-                continue;
-
-            cntt_bool done = cntt_false;
-            if ((curritem->transdef->flag & TFL_ENQUEUE) == TFL_ENQUEUE)
-            {
-                CNTT_STATENODE_T *statenode = fsm_StateNode(smachine->stree, curritem->transdef->nextstate);
-                if (statenode != NULL && statenode->evtqueue != NULL)
-                {
-                    CNTT_QUEUEEVT_T queueevt = { NULL, NULL, 0 };
-                    queueevt.evtname = curritem->transdef->evtname;
-                    if (pEvtData != NULL && nEvtDataLen > 0)
-                    {
-                        queueevt.evtdata = (cntt_uint8*) cntt_malloc((cntt_size)nEvtDataLen);
-                        if (queueevt.evtdata != NULL)
-                        {
-                            memcpy(queueevt.evtdata, pEvtData, nEvtDataLen);
-                            queueevt.evtdatalen = (cntt_int)nEvtDataLen;
-                        }
-                    }
-                    cntt_QueueEnter(statenode->evtqueue, &queueevt, -1);
-                }
-                result = CNTT_FSMR_REMOVE;
-                done = cntt_true;
-            }
-
-            if (!done && (curritem->transdef->flag & TFL_DEQUEUE) == TFL_DEQUEUE)
-            {
-                CNTT_STATENODE_T *statenode = fsm_StateNode(smachine->stree, curritem->transdef->nextstate);
-                if (statenode != NULL && statenode->evtqueue != NULL)
-                {
-                    CNTT_QUEUEEVT_T queueevt = { NULL, NULL, 0 };
-                    if (cntt_QueueConsume(statenode->evtqueue, &queueevt, NULL))
-                    {
-                        lpEvtName = queueevt.evtname;
-                        pEvtData = queueevt.evtdata;
-                        nEvtDataLen = queueevt.evtdatalen;
-                    }
-                    else
-                    {
-                        done = cntt_true;
-                    }
-                }
-            }
-
-            if (done)
-                continue;
-
-            if ((curritem->transdef->flag & TFL_NEXTPROC) == TFL_NEXTPROC)
-            {
-                if (curritem->transdef->nextstate != CNTT_FSMS_INVAL)
-                {
-                    if (!fsm_SwitchState(smachine, curritem->transdef->curstate, curritem->transdef->nextstate))
-                        return CNTT_FSMR_FATALERR; //if machine has been deleted
-
-                    if (curritem->transdef->onEvtProc)
-                    {
-                        result = curritem->transdef->onEvtProc(smachine, curritem->transdef->nextstate, lpEvtName, pEvtData, nEvtDataLen, curritem->transdef->userdata);
-                        if (!fsm_IsMachine(smachine))
-                            return CNTT_FSMR_FATALERR;
-                    }
-                }
-            }
-            else
-            {
-                if (curritem->transdef->onEvtProc)
-                {
-                    result = curritem->transdef->onEvtProc(smachine, curritem->transdef->curstate, lpEvtName, pEvtData, nEvtDataLen, curritem->transdef->userdata);
-                    if (!fsm_IsMachine(smachine))
-                        return CNTT_FSMR_FATALERR;
-                }
-
-                if (curritem->transdef->nextstate != CNTT_FSMS_INVAL &&
-                    (curritem->transdef->flag & TFL_DEQUEUE) != TFL_DEQUEUE) //only read event instead switch state for TFL_DEQUEUE
-                {
-                    if (!fsm_SwitchState(smachine, curritem->transdef->curstate, curritem->transdef->nextstate))
-                        return CNTT_FSMR_FATALERR; //if machine has been deleted
-                }
-            }
-
-            if ((curritem->transdef->flag & TFL_DEQUEUE) == TFL_DEQUEUE)
-            {
-                if (pEvtData != NULL)
-                    cntt_free(pEvtData);
-            }
-
-            if (result != CNTT_FSMR_CONTINUE && result != CNTT_FSMR_UNTOUCHED)
-                break;
         }
     }
 
     return result;
-#endif
 }
 
 NS_LL_END

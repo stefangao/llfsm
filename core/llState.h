@@ -33,7 +33,7 @@ protected:
     virtual void onInit();
     virtual void onEnter();
     virtual void onHeartBeat();
-    virtual bool onEventProc(const std::string& evtName, const EvtData& evtData);
+    virtual bool onEventProc(const std::string& evtName, EvtData& evtData);
     virtual void onExit();
 
 protected:

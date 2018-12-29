@@ -10,6 +10,8 @@
 #define __LL_CONST_H__
 
 #include <vector>
+#include <queue>
+#include <string>
 
 #ifdef __cplusplus
     #define NS_LL_BEGIN                     namespace lianli {
@@ -30,16 +32,16 @@ typedef unsigned char* pbyte;
 
 const sid S_ROOT = 1000000;
 const sid S_INVAL = -1;
+const sid S_NONE = -1;
 
 //state flag
 const unsigned int SFL_ZERO = 0;
 const unsigned int SFL_ACTIVE = 0x0001L;
 
 //transfer flag
-const unsigned int TFL_NEXTPROC = 0x0004L;
-const unsigned int TFL_ENQUEUE = 0x0008L;
-const unsigned int TFL_DEQUEUE = 0x0010L;
-const unsigned int TFL_OFFLINE = 0x0020L;
+const unsigned int TFL_ZERO = 0x0000L;
+const unsigned int TFL_TOPROC = 0x0001L;
+const unsigned int TFL_OFFLINE = 0x0002L;
 
 class State;
 typedef State* (*StateFactoryFunc)();
@@ -61,6 +63,7 @@ typedef struct
     unsigned int flag;
 } TransEntry_t;
 
+class EvtData;
 typedef struct _StateNode_t
 {
     const StateEntry_t *stateEntry;
@@ -74,6 +77,8 @@ typedef struct _StateNode_t
     int modedelayticks;    //the first onMode time
 
     unsigned int sopFlag;  //flag indicate on which procedure the state is
+
+    std::queue<std::pair<std::string, const EvtData*>> offlineEvents;
 
 } StateNode_t;
 
@@ -136,6 +141,9 @@ protected:\
 
 #define END_TRANS_TABLE()\
     {-1, nullptr, 0, 0}};\
+
+#define TRANS_ENTRY(fromState, eventName, toState, flag)\
+    {fromState, eventName, toState, flag},\
 
 #define DECLARE_STATE_FACTORY(stateClass, fsmClass)\
 public:\

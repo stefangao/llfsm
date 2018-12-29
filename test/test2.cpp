@@ -26,13 +26,13 @@ bool TestCase2::onInit()
     fsm->start();
 
     Utils::log("switch to DAEMON");
-    fsm->switchState(FSMA::DAEMON);
+    fsm->changeTo(FSMA::DAEMON);
 
     Utils::log("switch to TEST1");
-    fsm->switchState(FSMA::TEST1);
+    fsm->changeTo(FSMA::TEST1);
 
     Utils::log("switch to TEST4");
-    fsm->switchState(FSMA::TEST4);
+    fsm->changeTo(FSMA::TEST4);
 
     Utils::log("stop...");
     fsm->stop();
