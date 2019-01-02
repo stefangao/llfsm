@@ -33,6 +33,7 @@ public:
 protected:
     virtual ~State();
     static State* createInstance() {return nullptr;}
+    void processOfflineEvents();
 
     virtual void onInit();
     virtual void onEnter();

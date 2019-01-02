@@ -12,6 +12,7 @@
 #include <string>
 #include <string.h>
 #include "llConst.h"
+#include "llUtils.h"
 
 NS_LL_BEGIN
 
@@ -23,6 +24,16 @@ public:
     EvtData(int bufLen = DATA_BUFFER_INITLEN);
 
     EvtData(pbyte pData, int nDataLen);
+
+    EvtData(const EvtData& other)
+    {
+        pBuf = nullptr;
+        createBuffer(other.nWritePos);
+        memcpy(pBuf, other.pBuf, other.nWritePos);
+        nWritePos = other.nWritePos;
+        nReadPos = other.nReadPos;
+        Utils::log("EvtData::copy1");
+    }
 
     ~EvtData();
 
@@ -81,6 +92,7 @@ public:
         memcpy(this->pBuf, other.pBuf, other.nWritePos);
         this->nWritePos = other.nWritePos;
         this->nReadPos = other.nReadPos;
+        Utils::log("EvtData::copy2");
         return *this;
     }
 

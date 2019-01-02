@@ -235,6 +235,7 @@ bool FSM::enterState(sid sID, bool enterDefaultActive)
     {
         stateNode.sopFlag |= SOP_ENTER;
         stateNode.stateObject->onEnter();
+        stateNode.stateObject->processOfflineEvents();
         stateNode.sopFlag &= ~SOP_ENTER;
 
         FSM* fsm = dynamic_cast<FSM*>(stateNode.stateObject);
@@ -530,6 +531,7 @@ bool FSM::changeTo(sid dstState)
         {
             stateNode->sopFlag |= SOP_ENTER;
             stateNode->stateObject->onEnter();
+            stateNode->stateObject->processOfflineEvents();
             stateNode->sopFlag &= ~SOP_ENTER;
         }
         parentNode = stateNode;
@@ -559,7 +561,7 @@ int FSM::dispatchEvent(const std::string& evtName, const EvtData& evtData)
         {
             activeTransEntries.push_back(entry);
         }
-        else if ((entry->flag & TFL_OFFLINE) != TFL_OFFLINE)
+        else if ((entry->flag & TFL_OFFLINE) == TFL_OFFLINE)
         {
             auto& stateNode = getStateNode(fromSid);
             auto copyEvtData = evtData.clone();

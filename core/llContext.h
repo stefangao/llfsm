@@ -21,16 +21,19 @@ class Context
     friend class FSM;
 public:
     Context(const std::string& name);
+    static const Context& getDefault() {return DEFAULT;};
+
+    FSM* find(const std::string& name);
 
 protected:
-    void add(const FSM* fsm);
-    void remove(const FSM* fsm);
+    void add(FSM* fsm);
+    void remove(FSM* fsm);
 
 protected:
     std::string mName;
-    std::list<const FSM*> mFsmList;
+    std::list<FSM*> mFsmList;
 
-public:
+private:
     static Context DEFAULT;
 };
 

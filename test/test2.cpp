@@ -22,7 +22,7 @@ TestCase2::~TestCase2()
 bool TestCase2::onInit()
 {
     FSM *fsm = new FSMA();
-    fsm->create("TestFsmA");
+    fsm->create("fsm2");
     fsm->start();
 
     Utils::log("switch to DAEMON");

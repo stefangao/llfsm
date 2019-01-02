@@ -36,3 +36,18 @@ AppDelegate::~AppDelegate()
 {
 
 }
+
+void AppDelegate::onUserEvent(const std::string& fsmName, const std::string& evtName, std::vector<std::string>& evtParams)
+{
+    auto defaultContext = Context::getDefault();
+    auto fsm = defaultContext.find(fsmName);
+    if (fsm)
+    {
+        EvtData evtData;
+        for (auto& param : evtParams)
+        {
+            evtData.write(param);
+        }
+        fsm->postEvent(evtName, evtData);
+    }
+}

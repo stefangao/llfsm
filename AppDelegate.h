@@ -17,6 +17,8 @@ class AppDelegate
 public:
     AppDelegate();
     virtual ~AppDelegate();
+
+    virtual void onUserEvent(const std::string& fsmName, const std::string& evtName, std::vector<std::string>& evtParams);
 };
 
 #endif

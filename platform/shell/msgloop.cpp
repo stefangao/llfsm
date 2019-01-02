@@ -47,6 +47,8 @@ static std::queue<MsgInfo> gMsgQueue;
 static std::list<TimerInfo> gTimerList;
 static int gNextTimerId = 0;
 
+static CmdCallbackFunc gCmdCallbackFun = nullptr;
+
 static void postMsg(const MsgInfo& msg)
 {
     std::unique_lock < std::mutex > lck(gMainMtx);
@@ -186,6 +188,12 @@ static void onCommand(const std::string& cmd, std::vector<std::string> params)
 {
     dumpCommand(cmd, params);
 
+    if (gCmdCallbackFun)
+    {
+        gCmdCallbackFun(cmd, params);
+        return;
+    }
+
     if (cmd == "t")
     {
         int num = params.size();
@@ -259,7 +267,7 @@ static void do_input_thread()
     std::cout << "input thread exit\n";
 }
 
-int run_msgloop()
+int run_msgloop(const CmdCallbackFunc& cmdCallbackFun)
 {
     std::cout << "msgloop start\n";
     std::thread timerThread, inputThread;
@@ -268,6 +276,7 @@ int run_msgloop()
 
     while (!gFinished)
     {
+        gCmdCallbackFun = cmdCallbackFun;
         std::unique_lock <std::mutex> lck(gMainMtx);
         gMainCv.wait(lck, []{return gMsgQueue.size() > 0;});
         int msgNum = gMsgQueue.size();

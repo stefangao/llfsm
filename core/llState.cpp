@@ -124,4 +124,23 @@ bool State::isHeatBeatOn()
     return mStateNode->hbTimerID != -1;
 }
 
+void State::processOfflineEvents()
+{
+    auto& events = mStateNode->offlineEvents;
+    if (events.empty())
+        return;
+
+    postCallback([this, &events](const void* userData) {
+        auto& evtPair = events.front();
+        auto& evtName = evtPair.first;
+        auto& evtData = evtPair.second;
+        events.pop();
+        sendEvent(evtName, *evtData);
+        if (evtData)
+            delete evtData;
+
+        processOfflineEvents();
+    });
+}
+
 NS_LL_END

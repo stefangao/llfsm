@@ -114,7 +114,7 @@ public:
         {
             State::onEnter();
 
-            startHeartBeat(2000);
+            //startHeartBeat(2000);
         }
         virtual void onExit() override
         {
@@ -136,7 +136,7 @@ public:
         {
             State::onEnter();
 
-            startHeartBeat(3000, true);
+            //startHeartBeat(3000, true);
         }
         virtual void onExit() override
         {

@@ -22,13 +22,13 @@ TestCase1::~TestCase1()
 bool TestCase1::onInit()
 {
     FSM *fsm = new FSMA();
-    fsm->create("TestFsmA");
+    fsm->create("fsm1");
     fsm->start();
     Utils::log("start...");
 
     EvtData data;
     data.write("%d %d", 123, 78);
-    fsm->postEvent("TestEvt1", data);
+    //fsm->postEvent("TestEvt1", data);
 
 
 #if 0
@@ -54,6 +54,7 @@ BEGIN_TRANS_TABLE(FSMA, FSM)
     TRANS_ENTRY(TEST1, "TestEvt1", S_NONE, TFL_ZERO)
     TRANS_ENTRY(TEST4, "TestEvt1", TEST2,  TFL_ZERO)
     TRANS_ENTRY(TEST3, "TestEvt1", S_NONE, TFL_ZERO)
+    TRANS_ENTRY(TEST2, "TestEvt1", S_NONE, TFL_ZERO)
 END_TRANS_TABLE()
 
 }
