@@ -76,6 +76,7 @@ bool FSM::createInternal(const std::string& name, Context& context)
             mStateNodeTable[i].stateObject->mThisFSM = this;
             mStateNodeTable[i].stateObject->mID = stateEntry->id;
             mStateNodeTable[i].stateObject->mStateNode = &mStateNodeTable[i];
+            mStateNodeTable[i].hbTimerID = -1;
             stateEntry++;
         }
     }
@@ -376,7 +377,7 @@ bool FSM::postEvent(const std::string& evtName, const EvtData& evtData)
     auto copyEvtData = evtData.clone();
     LLASSERT(copyEvtData, "postEvent: clone evtData failed");
 
-    lianli::postCallback((const void*)0, [this, evtName, copyEvtData](const void* userData) {
+    postCallback([this, evtName, copyEvtData](const void* userData) {
         dispatchEvent(evtName, *copyEvtData);
         delete copyEvtData;
     });

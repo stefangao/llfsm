@@ -28,4 +28,3 @@
 #elif LL_PLATFORM_COCOS2DX == 1
     #include "llTimer_cocos2dx.h"
 #endif
-

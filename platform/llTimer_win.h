@@ -1,5 +1,5 @@
 //============================================================================
-// Name        : llTimer_win.h
+// Name        : It is the timer implementation on windows platform
 // Author      : Stefan Gao (stefan.gao@gmail.com)
 // Version     :
 // Copyright   : Your copyright notice
@@ -18,7 +18,7 @@ bool killTimer(int tid)
     return true;
 }
 
-void postCallback(const void* userData, const std::function<void(const void* userData)>& func)
+void postCallback(const std::function<void(const void* userData)>& func, const void* userData)
 {
 
 }

@@ -72,9 +72,8 @@ typedef struct _StateNode_t
     std::vector<const _StateNode_t*> childNodes;
     sid activeChild;       //current active child state id
 
-    int modeticks;         //the last ticks when onMode was triggered
-    int modemaxticks;      //the tick count for onMode
-    int modedelayticks;    //the first onMode time
+    int hbInterval;        //time interval every two successive heartbeat
+    int hbTimerID;
 
     unsigned int sopFlag;  //flag indicate on which procedure the state is
 

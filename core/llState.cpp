@@ -9,6 +9,7 @@
 #include "llState.h"
 #include "llFSM.h"
 #include "llUtils.h"
+#include "llTimer.h"
 
 NS_LL_BEGIN
 
@@ -53,6 +54,9 @@ bool State::onEventProc(const std::string& evtName, EvtData& evtData)
 
 void State::onHeartBeat()
 {
+    std::string msg;
+    msg = std::string("State::onHeartBeat(): ") + mThisFSM->getName() + "." + getName();
+    Utils::log(msg);
 }
 
 void State::onExit()
@@ -78,6 +82,46 @@ const char* State::getName() const
         return mStateNode->stateEntry->name;
 
     return LL_STRING_EMPTY;
+}
+
+bool State::startHeartBeat(int interval, bool atOnce)
+{
+    LLASSERT(mStateNode, "state object is not created");
+
+    if (mStateNode->hbTimerID != -1)
+    {
+        if (!atOnce && mStateNode->hbInterval == interval)
+            return true;
+
+        stopHeartBeat();
+    }
+
+    if (atOnce)
+    {
+        postCallback([this](const void* userData) {
+            onHeartBeat();
+        });
+    }
+
+    setTimer(interval, [this](int tid, const void* userData) {
+        onHeartBeat();
+    });
+
+    return true;
+}
+
+void State::stopHeartBeat()
+{
+    if (mStateNode->hbTimerID != -1)
+    {
+        killTimer(mStateNode->hbTimerID);
+        mStateNode->hbTimerID = -1;
+    }
+}
+
+bool State::isHeatBeatOn()
+{
+    return mStateNode->hbTimerID != -1;
 }
 
 NS_LL_END

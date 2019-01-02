@@ -26,6 +26,10 @@ public:
     bool postEvent(const std::string& evtName, const EvtData& evtData = EvtData::EMPTY);
     const char* getName() const;
 
+    bool startHeartBeat(int interval, bool atOnce = false);
+    void stopHeartBeat();
+    bool isHeatBeatOn();
+
 protected:
     virtual ~State();
     static State* createInstance() {return nullptr;}

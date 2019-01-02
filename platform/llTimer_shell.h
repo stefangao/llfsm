@@ -1,5 +1,5 @@
 //============================================================================
-// Name        : llTimer_shell.h
+// Name        : It is the timer implementation on shell
 // Author      : Stefan Gao (stefan.gao@gmail.com)
 // Version     :
 // Copyright   : Your copyright notice
@@ -20,7 +20,7 @@ bool killTimer(int tid)
     return llshell::killTimer(tid);
 }
 
-void postCallback(const void* userData, const std::function<void(const void* userData)>& func)
+void postCallback(const std::function<void(const void* userData)>& func, const void* userData)
 {
     llshell::postCallback(userData, [func](int, const void* userData) {
         func(userData);
@@ -32,7 +32,7 @@ NS_LL_END
 //the app entry for shell
 int main(int argc, const char * argv[])
 {
-    lianli::postCallback(nullptr, [](const void* userData) {
+    lianli::postCallback([](const void* userData) {
         new AppDelegate();
     });
     llshell::run_msgloop();
