@@ -17,11 +17,11 @@ const EvtData EvtData::EMPTY = EvtData(0);
 
 EvtData::EvtData(int bufLen)
 {
-    pBuf = nullptr;
-    nSize = 0;
-    nWritePos = 0;
-    nReadPos = 0;
-    isNeedFree = false;
+    mBuf = nullptr;
+    mBufSize = 0;
+    mWritePos = 0;
+    mReadPos = 0;
+    mIsNeedFree = false;
 
     if (bufLen > 0)
         createBuffer(bufLen);
@@ -29,7 +29,7 @@ EvtData::EvtData(int bufLen)
 
 EvtData::EvtData(pbyte pData, int nDataLen)
 {
-    pBuf = nullptr;
+    mBuf = nullptr;
     reset(pData, nDataLen);
 }
 
@@ -42,25 +42,25 @@ pbyte EvtData::createBuffer(int bufSize)
 {
     freeBuffer();
 
-    pBuf = (pbyte)malloc(bufSize);
-    LLASSERT(pBuf != NULL, "createBuffer: error");
+    mBuf = (pbyte)malloc(bufSize);
+    LLASSERT(mBuf != NULL, "createBuffer: error");
 
-    nSize = bufSize;
-    nWritePos = 0;
-    nReadPos = 0;
-    isNeedFree = true;
-    return pBuf;
+    mBufSize = bufSize;
+    mWritePos = 0;
+    mReadPos = 0;
+    mIsNeedFree = true;
+    return mBuf;
 }
 
 void EvtData::freeBuffer()
 {
-    if (pBuf && isNeedFree)
+    if (mBuf && mIsNeedFree)
     {
-        free(pBuf);
-        pBuf = nullptr;
-        nWritePos = 0;
-        nReadPos = 0;
-        isNeedFree = false;
+        free(mBuf);
+        mBuf = nullptr;
+        mWritePos = 0;
+        mReadPos = 0;
+        mIsNeedFree = false;
     }
 }
 
@@ -69,22 +69,22 @@ bool EvtData::ensureExtraCapacity(int nDataLen)
     if (nDataLen <= 0)
         return true;
 
-    if (nSize == 0)
+    if (mBufSize == 0)
         createBuffer(DATA_BUFFER_INITLEN);
 
-    int nNewBufLen = nSize;
-    while (nWritePos + nDataLen > nNewBufLen) {nNewBufLen *= 2;}
+    int nNewBufLen = mBufSize;
+    while (mWritePos + nDataLen > nNewBufLen) {nNewBufLen *= 2;}
 
-    if (nSize < nNewBufLen)
+    if (mBufSize < nNewBufLen)
     {
-        pbyte pNewBuf = (pbyte)realloc(pBuf, nNewBufLen);
+        pbyte pNewBuf = (pbyte)realloc(mBuf, nNewBufLen);
         LLASSERT(pNewBuf != NULL, "ensureExtraCapacity error");
         if (pNewBuf == NULL)
             return false;
 
-        pBuf = pNewBuf;
-        nSize = nNewBufLen;
-        isNeedFree = true;
+        mBuf = pNewBuf;
+        mBufSize = nNewBufLen;
+        mIsNeedFree = true;
     }
     return true;
 }
@@ -93,17 +93,17 @@ void EvtData::reset(pbyte pData, int nDataLen)
 {
     freeBuffer();
 
-    pBuf = pData;
-    nSize = nDataLen;
-    nWritePos = nDataLen;
-    nReadPos = 0;
-    isNeedFree = false;
+    mBuf = pData;
+    mBufSize = nDataLen;
+    mWritePos = nDataLen;
+    mReadPos = 0;
+    mIsNeedFree = false;
 }
 
 void EvtData::clear()
 {
-    nWritePos = 0;
-    nReadPos = 0;
+    mWritePos = 0;
+    mReadPos = 0;
 }
 
 bool EvtData::write(pbyte pData, int nDataLen)
@@ -113,8 +113,8 @@ bool EvtData::write(pbyte pData, int nDataLen)
     if (!ensureExtraCapacity(nDataLen))
         return false;
 
-    memcpy(pBuf + nWritePos, pData, nDataLen);
-    nWritePos += nDataLen;
+    memcpy(mBuf + mWritePos, pData, nDataLen);
+    mWritePos += nDataLen;
     return true;
 }
 
@@ -122,9 +122,9 @@ int EvtData::read(pbyte pDataBuf, int nBufLen)
 {
     LLASSERT(pDataBuf != NULL && nBufLen > 0, "argument error");
 
-    int nReadLen = std::min(nBufLen, nWritePos - nReadPos);
-    memcpy(pDataBuf, pBuf + nReadPos, nReadLen);
-    nReadPos += nReadLen;
+    int nReadLen = std::min(nBufLen, mWritePos - mReadPos);
+    memcpy(pDataBuf, mBuf + mReadPos, nReadLen);
+    mReadPos += nReadLen;
     return nReadLen;
 }
 
@@ -136,9 +136,9 @@ bool EvtData::write(EvtData* targetBuf)
     if (!ensureExtraCapacity(dataLen))
         return false;
 
-    memcpy(pBuf + nWritePos, targetBuf->pBuf + targetBuf->nReadPos, dataLen);
-    targetBuf->nReadPos += dataLen;
-    nWritePos += dataLen;
+    memcpy(mBuf + mWritePos, targetBuf->mBuf + targetBuf->mReadPos, dataLen);
+    targetBuf->mReadPos += dataLen;
+    mWritePos += dataLen;
     return true;
 }
 
@@ -150,9 +150,9 @@ int EvtData::read(EvtData* targetBuf)
     if (!targetBuf->ensureExtraCapacity(dataLen))
         return -1;
 
-    memcpy(targetBuf->pBuf + targetBuf->nWritePos, pBuf + nReadPos, dataLen);
-    nReadPos += dataLen;
-    targetBuf->nWritePos += dataLen;
+    memcpy(targetBuf->mBuf + targetBuf->mWritePos, mBuf + mReadPos, dataLen);
+    mReadPos += dataLen;
+    targetBuf->mWritePos += dataLen;
     return dataLen;
 }
 
@@ -161,9 +161,9 @@ int EvtData::readString(EvtData* targetBuf)
     LLASSERT(targetBuf != NULL, "argument error");
 
     int dataLen = 0;
-    while (nReadPos < nWritePos)
+    while (mReadPos < mWritePos)
     {
-        unsigned char c = pBuf[nReadPos++];
+        unsigned char c = mBuf[mReadPos++];
         targetBuf->write(&c, 1);
         if (c == '\0')
             break;
@@ -201,14 +201,14 @@ int EvtData::write(const char* fmt, ...)
     int len = 0;
 
     va_start(args, fmt);
-    len = vsnprintf((char*)pBuf + nWritePos, nSize - nWritePos - 1, fmt, args);
-    LLASSERT(len > 0 && len < nSize - nWritePos - 1, "write error");
+    len = vsnprintf((char*)mBuf + mWritePos, mBufSize - mWritePos - 1, fmt, args);
+    LLASSERT(len > 0 && len < mBufSize - mWritePos - 1, "write error");
 
-    nWritePos += len;
+    mWritePos += len;
     va_end(args);
 
-    pBuf[nWritePos] = ' ';
-    nWritePos++;
+    mBuf[mWritePos] = ' ';
+    mWritePos++;
 
     return len;
 }
@@ -225,8 +225,8 @@ int EvtData::read(const char* fmt, ...)
     newfmt[fmtlen + 1] = '\0';
 
     va_start(args, fmt);
-    len = vsscanf((char*)pBuf + nReadPos, newfmt, args);
-    nReadPos += len;
+    len = vsscanf((char*)mBuf + mReadPos, newfmt, args);
+    mReadPos += len;
     va_end(args);
 
     return len;
@@ -238,10 +238,10 @@ void EvtData::dump()
 
 EvtData* EvtData::clone() const
 {
-    auto dst = new EvtData(nSize);
-    memcpy(dst->pBuf, pBuf, nWritePos);
-    dst->nWritePos = nWritePos;
-    dst->nReadPos = nReadPos;
+    auto dst = new EvtData(mBufSize);
+    memcpy(dst->mBuf, mBuf, mWritePos);
+    dst->mWritePos = mWritePos;
+    dst->mReadPos = mReadPos;
     return dst;
 }
 

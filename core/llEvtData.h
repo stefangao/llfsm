@@ -27,11 +27,11 @@ public:
 
     EvtData(const EvtData& other)
     {
-        pBuf = nullptr;
-        createBuffer(other.nWritePos);
-        memcpy(pBuf, other.pBuf, other.nWritePos);
-        nWritePos = other.nWritePos;
-        nReadPos = other.nReadPos;
+        mBuf = nullptr;
+        createBuffer(other.mWritePos);
+        memcpy(mBuf, other.mBuf, other.mWritePos);
+        mWritePos = other.mWritePos;
+        mReadPos = other.mReadPos;
         Utils::log("EvtData::copy1");
     }
 
@@ -63,22 +63,22 @@ public:
 
     inline pbyte getData() const
     {
-        return pBuf + nReadPos;
+        return mBuf + mReadPos;
     }
 
     inline int getDataLen() const
     {
-        return nWritePos - nReadPos;
+        return mWritePos - mReadPos;
     }
 
     inline pbyte getBuffer()
     {
-        return pBuf + nWritePos;
+        return mBuf + mWritePos;
     }
 
     inline const char* c_str() const
     {
-        return (const char*)(pBuf + nReadPos);
+        return (const char*)(mBuf + mReadPos);
     }
 
     inline bool operator==(const char* str) const
@@ -88,10 +88,10 @@ public:
 
     inline EvtData& operator= (const EvtData& other)
     {
-        this->createBuffer(other.nWritePos);
-        memcpy(this->pBuf, other.pBuf, other.nWritePos);
-        this->nWritePos = other.nWritePos;
-        this->nReadPos = other.nReadPos;
+        this->createBuffer(other.mWritePos);
+        memcpy(this->mBuf, other.mBuf, other.mWritePos);
+        this->mWritePos = other.mWritePos;
+        this->mReadPos = other.mReadPos;
         Utils::log("EvtData::copy2");
         return *this;
     }
@@ -103,14 +103,19 @@ public:
 
     EvtData* clone() const;
 
+    inline bool isEmpty() const
+    {
+        return mBuf == nullptr || mBufSize == 0;
+    }
+
 protected:
-    pbyte pBuf;
-    int nSize;
+    pbyte mBuf;
+    int mBufSize;
 
-    int nWritePos;
-    int nReadPos;
+    int mWritePos;
+    int mReadPos;
 
-    bool isNeedFree;
+    bool mIsNeedFree;
 
 public:
     static const EvtData EMPTY;

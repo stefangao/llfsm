@@ -375,12 +375,23 @@ bool FSM::sendEvent(const std::string& evtName, const EvtData& evtData)
 
 bool FSM::postEvent(const std::string& evtName, const EvtData& evtData)
 {
-    auto copyEvtData = evtData.clone();
-    LLASSERT(copyEvtData, "postEvent: clone evtData failed");
+    EvtData* copyEvtData = nullptr;
+    if (!evtData.isEmpty())
+    {
+        copyEvtData = evtData.clone();
+        LLASSERT(copyEvtData, "postEvent: clone evtData failed");
+    }
 
     postCallback([this, evtName, copyEvtData](const void* userData) {
-        dispatchEvent(evtName, *copyEvtData);
-        delete copyEvtData;
+        if (copyEvtData)
+        {
+            dispatchEvent(evtName, *copyEvtData);
+            delete copyEvtData;
+        }
+        else
+        {
+            dispatchEvent(evtName, EvtData::EMPTY);
+        }
     });
     return true;
 }
@@ -564,7 +575,7 @@ int FSM::dispatchEvent(const std::string& evtName, const EvtData& evtData)
         else if ((entry->flag & TFL_OFFLINE) == TFL_OFFLINE)
         {
             auto& stateNode = getStateNode(fromSid);
-            auto copyEvtData = evtData.clone();
+            auto copyEvtData = evtData.isEmpty() ? &EvtData::EMPTY : evtData.clone();
             stateNode.offlineEvents.push(std::make_pair(evtName, copyEvtData));
         }
     }
