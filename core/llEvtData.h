@@ -11,6 +11,7 @@
 
 #include <string>
 #include <string.h>
+#include <sstream>
 #include "llConst.h"
 #include "llUtils.h"
 
@@ -18,8 +19,128 @@ NS_LL_BEGIN
 
 #define DATA_BUFFER_INITLEN    64
 
-class EvtData
+class EvtData : public std::stringstream
 {
+public:
+    EvtData& operator << (const char& c)
+    {
+        if (str().empty())
+            *((std::ostream*)this) << c;
+        else
+            *((std::ostream*)this) << '\0' << c;
+        return *this;
+    }
+
+    EvtData& operator << (const int& n)
+    {
+        if (str().empty())
+            *((std::ostream*)this) << n;
+        else
+            *((std::ostream*)this) << '\0' << n;
+        return *this;
+    }
+
+    EvtData& operator << (const long& n)
+    {
+        if (str().empty())
+            *((std::ostream*)this) << n;
+        else
+            *((std::ostream*)this) << '\0' << n;
+        return *this;
+    }
+
+    EvtData& operator << (const float& f)
+    {
+        if (str().empty())
+            *((std::ostream*)this) << f;
+        else
+            *((std::ostream*)this) << '\0' << f;
+        return *this;
+    }
+
+    EvtData& operator << (const double& d)
+    {
+        if (str().empty())
+            *((std::ostream*)this) << d;
+        else
+            *((std::ostream*)this) << '\0' << d;
+        return *this;
+    }
+
+    EvtData& operator << (const std::string& s)
+    {
+        if (str().empty())
+            *((std::ostream*)this) << s;
+        else
+            *((std::ostream*)this) << '\0' << s;
+        return *this;
+    }
+
+    EvtData& operator << (const char* cs)
+    {
+        if (str().empty())
+            *((std::ostream*)this) << cs;
+        else
+            *((std::ostream*)this) << '\0' << cs;
+        return *this;
+    }
+
+    EvtData& operator >> (char& c)
+    {
+        char zero;
+        *((std::istream*)this) >> c >> zero;
+        return *this;
+    }
+
+    EvtData& operator >> (int& n)
+    {
+        char zero;
+        *((std::istream*)this) >> n >> zero;
+        return *this;
+    }
+
+    EvtData& operator >> (long& n)
+    {
+        char zero;
+        *((std::istream*)this) >> n >> zero;
+        return *this;
+    }
+
+    EvtData& operator >> (float& f)
+    {
+        char zero;
+        *((std::istream*)this) >> f >> zero;
+        return *this;
+    }
+
+    EvtData& operator >> (double& d)
+    {
+        char zero;
+        *((std::istream*)this) >> d >> zero;
+        return *this;
+    }
+
+    EvtData& operator >> (std::string& s)
+    {
+        char c;
+        while ((c = get()) != '\0')
+        {
+            s.push_back(c);
+        }
+        return *this;
+    }
+
+    EvtData& operator >> (char* cs)
+    {
+        char c;
+        int i = 0;
+        while ((c = get()) != '\0')
+        {
+            cs[i++] = c;
+        }
+        return *this;
+    }
+
 public:
     EvtData(int bufLen = DATA_BUFFER_INITLEN);
 
@@ -32,6 +153,7 @@ public:
         memcpy(mBuf, other.mBuf, other.mWritePos);
         mWritePos = other.mWritePos;
         mReadPos = other.mReadPos;
+        *this << other.rdbuf()->str();
         Utils::log("EvtData::copy1");
     }
 
@@ -92,6 +214,7 @@ public:
         memcpy(this->mBuf, other.mBuf, other.mWritePos);
         this->mWritePos = other.mWritePos;
         this->mReadPos = other.mReadPos;
+        *this << other.rdbuf()->str();
         Utils::log("EvtData::copy2");
         return *this;
     }

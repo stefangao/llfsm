@@ -27,8 +27,8 @@ bool TestCase1::onInit()
     Utils::log("start...");
 
     EvtData data;
-    data.write("%d %d", 123, 78);
-    //fsm->postEvent("TestEvt1", data);
+    data << 123 << " hello world " << 78.5;
+    fsm->postEvent("TestEvt1", data);
 
 
 #if 0

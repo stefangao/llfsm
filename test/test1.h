@@ -146,10 +146,12 @@ public:
         {
             State::onEventProc(evtName, evtData);
 
-            int x, y;
-            evtData.read("%d %d", &x, &y);
+            int x;
+            float f;
+            std::string str;
+            evtData >> x >> str >> f;
             std::stringstream msg;
-            msg << "Test4::onEventProc x=" << x << " y=" << y << std::endl;
+            msg << "Test4::onEventProc x=" << x << " f=" << f << " str=" << str <<  std::endl;
             Utils::log(msg.str());
             return true;
         }
