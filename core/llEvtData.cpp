@@ -242,7 +242,7 @@ EvtData* EvtData::clone() const
     memcpy(dst->mBuf, mBuf, mWritePos);
     dst->mWritePos = mWritePos;
     dst->mReadPos = mReadPos;
-    *dst << rdbuf()->str();
+    *dst << str();
     return dst;
 }
 

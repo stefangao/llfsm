@@ -153,7 +153,7 @@ public:
         memcpy(mBuf, other.mBuf, other.mWritePos);
         mWritePos = other.mWritePos;
         mReadPos = other.mReadPos;
-        *this << other.rdbuf()->str();
+        *this << other.str();
         Utils::log("EvtData::copy1");
     }
 
@@ -214,7 +214,7 @@ public:
         memcpy(this->mBuf, other.mBuf, other.mWritePos);
         this->mWritePos = other.mWritePos;
         this->mReadPos = other.mReadPos;
-        *this << other.rdbuf()->str();
+        *this << other.str();
         Utils::log("EvtData::copy2");
         return *this;
     }
