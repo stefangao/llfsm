@@ -103,7 +103,7 @@ bool State::startHeartBeat(int interval, bool atOnce)
         });
     }
 
-    setTimer(interval, [this](int tid, const void* userData) {
+    mStateNode->hbTimerID = setTimer(interval, [this](int tid, const void* userData) {
         onHeartBeat();
     });
 

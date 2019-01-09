@@ -91,9 +91,10 @@ bool FSM::createInternal(const std::string& name, Context& context)
             const TransEntry_t* transEntry = builder->getTransTable();
             if (transEntry != NULL)
             {
-                while (transEntry->fromState != -1)
+                transEntry++; //skip the header element
+                while (transEntry->from != -1)
                 {
-                    auto& evtName = transEntry->eventName;
+                    auto& evtName = transEntry->event;
                     auto iter = mEventTransMap.find(evtName);
                     if (iter != mEventTransMap.end())
                     {
@@ -123,7 +124,7 @@ bool FSM::createInternal(const std::string& name, Context& context)
             auto& transVect = iter->second;
             std::sort(transVect.begin(), transVect.end(), [this](const TransEntry_t* t1,const TransEntry_t* t2)->bool
             {
-                return getStateLevel(t1->fromState) > getStateLevel(t2->fromState);
+                return getStateLevel(t1->from) > getStateLevel(t2->from);
             });
         }
     }
@@ -296,6 +297,11 @@ bool FSM::exitState(sid sID)
         {
             stateNode->sopFlag |= SOP_EXIT;
             stateNode->stateObject->onExit();
+            if (stateNode->hbTimerID != -1)
+            {
+                killTimer(stateNode->hbTimerID);
+                stateNode->hbTimerID = -1;
+            }
             stateNode->sopFlag &= ~SOP_EXIT;
         }
 
@@ -344,6 +350,9 @@ bool FSM::stop()
 
 bool FSM::destroy()
 {
+    if (mS == S::RUN)
+        stop();
+
     onDestroy(*mContext);
 
     mContext->remove(this);
@@ -567,7 +576,7 @@ int FSM::dispatchEvent(const std::string& evtName, const EvtData& evtData)
     auto& transVect = iter->second;
     for (auto& entry : transVect)
     {
-        sid fromSid = entry->fromState;
+        sid fromSid = entry->from;
         if (isStateActive(fromSid))
         {
             activeTransEntries.push_back(entry);
@@ -583,7 +592,7 @@ int FSM::dispatchEvent(const std::string& evtName, const EvtData& evtData)
     //call onEventProc of fromState
     for (auto& entry : activeTransEntries)
     {
-        sid fromSid = entry->fromState;
+        sid fromSid = entry->from;
         if ((entry->flag & TFL_TOPROC) != TFL_TOPROC)
         {
             auto& stateNode = getStateNode(fromSid);
@@ -597,10 +606,10 @@ int FSM::dispatchEvent(const std::string& evtName, const EvtData& evtData)
     bool stateChanged = false;
     for (auto& entry : activeTransEntries)
     {
-        sid fromSid = entry->fromState;
+        sid fromSid = entry->from;
         if (!stateChanged)
         {
-            sid toSid = entry->toState;
+            sid toSid = entry->to;
             if (toSid != S_NONE && toSid != fromSid)
             {
                 changeTo(toSid);
@@ -610,7 +619,7 @@ int FSM::dispatchEvent(const std::string& evtName, const EvtData& evtData)
 
         if ((entry->flag & TFL_TOPROC) == TFL_TOPROC)
         {
-            sid toSid = entry->toState;
+            sid toSid = entry->to;
             if (isStateActive(toSid))
             {
                 auto& stateNode = getStateNode(toSid);

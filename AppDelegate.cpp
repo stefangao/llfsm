@@ -8,6 +8,7 @@
 
 #include "AppDelegate.h"
 #include "test/test1.h"
+#include "test/test2.h"
 
 AppDelegate::AppDelegate()
 {
@@ -30,6 +31,7 @@ AppDelegate::AppDelegate()
 
     //run test case1
     TestCase1::create();
+    TestCase2::create();
 }
 
 AppDelegate::~AppDelegate()

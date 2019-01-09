@@ -46,7 +46,7 @@ const unsigned int TFL_OFFLINE = 0x0002L;
 class State;
 typedef State* (*StateFactoryFunc)();
 
-typedef struct
+typedef struct StateEntry_t
 {
     sid id;
     StateFactoryFunc createInstance;
@@ -55,12 +55,14 @@ typedef struct
     const char* name;
 } StateEntry_t;
 
-typedef struct
+typedef struct TransEntry_t
 {
-    sid fromState;
-    const char* eventName;
-    sid toState;
+    sid from;
+    const char* event;
+    sid to;
     unsigned int flag;
+    TransEntry_t(sid from, const char* event, sid to, unsigned int flag = 0)
+      : from(from), event(event), to(to), flag(flag) {}
 } TransEntry_t;
 
 class EvtData;
@@ -136,13 +138,12 @@ protected:\
     const TransEntry_t* fsmClass::getTransTable() const\
         { return &fsmClass::mTransEntries[0]; }\
     const TransEntry_t fsmClass::mTransEntries[] =\
-        {\
+        {{-1, nullptr, 0, 0}\
 
 #define END_TRANS_TABLE()\
-    {-1, nullptr, 0, 0}};\
+    ,{-1, nullptr, 0, 0}};\
 
-#define TRANS_ENTRY(fromState, eventName, toState, flag)\
-    {fromState, eventName, toState, flag},\
+#define TRANS_ENTRY ,TransEntry_t
 
 #define DECLARE_STATE_FACTORY(stateClass, fsmClass)\
 public:\

@@ -25,18 +25,6 @@ bool TestCase2::onInit()
     fsm->create("fsm2");
     fsm->start();
 
-    Utils::log("switch to DAEMON");
-    fsm->changeTo(FSMA::DAEMON);
-
-    Utils::log("switch to TEST1");
-    fsm->changeTo(FSMA::TEST1);
-
-    Utils::log("switch to TEST4");
-    fsm->changeTo(FSMA::TEST4);
-
-    Utils::log("stop...");
-    fsm->stop();
-    fsm->destroy();
     return true;
 }
 
@@ -45,13 +33,31 @@ namespace test2 {
 BEGIN_STATE_TABLE(FSMA)
     STATE_ENTRY(DAEMON, Daemon, S_ROOT,    SFL_ACTIVE)
     STATE_ENTRY(TEST1,  Test1,  DAEMON,    SFL_ACTIVE)
-    STATE_ENTRY(TEST2,  Test2,  DAEMON,    SFL_ZERO)
-    STATE_ENTRY(TEST3,  Test3,  TEST1,     SFL_ACTIVE)
-    STATE_ENTRY(TEST4,  Test3,  TEST2,     SFL_ACTIVE)
+    STATE_ENTRY(TEST2,  Test2,  DAEMON,    0)
 END_STATE_TABLE()
 
 BEGIN_TRANS_TABLE(FSMA, FSM)
-
+    TRANS_ENTRY(TEST1, "TestEvt1", TEST2)
 END_TRANS_TABLE()
+
+bool FSMA::Test1::onEventProc(const std::string& evtName, EvtData& evtData)
+{
+    return true;
+}
+
+void FSMA::Test1::onHeartBeat()
+{
+    postEvent("TestEvt1");
+}
+
+bool FSMA::Test2::onEventProc(const std::string& evtName, EvtData& evtData)
+{
+    return true;
+}
+
+void FSMA::Test2::onHeartBeat()
+{
+    me()->stop();
+}
 
 }

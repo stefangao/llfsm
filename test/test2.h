@@ -42,7 +42,7 @@ protected:
 public:
     enum
     {
-        DAEMON, TEST1, TEST2, TEST3, TEST4
+        DAEMON, TEST1, TEST2
     };
 
     class Daemon: public State
@@ -57,10 +57,6 @@ public:
         {
             State::onExit();
         }
-        virtual bool onEventProc(const std::string& evtName, EvtData& evtData) override
-        {
-            return true;
-        }
 
         DECLARE_STATE_FACTORY(Daemon, FSMA)
     };
@@ -71,15 +67,15 @@ public:
         virtual void onEnter() override
         {
             State::onEnter();
+
+            startHeartBeat(3000);
         }
         virtual void onExit() override
         {
             State::onExit();
         }
-        virtual bool onEventProc(const std::string& evtName, EvtData& evtData) override
-        {
-            return true;
-        }
+        virtual bool onEventProc(const std::string& evtName, EvtData& evtData) override;
+        virtual void onHeartBeat() override;
 
         DECLARE_STATE_FACTORY(Test1, FSMA)
     };
@@ -90,55 +86,17 @@ public:
         virtual void onEnter() override
         {
             State::onEnter();
+
+            startHeartBeat(2000);
         }
         virtual void onExit() override
         {
             State::onExit();
         }
-        virtual bool onEventProc(const std::string& evtName, EvtData& evtData) override
-        {
-            return true;
-        }
+        virtual bool onEventProc(const std::string& evtName, EvtData& evtData) override;
+        virtual void onHeartBeat() override;
 
         DECLARE_STATE_FACTORY(Test2, FSMA)
-    };
-
-    class Test3: public State
-    {
-    protected:
-        virtual void onEnter() override
-        {
-            State::onEnter();
-        }
-        virtual void onExit() override
-        {
-            State::onExit();
-        }
-        virtual bool onEventProc(const std::string& evtName, EvtData& evtData) override
-        {
-            return true;
-        }
-
-        DECLARE_STATE_FACTORY(Test3, FSMA)
-    };
-
-    class Test4: public State
-    {
-    protected:
-        virtual void onEnter() override
-        {
-            State::onEnter();
-        }
-        virtual void onExit() override
-        {
-            State::onExit();
-        }
-        virtual bool onEventProc(const std::string& evtName, EvtData& evtData) override
-        {
-            return true;
-        }
-
-        DECLARE_STATE_FACTORY(Test4, FSMA)
     };
 };
 
