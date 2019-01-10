@@ -15,7 +15,7 @@ NS_LL_BEGIN
 
 const EvtData EvtData::EMPTY = EvtData(0);
 
-EvtData::EvtData(int bufLen)
+DataBuf::DataBuf(int bufLen)
 {
     mBuf = nullptr;
     mBufSize = 0;
@@ -27,18 +27,18 @@ EvtData::EvtData(int bufLen)
         createBuffer(bufLen);
 }
 
-EvtData::EvtData(pbyte pData, int nDataLen)
+DataBuf::DataBuf(pbyte pData, int nDataLen)
 {
     mBuf = nullptr;
     reset(pData, nDataLen);
 }
 
-EvtData::~EvtData()
+DataBuf::~DataBuf()
 {
     freeBuffer();
 }
 
-pbyte EvtData::createBuffer(int bufSize)
+pbyte DataBuf::createBuffer(int bufSize)
 {
     freeBuffer();
 
@@ -52,7 +52,7 @@ pbyte EvtData::createBuffer(int bufSize)
     return mBuf;
 }
 
-void EvtData::freeBuffer()
+void DataBuf::freeBuffer()
 {
     if (mBuf && mIsNeedFree)
     {
@@ -64,7 +64,7 @@ void EvtData::freeBuffer()
     }
 }
 
-bool EvtData::ensureExtraCapacity(int nDataLen)
+bool DataBuf::ensureExtraCapacity(int nDataLen)
 {
     if (nDataLen <= 0)
         return true;
@@ -89,7 +89,7 @@ bool EvtData::ensureExtraCapacity(int nDataLen)
     return true;
 }
 
-void EvtData::reset(pbyte pData, int nDataLen)
+void DataBuf::reset(pbyte pData, int nDataLen)
 {
     freeBuffer();
 
@@ -100,13 +100,13 @@ void EvtData::reset(pbyte pData, int nDataLen)
     mIsNeedFree = false;
 }
 
-void EvtData::clear()
+void DataBuf::clear()
 {
     mWritePos = 0;
     mReadPos = 0;
 }
 
-bool EvtData::write(pbyte pData, int nDataLen)
+bool DataBuf::write(pbyte pData, int nDataLen)
 {
     LLASSERT(pData != NULL && nDataLen > 0, "argument error");
 
@@ -118,7 +118,7 @@ bool EvtData::write(pbyte pData, int nDataLen)
     return true;
 }
 
-int EvtData::read(pbyte pDataBuf, int nBufLen)
+int DataBuf::read(pbyte pDataBuf, int nBufLen)
 {
     LLASSERT(pDataBuf != NULL && nBufLen > 0, "argument error");
 
@@ -128,7 +128,7 @@ int EvtData::read(pbyte pDataBuf, int nBufLen)
     return nReadLen;
 }
 
-bool EvtData::write(EvtData* targetBuf)
+bool DataBuf::write(DataBuf* targetBuf)
 {
     LLASSERT(targetBuf != NULL, "argument error");
 
@@ -142,7 +142,7 @@ bool EvtData::write(EvtData* targetBuf)
     return true;
 }
 
-int EvtData::read(EvtData* targetBuf)
+int DataBuf::read(DataBuf* targetBuf)
 {
     LLASSERT(targetBuf != NULL, "argument error");
 
@@ -156,7 +156,7 @@ int EvtData::read(EvtData* targetBuf)
     return dataLen;
 }
 
-int EvtData::readString(EvtData* targetBuf)
+int DataBuf::readString(DataBuf* targetBuf)
 {
     LLASSERT(targetBuf != NULL, "argument error");
 
@@ -174,15 +174,15 @@ int EvtData::readString(EvtData* targetBuf)
     return dataLen;
 }
 
-int EvtData::read(std::string& str)
+int DataBuf::read(std::string& str)
 {
-    EvtData temp;
+    DataBuf temp;
     int len = readString(&temp);
     str = temp.c_str();
     return len;
 }
 
-bool EvtData::writeString(const char* cstr)
+bool DataBuf::writeString(const char* cstr)
 {
     LLASSERT(cstr != NULL, "argument error");
 
@@ -190,12 +190,12 @@ bool EvtData::writeString(const char* cstr)
     return write((pbyte)cstr, nDataLen + 1);
 }
 
-bool EvtData::write(const std::string& str)
+bool DataBuf::write(const std::string& str)
 {
     return writeString(str.c_str());
 }
 
-int EvtData::write(const char* fmt, ...)
+int DataBuf::write(const char* fmt, ...)
 {
     va_list args;
     int len = 0;
@@ -213,7 +213,7 @@ int EvtData::write(const char* fmt, ...)
     return len;
 }
 
-int EvtData::read(const char* fmt, ...)
+int DataBuf::read(const char* fmt, ...)
 {
     va_list args;
     int len = 0;
@@ -232,17 +232,16 @@ int EvtData::read(const char* fmt, ...)
     return len;
 }
 
-void EvtData::dump()
+void DataBuf::dump()
 {
 }
 
-EvtData* EvtData::clone() const
+DataBuf* DataBuf::clone() const
 {
-    auto dst = new EvtData(mBufSize);
+    auto dst = new DataBuf(mBufSize);
     memcpy(dst->mBuf, mBuf, mWritePos);
     dst->mWritePos = mWritePos;
     dst->mReadPos = mReadPos;
-    *dst << str();
     return dst;
 }
 

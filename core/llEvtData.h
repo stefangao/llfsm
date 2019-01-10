@@ -17,71 +17,182 @@
 
 NS_LL_BEGIN
 
-#define DATA_BUFFER_INITLEN    64
+static const int  DATA_BUFFER_INITLEN = 64;
+static const char ZERO = '\0';
 
-class EvtData : public std::stringstream
+class DataBuf
+{
+    friend EvtData;
+public:
+    DataBuf(int bufLen = DATA_BUFFER_INITLEN);
+    DataBuf(pbyte pData, int nDataLen);
+    DataBuf(const DataBuf& other)
+    {
+        mBuf = nullptr;
+        createBuffer(other.mWritePos);
+        memcpy(mBuf, other.mBuf, other.mWritePos);
+        mWritePos = other.mWritePos;
+        mReadPos = other.mReadPos;
+    }
+
+    ~DataBuf();
+
+    pbyte createBuffer(int bufSize);
+
+    void freeBuffer();
+
+    bool ensureExtraCapacity(int nDataLen);
+
+    void reset(pbyte pData, int nDataLen);
+
+    void clear();
+
+    bool write(pbyte pData, int nDataLen);
+
+    int read(pbyte pDataBuf, int nBufLen);
+
+    bool write(DataBuf* targetBuf);
+
+    int read(DataBuf* targetBuf);
+
+    int readString(DataBuf* targetBuf);
+    int read(std::string& str);
+
+    bool writeString(const char* cstr);
+    bool write(const std::string& str);
+
+    inline pbyte getData() const
+    {
+        return mBuf + mReadPos;
+    }
+
+    inline int getDataLen() const
+    {
+        return mWritePos - mReadPos;
+    }
+
+    inline pbyte getBuffer()
+    {
+        return mBuf + mReadPos;
+    }
+
+    inline const char* c_str() const
+    {
+        return (const char*)(mBuf + mReadPos);
+    }
+
+    inline bool operator==(const char* str) const
+    {
+        return strcmp(this->c_str(), str) == 0;
+    }
+
+    inline DataBuf& operator= (const DataBuf& other)
+    {
+        this->createBuffer(other.mWritePos);
+        memcpy(this->mBuf, other.mBuf, other.mWritePos);
+        this->mWritePos = other.mWritePos;
+        this->mReadPos = other.mReadPos;
+        Utils::log("DataBuf::copy2");
+        return *this;
+    }
+
+    int write(const char* fmt, ...);
+    int read(const char* fmt, ...);
+
+    void dump();
+
+    DataBuf* clone() const;
+
+    inline bool isEmpty() const
+    {
+        return mBuf == nullptr || mBufSize == 0;
+    }
+
+protected:
+    pbyte mBuf;
+    int mBufSize;
+
+    int mWritePos;
+    int mReadPos;
+
+    bool mIsNeedFree;
+};
+
+class EvtData : public DataBuf, public std::stringstream
 {
 public:
+    EvtData(int bufLen = DATA_BUFFER_INITLEN)
+    {
+    }
+
+    EvtData(pbyte pData, int nDataLen)
+    {
+    }
+
+    EvtData(const EvtData& other)
+    {
+        *this << other.str();
+    }
+
+    inline EvtData& operator= (const EvtData& other)
+    {
+        *this = other;
+        *this << other.str();
+        return *this;
+    }
+
     EvtData& operator << (const char& c)
     {
-        if (str().empty())
-            *((std::ostream*)this) << c;
-        else
-            *((std::ostream*)this) << '\0' << c;
+        *((std::ostream*)this) << c << ZERO;
         return *this;
     }
 
     EvtData& operator << (const int& n)
     {
-        if (str().empty())
-            *((std::ostream*)this) << n;
-        else
-            *((std::ostream*)this) << '\0' << n;
+        *((std::ostream*)this) << n << ZERO;
         return *this;
     }
 
     EvtData& operator << (const long& n)
     {
-        if (str().empty())
-            *((std::ostream*)this) << n;
-        else
-            *((std::ostream*)this) << '\0' << n;
+        *((std::ostream*)this) << n << ZERO;
         return *this;
     }
 
     EvtData& operator << (const float& f)
     {
-        if (str().empty())
-            *((std::ostream*)this) << f;
-        else
-            *((std::ostream*)this) << '\0' << f;
+        *((std::ostream*)this) << f << ZERO;
         return *this;
     }
 
     EvtData& operator << (const double& d)
     {
-        if (str().empty())
-            *((std::ostream*)this) << d;
-        else
-            *((std::ostream*)this) << '\0' << d;
+        *((std::ostream*)this) << d << ZERO;
         return *this;
     }
 
     EvtData& operator << (const std::string& s)
     {
-        if (str().empty())
-            *((std::ostream*)this) << s;
-        else
-            *((std::ostream*)this) << '\0' << s;
+        *((std::ostream*)this) << s << ZERO;
         return *this;
     }
 
     EvtData& operator << (const char* cs)
     {
-        if (str().empty())
-            *((std::ostream*)this) << cs;
-        else
-            *((std::ostream*)this) << '\0' << cs;
+        *((std::ostream*)this) << cs << ZERO;
+        return *this;
+    }
+
+    EvtData& operator << (const DataBuf& dataBuf)
+    {
+        int dataLen = dataBuf.mWritePos - dataBuf.mReadPos;
+        *this << dataLen;
+        int readPos = dataBuf.mReadPos;
+        while (readPos < dataBuf.mWritePos)
+        {
+            unsigned char c = dataBuf.mBuf[readPos++];
+            *((std::ostream*)this) << c;
+        }
         return *this;
     }
 
@@ -123,7 +234,7 @@ public:
     EvtData& operator >> (std::string& s)
     {
         char c;
-        while ((c = get()) != '\0')
+        while ((c = get()) != EOF && c != ZERO)
         {
             s.push_back(c);
         }
@@ -134,111 +245,61 @@ public:
     {
         char c;
         int i = 0;
-        while ((c = get()) != '\0')
+        while ((c = get()) != EOF && c != ZERO)
         {
             cs[i++] = c;
         }
         return *this;
     }
 
-public:
-    EvtData(int bufLen = DATA_BUFFER_INITLEN);
-
-    EvtData(pbyte pData, int nDataLen);
-
-    EvtData(const EvtData& other)
+    EvtData& operator >> (DataBuf& dataBuf)
     {
-        mBuf = nullptr;
-        createBuffer(other.mWritePos);
-        memcpy(mBuf, other.mBuf, other.mWritePos);
-        mWritePos = other.mWritePos;
-        mReadPos = other.mReadPos;
-        *this << other.str();
-        Utils::log("EvtData::copy1");
-    }
-
-    ~EvtData();
-
-    pbyte createBuffer(int bufSize);
-
-    void freeBuffer();
-
-    bool ensureExtraCapacity(int nDataLen);
-
-    void reset(pbyte pData, int nDataLen);
-
-    void clear();
-
-    bool write(pbyte pData, int nDataLen);
-
-    int read(pbyte pDataBuf, int nBufLen);
-
-    bool write(EvtData* targetBuf);
-
-    int read(EvtData* targetBuf);
-
-    int readString(EvtData* targetBuf);
-    int read(std::string& str);
-
-    bool writeString(const char* cstr);
-    bool write(const std::string& str);
-
-    inline pbyte getData() const
-    {
-        return mBuf + mReadPos;
-    }
-
-    inline int getDataLen() const
-    {
-        return mWritePos - mReadPos;
-    }
-
-    inline pbyte getBuffer()
-    {
-        return mBuf + mWritePos;
-    }
-
-    inline const char* c_str() const
-    {
-        return (const char*)(mBuf + mReadPos);
-    }
-
-    inline bool operator==(const char* str) const
-    {
-        return strcmp(this->c_str(), str) == 0;
-    }
-
-    inline EvtData& operator= (const EvtData& other)
-    {
-        this->createBuffer(other.mWritePos);
-        memcpy(this->mBuf, other.mBuf, other.mWritePos);
-        this->mWritePos = other.mWritePos;
-        this->mReadPos = other.mReadPos;
-        *this << other.str();
-        Utils::log("EvtData::copy2");
+        int dataLen;
+        *this >> dataLen;
+        if (dataLen > 0)
+        {
+            int pos = tellg();
+            dataBuf.write((pbyte)str().c_str() + pos, dataLen);
+            seekg(pos + dataLen);
+        }
         return *this;
     }
 
-    int write(const char* fmt, ...);
-    int read(const char* fmt, ...);
-
-    void dump();
-
-    EvtData* clone() const;
-
-    inline bool isEmpty() const
+    EvtData& operator >> (unsigned char* ucs)
     {
-        return mBuf == nullptr || mBufSize == 0;
+        int dataLen;
+        *this >> dataLen;
+        if (dataLen > 0)
+        {
+            int pos = tellg();
+            memcpy(ucs, (pbyte)str().c_str() + pos, dataLen);
+            seekg(pos + dataLen);
+        }
+        return *this;
     }
 
-protected:
-    pbyte mBuf;
-    int mBufSize;
+    int getSize()
+    {
+        int size = 0;
+        int pos = tellg();
+        int bufSize = str().size();
+        char c;
+        while (pos < bufSize && (c = str().at(pos++)) != EOF && c != ZERO)
+        {
+            size++;
+        }
+        return size;
+    }
 
-    int mWritePos;
-    int mReadPos;
-
-    bool mIsNeedFree;
+    EvtData* clone() const
+    {
+        auto dst = new EvtData(mBufSize);
+        memcpy(dst->mBuf, mBuf, mWritePos);
+        dst->mWritePos = mWritePos;
+        dst->mReadPos = mReadPos;
+        *dst << str();
+        return dst;
+    }
 
 public:
     static const EvtData EMPTY;

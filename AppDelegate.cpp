@@ -5,33 +5,18 @@
 // Copyright   : Your copyright notice
 // Description :
 //============================================================================
-
+#include <iostream>
 #include "AppDelegate.h"
 #include "test/test1.h"
 #include "test/test2.h"
+#include "test/test3.h"
 
 AppDelegate::AppDelegate()
 {
-#if 0
-    //test the interfaces: postCallback and setTimer
-    Utils::log("gwas: postCallback E1");
-    lianli::postCallback(nullptr, [](const void* userData) {
-        Utils::log("gwas: postCallback X1");
-    });
-
-    Utils::log("gwas: postCallback E2");
-    lianli::postCallback(nullptr, [](const void* userData) {
-        Utils::log("gwas: postCallback X2");
-
-        setTimer(2000, [](int tid, const void* userData) {
-            Utils::log("time out");
-        }, nullptr);
-    });
-#endif
-
-    //run test case1
-    TestCase1::create();
-    TestCase2::create();
+    //run test cases
+    //TestCase1::create();
+    //TestCase2::create();
+    TestCase3::create();
 }
 
 AppDelegate::~AppDelegate()
@@ -48,7 +33,7 @@ void AppDelegate::onUserEvent(const std::string& fsmName, const std::string& evt
         EvtData evtData;
         for (auto& param : evtParams)
         {
-            evtData.write(param);
+            evtData.DataBuf::write(param);
         }
         fsm->postEvent(evtName, evtData);
     }
