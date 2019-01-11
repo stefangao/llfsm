@@ -1,24 +1,20 @@
 //============================================================================
-// Name        : TestCase.cpp
+// Name        : lianli.h
 // Author      : Stefan Gao (stefan.gao@gmail.com)
 // Version     :
 // Copyright   : Your copyright notice
 // Description :
 //============================================================================
 
-#include "TestCase.h"
+#ifndef __LL_LIANLI_H__
+#define __LL_LIANLI_H__
 
-TestCase::TestCase()
-{
+#include "core/llConst.h"
+#include "core/llContext.h"
+#include "core/llState.h"
+#include "core/llFSM.h"
+#include "core/llUtils.h"
+#include "core/llEvtData.h"
+#include "core/llTimer.h"
 
-}
-
-TestCase::~TestCase()
-{
-
-}
-
-bool TestCase::onInit()
-{
-    return true;
-}
+#endif

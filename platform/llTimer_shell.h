@@ -6,7 +6,7 @@
 // Description :
 //============================================================================
 #include "shell/msgloop.h"
-#include "../AppDelegate.h"
+#include "../../test//AppDelegate.h"
 
 NS_LL_BEGIN
 
