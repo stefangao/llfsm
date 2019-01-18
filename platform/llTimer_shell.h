@@ -6,7 +6,6 @@
 // Description :
 //============================================================================
 #include "shell/msgloop.h"
-#include "../../test//AppDelegate.h"
 
 NS_LL_BEGIN
 
@@ -28,30 +27,3 @@ void postCallback(const std::function<void(const void* userData)>& func, const v
 }
 
 NS_LL_END
-
-static AppDelegate* gAppDelegate = nullptr;
-//the app entry for shell
-int main(int argc, const char * argv[])
-{
-    lianli::postCallback([](const void* userData) {
-        gAppDelegate = new AppDelegate();
-    });
-    llshell::run_msgloop([](const std::string& cmd, std::vector<std::string>& params)
-        {
-            if (gAppDelegate)
-            {
-                if (params.size() >= 1)
-                {
-                    std::string fsm = cmd;
-                    std::string evtName = params[0];
-                    std::vector<std::string> evtParams;
-                    evtParams.assign(params.begin() + 1, params.end());
-                    gAppDelegate->onUserEvent(fsm, evtName, evtParams);
-                }
-            }
-        });
-
-    lianli::Utils::log("main end");
-    return 0;
-}
-
