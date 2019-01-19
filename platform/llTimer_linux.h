@@ -1,5 +1,5 @@
 //============================================================================
-// Name        : It is the timer implementation on shell
+// Name        : It is the timer implementation on linux
 // Author      : Stefan Gao (stefan.gao@gmail.com)
 // Version     :
 // Copyright   : Your copyright notice
