@@ -218,16 +218,17 @@ int DataBuf::read(const char* fmt, ...)
     va_list args;
     int len = 0;
 
-    size_t fmtlen = strlen(fmt);
-    char newfmt[fmtlen + 2];
-    strcpy(newfmt, fmt);
-    newfmt[fmtlen] = ' ';
-    newfmt[fmtlen + 1] = '\0';
+    int fmtLen = strlen(fmt);
+    char* newfmt = new char[fmtLen + 2];
+    memcpy(newfmt, fmt, fmtLen);
+    newfmt[fmtLen] = ' ';
+    newfmt[fmtLen + 1] = '\0';
 
     va_start(args, fmt);
     len = vsscanf((char*)mBuf + mReadPos, newfmt, args);
     mReadPos += len;
     va_end(args);
+    delete[] newfmt;
 
     return len;
 }

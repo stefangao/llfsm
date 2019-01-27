@@ -258,7 +258,7 @@ public:
         *this >> dataLen;
         if (dataLen > 0)
         {
-            int pos = tellg();
+            int pos = (int)tellg();
             dataBuf.write((pbyte)str().c_str() + pos, dataLen);
             seekg(pos + dataLen);
         }
@@ -271,7 +271,7 @@ public:
         *this >> dataLen;
         if (dataLen > 0)
         {
-            int pos = tellg();
+            int pos = (int)tellg();
             memcpy(ucs, (pbyte)str().c_str() + pos, dataLen);
             seekg(pos + dataLen);
         }
@@ -281,7 +281,7 @@ public:
     int getSize()
     {
         int size = 0;
-        int pos = tellg();
+        int pos = (int)tellg();
         int bufSize = str().size();
         char c;
         while (pos < bufSize && (c = str().at(pos++)) != EOF && c != ZERO)
