@@ -16,10 +16,12 @@ const char* LL_STRING_EMPTY = "";
 
 void Utils::log(const std::string& msg)
 {
-    std::cout << msg << std::endl;
+    //std::cout << msg << std::endl;
+	LLLOG(msg.c_str());
+	LLLOG("\n");
 }
 
-void Utils::assert(const char* msg, const char* file, int lineno)
+void Utils::assertX(const char* msg, const char* file, int lineno)
 {
     std::cout << "Assert failed {" << msg << "} " << file << "(" << lineno << ")" << std::endl;
     abort();
