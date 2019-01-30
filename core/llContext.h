@@ -26,8 +26,8 @@ public:
     FSM* find(const std::string& name);
 
 protected:
-    void add(FSM* fsm);
-    void remove(FSM* fsm);
+    virtual void add(FSM* fsm);
+    virtual void remove(FSM* fsm);
 
 protected:
     std::string mName;
