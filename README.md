@@ -31,7 +31,8 @@ The uri of fsm3 is context1:fsm3.
 
 The name of fsm must be unique within a context. So we can locate every fsm by its uri.
 
-
+Usage:
+=
 
 1. How to build llfsm?
 llfsm is a library, which can be used in executable program. So it is better to build test project and llfsm together. test is the executable program, which includes some test cases that will demonstrate how to use llfsm.
