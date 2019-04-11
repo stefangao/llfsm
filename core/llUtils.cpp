@@ -16,9 +16,9 @@ const char* LL_STRING_EMPTY = "";
 
 void Utils::log(const std::string& msg)
 {
-    //std::cout << msg << std::endl;
-	LLLOG(msg.c_str());
-	LLLOG("\n");
+    std::cout << msg << std::endl;
+	//LLLOG(msg.c_str());
+	//LLLOG("\n");
 }
 
 void Utils::assertX(const char* msg, const char* file, int lineno)

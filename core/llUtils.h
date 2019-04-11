@@ -11,7 +11,7 @@
 
 #include <string>
 #include "llConst.h"
-#include "wtermin.h"
+//#include "wtermin.h"
 
 NS_LL_BEGIN
 
@@ -31,6 +31,8 @@ extern const char* LL_STRING_EMPTY;
 #else
     #define LLASSERT(x, msg)
 #endif
+
+#define WT_Trace(x, y)
 
 #ifdef LL_DEBUG
 #define LLLOG(format, ...) WT_Trace(format, __VA_ARGS__)
