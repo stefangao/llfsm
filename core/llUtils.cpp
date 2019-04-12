@@ -8,22 +8,37 @@
 
 #include <iostream>
 #include <stdlib.h>
+#include <stdarg.h>
 #include "llUtils.h"
 
 NS_LL_BEGIN
 
 const char* LL_STRING_EMPTY = "";
 
-void Utils::log(const std::string& msg)
+void Utils::__log(const char *format,...)
 {
-    std::cout << msg << std::endl;
-	//LLLOG(msg.c_str());
-	//LLLOG("\n");
+    char strBuffer[4096] = { 0 };
+    va_list vlArgs;
+    va_start(vlArgs, format);
+    vsnprintf(strBuffer, sizeof(strBuffer) - 1, format, vlArgs);
+    va_end(vlArgs);
+
+#ifdef WIN32
+    OutputDebugString(strBuffer);
+#else
+    std::cout << strBuffer << std::endl;
+#endif
 }
 
-void Utils::assertX(const char* msg, const char* file, int lineno)
+void Utils::__assert(const char* file, int lineno, const char* format,...)
 {
-    std::cout << "Assert failed {" << msg << "} " << file << "(" << lineno << ")" << std::endl;
+    char strBuffer[4096] = { 0 };
+    va_list vlArgs;
+    va_start(vlArgs, format);
+    vsnprintf(strBuffer, sizeof(strBuffer) - 1, format, vlArgs);
+    va_end(vlArgs);
+
+    LLLOG("Assert failed: %s\n[%s:%d]\n", strBuffer, file, lineno);
     abort();
 }
 

@@ -92,7 +92,7 @@ public:
         memcpy(this->mBuf, other.mBuf, other.mWritePos);
         this->mWritePos = other.mWritePos;
         this->mReadPos = other.mReadPos;
-        Utils::log("DataBuf::copy2");
+        LLLOG("DataBuf::copy2");
         return *this;
     }
 

@@ -11,31 +11,28 @@
 
 #include <string>
 #include "llConst.h"
-//#include "wtermin.h"
 
 NS_LL_BEGIN
 
 class Utils
 {
 public:
-    static void log(const std::string& msg);
-    static void assertX(const char* msg, const char* file, int lineno);
+    static void __log(const char* format,...);
+    static void __assert(const char* file, int lineno, const char* format,...);
 };
 
 extern const char* LL_STRING_EMPTY;
 
 #ifdef LL_DEBUG
-    #define LLASSERT(x, msg)\
+    #define LLASSERT(x, format, ...)\
         if (!(x))\
-            Utils::assertX(msg, __FILE__, __LINE__)
+            Utils::__assert(__FILE__, __LINE__, format, ##__VA_ARGS__)
 #else
     #define LLASSERT(x, msg)
 #endif
 
-#define WT_Trace(x, y)
-
 #ifdef LL_DEBUG
-#define LLLOG(format, ...) WT_Trace(format, __VA_ARGS__)
+#define LLLOG(format,...) Utils::__log(format, ##__VA_ARGS__)
 #else
 #define LLLOG(format)
 #endif

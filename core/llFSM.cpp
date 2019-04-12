@@ -409,36 +409,42 @@ void FSM::onCreate(const Context& context)
 {
     std::string msg;
     msg = std::string("FSM::onCreate(): ") + getName();
-    Utils::log(msg);
+    LLLOG(msg.c_str());
 }
 
 void FSM::onStart()
 {
     std::string msg;
     msg = std::string("FSM::onStart(): ") + getName();
-    Utils::log(msg);
+    LLLOG(msg.c_str());
 }
 
 void FSM::onPause()
 {
-    Utils::log(getName() + ".onPause");
+    std::string msg;
+    msg = getName() + ".onPause";
+    LLLOG(msg.c_str());
 }
 
 void FSM::onResume()
 {
-    Utils::log(getName() + ".onResume");
+    std::string msg;
+    msg = getName() + ".onResume";
+    LLLOG(msg.c_str());
 }
 
 void FSM::onStop()
 {
-    Utils::log(getName() + ".onStop");
+    std::string msg;
+    msg = getName() + ".onStop";
+    LLLOG(msg.c_str());
 }
 
 void FSM::onDestroy(const Context& context)
 {
     std::string msg;
     msg = std::string("FSM::onDestroy(): ") + getName();
-    Utils::log(msg);
+    LLLOG(msg.c_str());
 }
 
 bool FSM::isInvalid() const

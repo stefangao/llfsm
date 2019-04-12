@@ -30,7 +30,7 @@ int main(int argc, const char * argv[])
             }
         });
 
-    lianli::Utils::log("main end");
+    LLLOG("main end");
     return 0;
 }
 

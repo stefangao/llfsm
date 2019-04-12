@@ -49,7 +49,7 @@ bool FSMA::Test1::onEventProc(const std::string& evtName, EvtData& evtData)
     evtData >> a;
     evtData >> str;
     ss << "Test1 Proc: a=" << a << " str=" << str;
-    Utils::log(ss.str());
+    LLLOG(ss.str().c_str());
     return true;
 }
 
@@ -70,7 +70,7 @@ bool FSMA::Test2::onEventProc(const std::string& evtName, EvtData& evtData)
     std::string str;
     evtData >> a >> str;
     ss << "Test2 Proc: a=" << a << " str=" << str;
-    Utils::log(ss.str());
+    LLLOG(ss.str().c_str());
 
     return true;
 }

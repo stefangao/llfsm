@@ -24,7 +24,7 @@ bool TestCase1::onInit()
     FSM *fsm = new FSMA();
     fsm->create("fsm1");
     fsm->start();
-    Utils::log("start...");
+    LLLOG("start...");
 
     EvtData data;
     data << 123 << "  hello world 56" << 78.5;

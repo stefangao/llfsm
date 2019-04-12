@@ -152,7 +152,7 @@ public:
             evtData >> x >> str >> f;
             std::stringstream msg;
             msg << "Test4::onEventProc x=" << x << " f=" << f << " str=" << str <<  std::endl;
-            Utils::log(msg.str());
+            LLLOG(msg.str().c_str());
             return true;
         }
 
