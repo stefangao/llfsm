@@ -41,7 +41,6 @@ private:
     };
 
 protected:
-    virtual ~FSM();
     static const FSM* __getBuilder() {return nullptr;}
     virtual const FSM* __getSuperBuilder() const {return nullptr;}
     virtual const StateEntry_t* getStateTable() const {return nullptr;}
@@ -60,6 +59,7 @@ protected:
 
 public:
     FSM();
+    virtual ~FSM();
     bool create(const std::string& name, Context& context = Context::DEFAULT);
     bool start();
     bool pause();

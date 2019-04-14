@@ -11,6 +11,10 @@
 #include <stdarg.h>
 #include "llUtils.h"
 
+#ifdef WIN32
+#include <windows.h>
+#endif
+
 NS_LL_BEGIN
 
 const char* LL_STRING_EMPTY = "";

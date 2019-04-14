@@ -43,8 +43,8 @@ bool FSM::create(const std::string& name, Context& context)
 bool FSM::createInternal(const std::string& name, Context& context)
 {
     const StateEntry_t* stateEntry = getStateTable();
-    if (stateEntry == nullptr)
-        return false;
+    //if (stateEntry == nullptr)
+    //    return false;
 
     mContext = &context;
     mName = name;
@@ -54,7 +54,7 @@ bool FSM::createInternal(const std::string& name, Context& context)
     mRootNode.activeChild = S_INVAL;
 
     int stateCount = getStateCount();
-    if (stateCount == 0)
+    if (stateCount == 0 && stateEntry != nullptr)
     {
         while (stateEntry++->id != S_INVAL)
             stateCount++;
@@ -68,16 +68,19 @@ bool FSM::createInternal(const std::string& name, Context& context)
         mStateNodeTable.resize(stateCount);
 
         stateEntry = getStateTable();
-        for (int i = 0; i < stateCount; i++)
+        if (stateEntry != nullptr)
         {
-            LLASSERT(stateEntry->id == i, "State ID is disordered!");
-            mStateNodeTable[i].stateEntry = stateEntry;
-            mStateNodeTable[i].stateObject = stateEntry->createInstance();
-            mStateNodeTable[i].stateObject->mThisFSM = this;
-            mStateNodeTable[i].stateObject->mID = stateEntry->id;
-            mStateNodeTable[i].stateObject->mStateNode = &mStateNodeTable[i];
-            mStateNodeTable[i].hbTimerID = -1;
-            stateEntry++;
+            for (int i = 0; i < stateCount; i++)
+            {
+                LLASSERT(stateEntry->id == i, "State ID is disordered!");
+                mStateNodeTable[i].stateEntry = stateEntry;
+                mStateNodeTable[i].stateObject = stateEntry->createInstance();
+                mStateNodeTable[i].stateObject->mThisFSM = this;
+                mStateNodeTable[i].stateObject->mID = stateEntry->id;
+                mStateNodeTable[i].stateObject->mStateNode = &mStateNodeTable[i];
+                mStateNodeTable[i].hbTimerID = -1;
+                stateEntry++;
+            }
         }
     }
     buildStateTree(S_ROOT);
@@ -150,8 +153,6 @@ bool FSM::createInternal(const std::string& name, Context& context)
 
 void FSM::onCreateInternal(Context& context)
 {
-    onCreate(context);
-
     int stateCount = getStateCount();
     for (int i = 0; i < stateCount; i++)
     {
@@ -166,6 +167,8 @@ void FSM::onCreateInternal(Context& context)
             fsm->onCreateInternal(context);
         }
     }
+
+    onCreate(context);
 }
 
 const StateNode_t& FSM::getStateNode(sid sID) const

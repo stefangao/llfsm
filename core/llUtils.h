@@ -32,7 +32,7 @@ extern const char* LL_STRING_EMPTY;
 #endif
 
 #ifdef LL_DEBUG
-#define LLLOG(format,...) Utils::__log(format, ##__VA_ARGS__)
+#define LLLOG(format,...) lianli::Utils::__log(format, ##__VA_ARGS__)
 #else
 #define LLLOG(format)
 #endif
