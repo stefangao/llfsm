@@ -91,6 +91,7 @@ protected:
     virtual void onDestroy(const Context& context);
     bool buildStateTree(sid parent);
 
+    virtual bool onEventProc(const std::string& evtName, EvtData& evtData);
 
     sid seekParent(sid sID, int level);
     sid seekCommonParent(sid sID1, sid sID2);

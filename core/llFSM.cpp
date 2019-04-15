@@ -450,6 +450,12 @@ void FSM::onDestroy(const Context& context)
     LLLOG(msg.c_str());
 }
 
+bool FSM::onEventProc(const std::string& evtName, EvtData& evtData)
+{
+    LLLOG("FSM::onEventProc()");
+	return true;
+}
+
 bool FSM::isInvalid() const
 {
     return getS() == S::INVAL;
@@ -604,10 +610,19 @@ int FSM::dispatchEvent(const std::string& evtName, const EvtData& evtData)
         sid fromSid = entry->from;
         if ((entry->flag & TFL_TOPROC) != TFL_TOPROC)
         {
-            auto& stateNode = getStateNode(fromSid);
-            int r = stateNode.stateObject->onEventProc(evtName, (EvtData&)evtData);
-            if (r)
-                result = EVTR_CONTINUE;
+            if (fromSid != S_ROOT)
+            {
+                auto& stateNode = getStateNode(fromSid);
+                int r = stateNode.stateObject->onEventProc(evtName, (EvtData&) evtData);
+                if (r)
+                    result = EVTR_CONTINUE;
+            }
+            else
+            {
+                int r = onEventProc(evtName, (EvtData&) evtData); //if root state, trigger fsm event proc
+                if (r)
+                    result = EVTR_CONTINUE;
+            }
         }
     }
 
