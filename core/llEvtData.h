@@ -159,6 +159,12 @@ public:
         return *this;
     }
 
+    EvtData& operator << (const unsigned long& n)
+    {
+        *((std::ostream*)this) << n << ZERO;
+        return *this;
+    }
+
     EvtData& operator << (const float& f)
     {
         *((std::ostream*)this) << f << ZERO;
@@ -211,6 +217,13 @@ public:
     }
 
     EvtData& operator >> (long& n)
+    {
+        char zero;
+        *((std::istream*)this) >> n >> zero;
+        return *this;
+    }
+
+    EvtData& operator >> (unsigned long& n)
     {
         char zero;
         *((std::istream*)this) >> n >> zero;
