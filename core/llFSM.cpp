@@ -381,12 +381,18 @@ bool FSM::destroy()
 
 bool FSM::sendEvent(const std::string& evtName, const EvtData& evtData)
 {
+    if (mS != S::RUN)
+        return false;
+
     dispatchEvent(evtName, evtData);
     return true;
 }
 
 bool FSM::postEvent(const std::string& evtName, const EvtData& evtData)
 {
+    if (mS != S::RUN)
+        return false;
+
     EvtData* copyEvtData = nullptr;
     if (!evtData.isEmpty())
     {

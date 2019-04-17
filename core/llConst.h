@@ -148,7 +148,7 @@ protected:\
 #define DECLARE_STATE_FACTORY(stateClass, fsmClass)\
 public:\
     static lianli::State* createInstance() {return new stateClass();}\
-    inline fsmClass* me() {return (fsmClass*)mThisFSM;};\
+    inline fsmClass* self() {return (fsmClass*)mThisFSM;};\
 
 NS_LL_END
 

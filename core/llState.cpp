@@ -99,12 +99,14 @@ bool State::startHeartBeat(int interval, bool atOnce)
     if (atOnce)
     {
         postCallback([this](const void* userData) {
-            onHeartBeat();
+            if (isActive())
+                onHeartBeat();
         });
     }
 
     mStateNode->hbTimerID = setTimer(interval, [this](int tid, const void* userData) {
-        onHeartBeat();
+        if (isActive())
+            onHeartBeat();
     });
 
     return true;
@@ -122,6 +124,13 @@ void State::stopHeartBeat()
 bool State::isHeatBeatOn()
 {
     return mStateNode->hbTimerID != -1;
+}
+
+bool State::isActive()
+{
+    sid parent = mStateNode->stateEntry->parent;
+    const StateNode_t& parentNode = mThisFSM->getStateNode(parent);
+    return parentNode.activeChild == mID;
 }
 
 void State::processOfflineEvents()

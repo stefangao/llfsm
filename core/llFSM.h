@@ -24,6 +24,7 @@ NS_LL_BEGIN
 
 class FSM: public State, public Ref
 {
+    friend class State;
 public:
     enum class S
     {

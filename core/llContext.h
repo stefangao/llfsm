@@ -33,7 +33,7 @@ protected:
     std::string mName;
     std::list<FSM*> mFsmList;
 
-private:
+public:
     static Context DEFAULT;
 };
 

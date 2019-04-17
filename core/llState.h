@@ -29,6 +29,7 @@ public:
     bool startHeartBeat(int interval, bool atOnce = false);
     void stopHeartBeat();
     bool isHeatBeatOn();
+    bool isActive();
 
 protected:
     virtual ~State();
