@@ -48,8 +48,13 @@ bool killTimer(int tid)
 void postCallback(const std::function<void(const void* userData)>& func, const void* userData)
 {
 	int tid = setTimer(0, [func, userData](int tid, const void*) {
+		KillTimer(0, tid);
 		func(userData);
-		killTimer(tid);
+		auto iter = gTimerMap.find(tid);
+		if (iter != gTimerMap.end())
+		{
+			gTimerMap.erase(iter);
+		}
 	}, 0);
 }
 
