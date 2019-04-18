@@ -25,6 +25,9 @@ public:
 
     FSM* find(const std::string& name);
 
+    void postBcEvent(const std::string& evtName, const EvtData& evtData);
+    void sendBcEvent(const std::string& evtName, const EvtData& evtData);
+
 protected:
     virtual void add(FSM* fsm);
     virtual void remove(FSM* fsm);

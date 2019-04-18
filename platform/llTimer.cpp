@@ -8,8 +8,8 @@
 
 #include "../core/llTimer.h"
 
-#define LL_PLATFORM_LINUX    0
-#define LL_PLATFORM_WIN      1
+#define LL_PLATFORM_LINUX    1
+#define LL_PLATFORM_WIN      0
 #define LL_PLATFORM_IOS      0
 #define LL_PLATFORM_MAC      0
 #define LL_PLATFORM_ANDROID  0

@@ -31,13 +31,13 @@ FSM::~FSM()
 
 }
 
-bool FSM::create(const std::string& name, Context& context)
+FSM& FSM::create(const std::string& name, Context& context)
 {
-    if (!createInternal(name, context))
-        return false;
+    bool ret = createInternal(name, context);
+    LLASSERT(ret, "FSM::create failed: %s\n", name.c_str());
 
     onCreateInternal(context);
-    return true;
+    return *this;
 }
 
 bool FSM::createInternal(const std::string& name, Context& context)
@@ -126,9 +126,9 @@ bool FSM::createInternal(const std::string& name, Context& context)
         {
             auto& transVect = iter->second;
             std::sort(transVect.begin(), transVect.end(), [this](const TransEntry_t* t1,const TransEntry_t* t2)->bool
-            {
-                return getStateLevel(t1->from) > getStateLevel(t2->from);
-            });
+                {
+                    return getStateLevel(t1->from) > getStateLevel(t2->from);
+                });
         }
     }
 
@@ -414,6 +414,15 @@ bool FSM::postEvent(const std::string& evtName, const EvtData& evtData)
     return true;
 }
 
+void FSM::postBcEvent(const std::string& evtName, const EvtData& evtData)
+{
+    mContext->postBcEvent(evtName, evtData);
+}
+
+void FSM::sendBcEvent(const std::string& evtName, const EvtData& evtData)
+{
+    mContext->sendBcEvent(evtName, evtData);
+}
 void FSM::onCreate(const Context& context)
 {
     std::string msg;
@@ -661,6 +670,30 @@ int FSM::dispatchEvent(const std::string& evtName, const EvtData& evtData)
     }
 
     return result;
+}
+
+void FSM::subscribeBcEvent(const std::string& evtName)
+{
+    auto iter = mBcEventSubscribeMap.find(evtName);
+    if (iter == mBcEventSubscribeMap.end())
+    {
+        mBcEventSubscribeMap.insert(std::make_pair(evtName, true));
+    }
+}
+
+void FSM::unsubscribeBcEvent(const std::string& evtName)
+{
+    auto iter = mBcEventSubscribeMap.find(evtName);
+    if (iter != mBcEventSubscribeMap.end())
+    {
+        mBcEventSubscribeMap.erase(iter);
+    }
+}
+
+bool FSM::isBcEventSubscribed(const std::string& evtName)
+{
+    auto iter = mBcEventSubscribeMap.find(evtName);
+    return iter != mBcEventSubscribeMap.end();
 }
 
 NS_LL_END

@@ -49,4 +49,22 @@ FSM* Context::find(const std::string& name)
     return nullptr;
 }
 
+void Context::postBcEvent(const std::string& evtName, const EvtData& evtData)
+{
+    for (auto fsm : mFsmList)
+    {
+        if (fsm->isBcEventSubscribed(evtName))
+            fsm->postBcEvent(evtName, evtData);
+    }
+}
+
+void Context::sendBcEvent(const std::string& evtName, const EvtData& evtData)
+{
+    for (auto fsm : mFsmList)
+    {
+        if (fsm->isBcEventSubscribed(evtName))
+            fsm->sendBcEvent(evtName, evtData);
+    }
+}
+
 NS_LL_END

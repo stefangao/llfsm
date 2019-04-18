@@ -61,7 +61,7 @@ protected:
 public:
     FSM();
     virtual ~FSM();
-    bool create(const std::string& name, Context& context = Context::DEFAULT);
+    FSM& create(const std::string& name, Context& context = Context::DEFAULT);
     bool start();
     bool pause();
     bool resume();
@@ -70,6 +70,12 @@ public:
 
     bool sendEvent(const std::string& evtName, const EvtData& evtData = EvtData::EMPTY);
     bool postEvent(const std::string& evtName, const EvtData& evtData = EvtData::EMPTY);
+    void postBcEvent(const std::string& evtName, const EvtData& evtData = EvtData::EMPTY);
+    void sendBcEvent(const std::string& evtName, const EvtData& evtData = EvtData::EMPTY);
+
+    void subscribeBcEvent(const std::string& evtName);
+    void unsubscribeBcEvent(const std::string& evtName);
+    bool isBcEventSubscribed(const std::string& evtName);
 
     inline const std::string& getName() const {return mName;};
     inline void setName(const std::string& name) {mName = name;}
@@ -110,6 +116,7 @@ protected:
     std::vector<StateNode_t> mStateNodeTable;
     StateNode_t mRootNode;
     std::map<std::string, std::vector<const TransEntry_t*>> mEventTransMap;
+    std::map<std::string, int> mBcEventSubscribeMap;
 
 public:
     static const StateEntry_t ROOT_ENTRY;
