@@ -9,7 +9,7 @@
 #ifndef __TEST_CASE_H__
 #define __TEST_CASE_H__
 
-#include "llfsm/lianli.h"
+#include "lianli.h"
 
 #define DECLARE_TESTCASE_FACTORY(testCaseClass)\
 public:\

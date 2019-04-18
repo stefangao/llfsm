@@ -54,7 +54,7 @@ void Context::postBcEvent(const std::string& evtName, const EvtData& evtData)
     for (auto fsm : mFsmList)
     {
         if (fsm->isBcEventSubscribed(evtName))
-            fsm->postBcEvent(evtName, evtData);
+            fsm->postEvent(evtName, evtData);
     }
 }
 
@@ -63,7 +63,7 @@ void Context::sendBcEvent(const std::string& evtName, const EvtData& evtData)
     for (auto fsm : mFsmList)
     {
         if (fsm->isBcEventSubscribed(evtName))
-            fsm->sendBcEvent(evtName, evtData);
+            fsm->sendEvent(evtName, evtData);
     }
 }
 

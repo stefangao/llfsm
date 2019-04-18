@@ -57,7 +57,7 @@ bool FSMA::Test2::onEventProc(const std::string& evtName, EvtData& evtData)
 
 void FSMA::Test2::onHeartBeat()
 {
-    me()->stop();
+    self()->stop();
 }
 
 }

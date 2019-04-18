@@ -22,8 +22,14 @@ TestCase3::~TestCase3()
 bool TestCase3::onInit()
 {
     FSM *fsm = new FSMA();
-    fsm->create("fsm3");
-    fsm->start();
+    fsm->create("fsm3").start();
+    fsm->subscribeBcEvent("TestEvt1");
+
+
+    EvtData data;
+    std::string input = "000 hello world! 300 abc123";
+    data << 23 << input;
+    fsm->sendBcEvent("TestEvt1", data);
 
     return true;
 }
@@ -37,8 +43,8 @@ BEGIN_STATE_TABLE(FSMA)
 END_STATE_TABLE()
 
 BEGIN_TRANS_TABLE(FSMA, FSM)
-    TRANS_ENTRY(TEST1, "TestEvt1", TEST2)
-    TRANS_ENTRY(TEST2, "TestEvt2", TEST1)
+    TRANS_ENTRY(TEST1, "TestEvt1", S_NONE)
+    //TRANS_ENTRY(TEST2, "TestEvt2", TEST1)
 END_TRANS_TABLE()
 
 bool FSMA::Test1::onEventProc(const std::string& evtName, EvtData& evtData)
@@ -60,7 +66,7 @@ void FSMA::Test1::onHeartBeat()
     std::string input = "000 hello world! 300";
     data << 23 << input;
 
-    postEvent("TestEvt1", data);
+    //postEvent("TestEvt1", data);
 }
 
 bool FSMA::Test2::onEventProc(const std::string& evtName, EvtData& evtData)

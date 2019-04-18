@@ -9,7 +9,7 @@
 #ifndef __LL_APPDELEGATE_H__
 #define __LL_APPDELEGATE_H__
 
-#include "llfsm/lianli.h"
+#include "lianli.h"
 USING_NS_LL;
 
 class AppDelegate
