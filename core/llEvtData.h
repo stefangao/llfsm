@@ -123,10 +123,12 @@ class EvtData : public DataBuf, public std::stringstream
 public:
     EvtData(int bufLen = DATA_BUFFER_INITLEN)
     {
+        mDataLen = 0;
     }
 
     EvtData(pbyte pData, int nDataLen)
     {
+        mDataLen = 0;
     }
 
     EvtData(const EvtData& other)
@@ -144,48 +146,56 @@ public:
     EvtData& operator << (const char& c)
     {
         *((std::ostream*)this) << c << ZERO;
+        mDataLen += sizeof(c) + 1;
         return *this;
     }
 
     EvtData& operator << (const int& n)
     {
         *((std::ostream*)this) << n << ZERO;
+        mDataLen += sizeof(n) + 1;
         return *this;
     }
 
     EvtData& operator << (const long& n)
     {
         *((std::ostream*)this) << n << ZERO;
+        mDataLen += sizeof(n) + 1;
         return *this;
     }
 
     EvtData& operator << (const unsigned long& n)
     {
         *((std::ostream*)this) << n << ZERO;
+        mDataLen += sizeof(n) + 1;
         return *this;
     }
 
     EvtData& operator << (const float& f)
     {
         *((std::ostream*)this) << f << ZERO;
+        mDataLen += sizeof(f) + 1;
         return *this;
     }
 
     EvtData& operator << (const double& d)
     {
         *((std::ostream*)this) << d << ZERO;
+        mDataLen += sizeof(d) + 1;
         return *this;
     }
 
     EvtData& operator << (const std::string& s)
     {
         *((std::ostream*)this) << s << ZERO;
+        mDataLen += s.size() + 1;
         return *this;
     }
 
     EvtData& operator << (const char* cs)
     {
         *((std::ostream*)this) << cs << ZERO;
+        mDataLen += strlen(cs) + 1;
         return *this;
     }
 
@@ -198,6 +208,7 @@ public:
         {
             unsigned char c = dataBuf.mBuf[readPos++];
             *((std::ostream*)this) << c;
+            mDataLen += 1;
         }
         return *this;
     }
@@ -206,6 +217,7 @@ public:
     {
         char zero;
         *((std::istream*)this) >> c >> zero;
+        mDataLen -= (sizeof(c) + 1);
         return *this;
     }
 
@@ -213,6 +225,7 @@ public:
     {
         char zero;
         *((std::istream*)this) >> n >> zero;
+        mDataLen -= (sizeof(n) + 1);
         return *this;
     }
 
@@ -220,6 +233,7 @@ public:
     {
         char zero;
         *((std::istream*)this) >> n >> zero;
+        mDataLen -= (sizeof(n) + 1);
         return *this;
     }
 
@@ -227,6 +241,7 @@ public:
     {
         char zero;
         *((std::istream*)this) >> n >> zero;
+        mDataLen -= (sizeof(n) + 1);
         return *this;
     }
 
@@ -234,6 +249,7 @@ public:
     {
         char zero;
         *((std::istream*)this) >> f >> zero;
+        mDataLen -= (sizeof(f) + 1);
         return *this;
     }
 
@@ -241,6 +257,7 @@ public:
     {
         char zero;
         *((std::istream*)this) >> d >> zero;
+        mDataLen -= (sizeof(d) + 1);
         return *this;
     }
 
@@ -250,6 +267,7 @@ public:
         while ((c = get()) != EOF && c != ZERO)
         {
             s.push_back(c);
+            mDataLen += 1;
         }
         return *this;
     }
@@ -261,6 +279,7 @@ public:
         while ((c = get()) != EOF && c != ZERO)
         {
             cs[i++] = c;
+            mDataLen += 1;
         }
         return *this;
     }
@@ -274,6 +293,7 @@ public:
             int pos = (int)tellg();
             dataBuf.write((pbyte)str().c_str() + pos, dataLen);
             seekg(pos + dataLen);
+            mDataLen += dataLen;
         }
         return *this;
     }
@@ -287,6 +307,7 @@ public:
             int pos = (int)tellg();
             memcpy(ucs, (pbyte)str().c_str() + pos, dataLen);
             seekg(pos + dataLen);
+            mDataLen += dataLen;
         }
         return *this;
     }
@@ -304,6 +325,16 @@ public:
         return size;
     }
 
+    inline pbyte getData() const
+    {
+        return (pbyte)rdbuf();
+    }
+
+    inline int getDataLen() const
+    {
+        return mDataLen;
+    }
+
     EvtData* clone() const
     {
         auto dst = new EvtData(mBufSize);
@@ -313,6 +344,24 @@ public:
         *dst << str();
         return dst;
     }
+
+    int copyTo(pbyte buf, int bufLen) const
+    {
+        int pos = 0;
+        int dataLen = getDataLen();
+        if (dataLen > bufLen)
+            dataLen = bufLen;
+
+        char c;
+        while (pos < dataLen && (c = str().at(pos)) != EOF)
+        {
+            buf[pos++] = c;
+        }
+        return pos;
+    }
+
+private:
+    int mDataLen;
 
 public:
     static const EvtData EMPTY;
