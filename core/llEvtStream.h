@@ -6,8 +6,8 @@
 // Description :
 //============================================================================
 
-#ifndef __LL_EVTDATA_H__
-#define __LL_EVTDATA_H__
+#ifndef __LL_EVTSTREAM_H__
+#define __LL_EVTSTREAM_H__
 
 #include <string>
 #include <string.h>
@@ -20,232 +20,116 @@ NS_LL_BEGIN
 static const int  DATA_BUFFER_INITLEN = 64;
 static const char ZERO = '\0';
 
-class DataBuf
+class EvtStream : public std::stringstream
 {
-    friend EvtData;
 public:
-    DataBuf(int bufLen = DATA_BUFFER_INITLEN);
-    DataBuf(pbyte pData, int nDataLen);
-    DataBuf(const DataBuf& other)
+    EvtStream()
     {
-        mBuf = nullptr;
-        createBuffer(other.mWritePos);
-        memcpy(mBuf, other.mBuf, other.mWritePos);
-        mWritePos = other.mWritePos;
-        mReadPos = other.mReadPos;
+
     }
 
-    ~DataBuf();
-
-    pbyte createBuffer(int bufSize);
-
-    void freeBuffer();
-
-    bool ensureExtraCapacity(int nDataLen);
-
-    void reset(pbyte pData, int nDataLen);
-
-    void clear();
-
-    bool write(pbyte pData, int nDataLen);
-
-    int read(pbyte pDataBuf, int nBufLen);
-
-    bool write(DataBuf* targetBuf);
-
-    int read(DataBuf* targetBuf);
-
-    int readString(DataBuf* targetBuf);
-    int read(std::string& str);
-
-    bool writeString(const char* cstr);
-    bool write(const std::string& str);
-
-    inline pbyte getData() const
+    EvtStream(const EvtStream& other)
     {
-        return mBuf + mReadPos;
+        *((std::ostream*)this) << other.str();
     }
 
-    inline int getDataLen() const
+    inline EvtStream& operator= (const EvtStream& other)
     {
-        return mWritePos - mReadPos;
-    }
-
-    inline pbyte getBuffer()
-    {
-        return mBuf + mReadPos;
-    }
-
-    inline const char* c_str() const
-    {
-        return (const char*)(mBuf + mReadPos);
-    }
-
-    inline bool operator==(const char* str) const
-    {
-        return strcmp(this->c_str(), str) == 0;
-    }
-
-    inline DataBuf& operator= (const DataBuf& other)
-    {
-        this->createBuffer(other.mWritePos);
-        memcpy(this->mBuf, other.mBuf, other.mWritePos);
-        this->mWritePos = other.mWritePos;
-        this->mReadPos = other.mReadPos;
-        LLLOG("DataBuf::copy2");
+        *((std::ostream*)this) << other.str();
         return *this;
     }
 
-    int write(const char* fmt, ...);
-    int read(const char* fmt, ...);
-
-    void dump();
-
-    DataBuf* clone() const;
-
-    inline bool isEmpty() const
-    {
-        return mBuf == nullptr || mBufSize == 0;
-    }
-
-protected:
-    pbyte mBuf;
-    int mBufSize;
-
-    int mWritePos;
-    int mReadPos;
-
-    bool mIsNeedFree;
-};
-
-class EvtData : public DataBuf, public std::stringstream
-{
-public:
-    EvtData(int bufLen = DATA_BUFFER_INITLEN)
-    {
-
-    }
-
-    EvtData(pbyte pData, int nDataLen)
-    {
-    }
-
-    EvtData(const EvtData& other)
-    {
-        *this << other.str();
-    }
-
-    inline EvtData& operator= (const EvtData& other)
-    {
-        *this = other;
-        *this << other.str();
-        return *this;
-    }
-
-    EvtData& operator << (const char& c)
+    EvtStream& operator << (const char& c)
     {
         *((std::ostream*)this) << c << ZERO;
         return *this;
     }
 
-    EvtData& operator << (const int& n)
+    EvtStream& operator << (const int& n)
     {
         *((std::ostream*)this) << n << ZERO;
         return *this;
     }
 
-    EvtData& operator << (const long& n)
+    EvtStream& operator << (const long& n)
     {
         *((std::ostream*)this) << n << ZERO;
         return *this;
     }
 
-    EvtData& operator << (const unsigned long& n)
+    EvtStream& operator << (const unsigned long& n)
     {
         *((std::ostream*)this) << n << ZERO;
         return *this;
     }
 
-    EvtData& operator << (const float& f)
+    EvtStream& operator << (const float& f)
     {
         *((std::ostream*)this) << f << ZERO;
         return *this;
     }
 
-    EvtData& operator << (const double& d)
+    EvtStream& operator << (const double& d)
     {
         *((std::ostream*)this) << d << ZERO;
         return *this;
     }
 
-    EvtData& operator << (const std::string& s)
+    EvtStream& operator << (const std::string& s)
     {
         *((std::ostream*)this) << s << ZERO;
         return *this;
     }
 
-    EvtData& operator << (const char* cs)
+    EvtStream& operator << (const char* cs)
     {
         *((std::ostream*)this) << cs << ZERO;
         return *this;
     }
 
-    EvtData& operator << (const DataBuf& dataBuf)
-    {
-        int dataLen = dataBuf.mWritePos - dataBuf.mReadPos;
-        *this << dataLen;
-        int readPos = dataBuf.mReadPos;
-        while (readPos < dataBuf.mWritePos)
-        {
-            unsigned char c = dataBuf.mBuf[readPos++];
-            *((std::ostream*)this) << c;
-        }
-        return *this;
-    }
-
-    EvtData& operator >> (char& c)
+    EvtStream& operator >> (char& c)
     {
         char zero;
         *((std::istream*)this) >> c >> zero;
         return *this;
     }
 
-    EvtData& operator >> (int& n)
+    EvtStream& operator >> (int& n)
     {
         char zero;
         *((std::istream*)this) >> n >> zero;
         return *this;
     }
 
-    EvtData& operator >> (long& n)
+    EvtStream& operator >> (long& n)
     {
         char zero;
         *((std::istream*)this) >> n >> zero;
         return *this;
     }
 
-    EvtData& operator >> (unsigned long& n)
+    EvtStream& operator >> (unsigned long& n)
     {
         char zero;
         *((std::istream*)this) >> n >> zero;
         return *this;
     }
 
-    EvtData& operator >> (float& f)
+    EvtStream& operator >> (float& f)
     {
         char zero;
         *((std::istream*)this) >> f >> zero;
         return *this;
     }
 
-    EvtData& operator >> (double& d)
+    EvtStream& operator >> (double& d)
     {
         char zero;
         *((std::istream*)this) >> d >> zero;
         return *this;
     }
 
-    EvtData& operator >> (std::string& s)
+    EvtStream& operator >> (std::string& s)
     {
         char c;
         while ((c = get()) != EOF && c != ZERO)
@@ -255,7 +139,7 @@ public:
         return *this;
     }
 
-    EvtData& operator >> (char* cs)
+    EvtStream& operator >> (char* cs)
     {
         char c;
         int i = 0;
@@ -266,20 +150,20 @@ public:
         return *this;
     }
 
-    EvtData& operator >> (DataBuf& dataBuf)
+    EvtStream& operator >> (EvtStream& dataBuf)
     {
         int dataLen;
         *this >> dataLen;
         if (dataLen > 0)
         {
             int pos = (int)tellg();
-            dataBuf.write((pbyte)str().c_str() + pos, dataLen);
+            dataBuf.write(str().c_str() + pos, dataLen);
             seekg(pos + dataLen);
         }
         return *this;
     }
 
-    EvtData& operator >> (unsigned char* ucs)
+    EvtStream& operator >> (unsigned char* ucs)
     {
         int dataLen;
         *this >> dataLen;
@@ -292,50 +176,43 @@ public:
         return *this;
     }
 
-    int getSize()
+    int size() const
     {
-        int size = 0;
-        int pos = (int)tellg();
-        int bufSize = str().size();
-        char c;
-        while (pos < bufSize && (c = str().at(pos++)) != EOF && c != ZERO)
-        {
-            size++;
-        }
-        return size;
+        return str().size();
     }
 
-    inline pbyte getData() const
+    bool empty() const
     {
-        return (pbyte)rdbuf();
+        return str().size() == 0;
+    }
+
+    EvtStream* clone() const
+    {
+        auto stream = new EvtStream(*this);
+        return stream;
+    }
+
+    int getPos()
+    {
+        return tellg();
     }
 
     inline int getDataLen()
     {
-        return std::stringstream::tellp();
-    }
+        char c;
+        int dataLen = 0;
+        int pos = (int)tellg();
+        int bufSize = str().size();
 
-    EvtData* clone() const
-    {
-        auto dst = new EvtData(mBufSize);
-        memcpy(dst->mBuf, mBuf, mWritePos);
-        dst->mWritePos = mWritePos;
-        dst->mReadPos = mReadPos;
-        *dst << str();
-        return dst;
+        while (pos < bufSize && (c = str().at(pos++)) != EOF && c != ZERO)
+        {
+            dataLen++;
+        }
+        return dataLen;
     }
-
-    int copyTo(char* buf, int bufLen)
-    {
-    	std::stringstream::read(buf, bufLen);
-        return 0;
-    }
-
-private:
-    int mDataLen;
 
 public:
-    static const EvtData EMPTY;
+    static const EvtStream EMPTY;
 };
 
 NS_LL_END

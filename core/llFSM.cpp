@@ -379,7 +379,7 @@ bool FSM::destroy()
     return true;
 }
 
-bool FSM::sendEvent(const std::string& evtName, const EvtData& evtData)
+bool FSM::sendEvent(const std::string& evtName, const EvtStream& evtData)
 {
     if (mS != S::RUN)
         return false;
@@ -388,16 +388,15 @@ bool FSM::sendEvent(const std::string& evtName, const EvtData& evtData)
     return true;
 }
 
-bool FSM::postEvent(const std::string& evtName, const EvtData& evtData)
+bool FSM::postEvent(const std::string& evtName, const EvtStream& evtData)
 {
     if (mS != S::RUN)
         return false;
 
-    EvtData* copyEvtData = nullptr;
-    if (!evtData.isEmpty())
+    EvtStream* copyEvtData = nullptr;
+    if (!evtData.empty())
     {
         copyEvtData = evtData.clone();
-        LLASSERT(copyEvtData, "postEvent: clone evtData failed");
     }
 
     postCallback([this, evtName, copyEvtData](const void* userData) {
@@ -408,18 +407,18 @@ bool FSM::postEvent(const std::string& evtName, const EvtData& evtData)
         }
         else
         {
-            dispatchEvent(evtName, EvtData::EMPTY);
+            dispatchEvent(evtName, EvtStream::EMPTY);
         }
     });
     return true;
 }
 
-void FSM::postBcEvent(const std::string& evtName, const EvtData& evtData)
+void FSM::postBcEvent(const std::string& evtName, const EvtStream& evtData)
 {
     mContext->postBcEvent(evtName, evtData);
 }
 
-void FSM::sendBcEvent(const std::string& evtName, const EvtData& evtData)
+void FSM::sendBcEvent(const std::string& evtName, const EvtStream& evtData)
 {
     mContext->sendBcEvent(evtName, evtData);
 }
@@ -465,7 +464,7 @@ void FSM::onDestroy(const Context& context)
     LLLOG(msg.c_str());
 }
 
-bool FSM::onEventProc(const std::string& evtName, EvtData& evtData)
+bool FSM::onEventProc(const std::string& evtName, EvtStream& evtData)
 {
     LLLOG("FSM::onEventProc()");
 	return true;
@@ -594,7 +593,7 @@ bool FSM::changeTo(sid dstState)
     return true;
 }
 
-int FSM::dispatchEvent(const std::string& evtName, const EvtData& evtData)
+int FSM::dispatchEvent(const std::string& evtName, const EvtStream& evtData)
 {
     int result = EVTR_UNTOUCHED;
     std::vector<const TransEntry_t*> activeTransEntries;
@@ -614,7 +613,7 @@ int FSM::dispatchEvent(const std::string& evtName, const EvtData& evtData)
         else if ((entry->flag & TFL_OFFLINE) == TFL_OFFLINE)
         {
             auto& stateNode = getStateNode(fromSid);
-            auto copyEvtData = evtData.isEmpty() ? &EvtData::EMPTY : evtData.clone();
+            auto copyEvtData = evtData.empty() ? &EvtStream::EMPTY : evtData.clone();
             stateNode.offlineEvents.push(std::make_pair(evtName, copyEvtData));
         }
     }
@@ -628,13 +627,13 @@ int FSM::dispatchEvent(const std::string& evtName, const EvtData& evtData)
             if (fromSid != S_ROOT)
             {
                 auto& stateNode = getStateNode(fromSid);
-                int r = stateNode.stateObject->onEventProc(evtName, (EvtData&) evtData);
+                int r = stateNode.stateObject->onEventProc(evtName, (EvtStream&) evtData);
                 if (r)
                     result = EVTR_CONTINUE;
             }
             else
             {
-                int r = onEventProc(evtName, (EvtData&) evtData); //if root state, trigger fsm event proc
+                int r = onEventProc(evtName, (EvtStream&) evtData); //if root state, trigger fsm event proc
                 if (r)
                     result = EVTR_CONTINUE;
             }
@@ -662,7 +661,7 @@ int FSM::dispatchEvent(const std::string& evtName, const EvtData& evtData)
             if (isStateActive(toSid))
             {
                 auto& stateNode = getStateNode(toSid);
-                int r = stateNode.stateObject->onEventProc(evtName, (EvtData&)evtData);
+                int r = stateNode.stateObject->onEventProc(evtName, (EvtStream&)evtData);
                 if (r)
                     result = EVTR_CONTINUE;
             }

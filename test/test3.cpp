@@ -26,7 +26,7 @@ bool TestCase3::onInit()
     fsm->subscribeBcEvent("TestEvt1");
 
 
-    EvtData data;
+    EvtStream data;
     std::string input = "000 hello world! 300 abc123";
     data << 23 << input;
     fsm->sendBcEvent("TestEvt1", data);
@@ -47,7 +47,7 @@ BEGIN_TRANS_TABLE(FSMA, FSM)
     //TRANS_ENTRY(TEST2, "TestEvt2", TEST1)
 END_TRANS_TABLE()
 
-bool FSMA::Test1::onEventProc(const std::string& evtName, EvtData& evtData)
+bool FSMA::Test1::onEventProc(const std::string& evtName, EvtStream& evtData)
 {
     std::stringstream ss;
     int a;
@@ -61,7 +61,7 @@ bool FSMA::Test1::onEventProc(const std::string& evtName, EvtData& evtData)
 
 void FSMA::Test1::onHeartBeat()
 {
-    EvtData data;
+    EvtStream data;
 
     std::string input = "000 hello world! 300";
     data << 23 << input;
@@ -69,7 +69,7 @@ void FSMA::Test1::onHeartBeat()
     //postEvent("TestEvt1", data);
 }
 
-bool FSMA::Test2::onEventProc(const std::string& evtName, EvtData& evtData)
+bool FSMA::Test2::onEventProc(const std::string& evtName, EvtStream& evtData)
 {
     std::stringstream ss;
     int a;

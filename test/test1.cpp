@@ -26,7 +26,7 @@ bool TestCase1::onInit()
     fsm->start();
     LLLOG("start...");
 
-    EvtData data;
+    EvtStream data;
     data << 123 << "  hello world 56" << 78.5;
     fsm->postEvent("TestEvt1", data);
 

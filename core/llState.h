@@ -11,7 +11,7 @@
 
 #include <string>
 #include "llConst.h"
-#include "llEvtData.h"
+#include "llEvtStream.h"
 
 NS_LL_BEGIN
 
@@ -22,8 +22,8 @@ class State
     friend class FSM;
 public:
     State();
-    bool sendEvent(const std::string& evtName, const EvtData& evtData = EvtData::EMPTY);
-    bool postEvent(const std::string& evtName, const EvtData& evtData = EvtData::EMPTY);
+    bool sendEvent(const std::string& evtName, const EvtStream& evtData = EvtStream::EMPTY);
+    bool postEvent(const std::string& evtName, const EvtStream& evtData = EvtStream::EMPTY);
     const char* getName() const;
 
     bool startHeartBeat(int interval, bool atOnce = false);
@@ -39,7 +39,7 @@ protected:
     virtual void onInit();
     virtual void onEnter();
     virtual void onHeartBeat();
-    virtual bool onEventProc(const std::string& evtName, EvtData& evtData);
+    virtual bool onEventProc(const std::string& evtName, EvtStream& evtData);
     virtual void onExit();
 
 protected:

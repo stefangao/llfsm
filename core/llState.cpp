@@ -44,7 +44,7 @@ void State::onEnter()
     LLLOG(msg.c_str());
 }
 
-bool State::onEventProc(const std::string& evtName, EvtData& evtData)
+bool State::onEventProc(const std::string& evtName, EvtStream& evtData)
 {
     std::string msg;
     msg = std::string("State::onEventProc(): ") + mThisFSM->getName() + "." + getName();
@@ -66,12 +66,12 @@ void State::onExit()
     LLLOG(msg.c_str());
 }
 
-bool State::sendEvent(const std::string& evtName, const EvtData& evtData)
+bool State::sendEvent(const std::string& evtName, const EvtStream& evtData)
 {
     return mThisFSM->sendEvent(evtName, evtData);
 }
 
-bool State::postEvent(const std::string& evtName, const EvtData& evtData)
+bool State::postEvent(const std::string& evtName, const EvtStream& evtData)
 {
     return mThisFSM->postEvent(evtName, evtData);
 }

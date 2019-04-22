@@ -14,7 +14,7 @@
 #include "core/llState.h"
 #include "core/llFSM.h"
 #include "core/llUtils.h"
-#include "core/llEvtData.h"
+#include "core/llEvtStream.h"
 #include "core/llTimer.h"
 
 #endif

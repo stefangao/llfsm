@@ -74,7 +74,7 @@ public:
         {
             State::onExit();
         }
-        virtual bool onEventProc(const std::string& evtName, EvtData& evtData) override;
+        virtual bool onEventProc(const std::string& evtName, EvtStream& evtData) override;
         virtual void onHeartBeat() override;
 
         DECLARE_STATE_FACTORY(Test1, FSMA)
@@ -93,7 +93,7 @@ public:
         {
             State::onExit();
         }
-        virtual bool onEventProc(const std::string& evtName, EvtData& evtData) override;
+        virtual bool onEventProc(const std::string& evtName, EvtStream& evtData) override;
         virtual void onHeartBeat() override;
 
         DECLARE_STATE_FACTORY(Test2, FSMA)

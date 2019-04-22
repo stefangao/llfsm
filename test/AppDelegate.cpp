@@ -15,8 +15,8 @@ AppDelegate::AppDelegate()
 {
     //run test cases
     //TestCase1::create();
-    TestCase2::create();
-    //TestCase3::create();
+    //TestCase2::create();
+    TestCase3::create();
 }
 
 AppDelegate::~AppDelegate()
@@ -30,10 +30,10 @@ void AppDelegate::onUserEvent(const std::string& fsmName, const std::string& evt
     auto fsm = defaultContext.find(fsmName);
     if (fsm)
     {
-        EvtData evtData;
+        EvtStream evtData;
         for (auto& param : evtParams)
         {
-            evtData.DataBuf::write(param);
+            //evtData.DataBuf::write(param); //TBD
         }
         fsm->postEvent(evtName, evtData);
     }

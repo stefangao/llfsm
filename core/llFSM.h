@@ -68,10 +68,10 @@ public:
     bool stop();
     bool destroy();
 
-    bool sendEvent(const std::string& evtName, const EvtData& evtData = EvtData::EMPTY);
-    bool postEvent(const std::string& evtName, const EvtData& evtData = EvtData::EMPTY);
-    void postBcEvent(const std::string& evtName, const EvtData& evtData = EvtData::EMPTY);
-    void sendBcEvent(const std::string& evtName, const EvtData& evtData = EvtData::EMPTY);
+    bool sendEvent(const std::string& evtName, const EvtStream& evtData = EvtStream::EMPTY);
+    bool postEvent(const std::string& evtName, const EvtStream& evtData = EvtStream::EMPTY);
+    void postBcEvent(const std::string& evtName, const EvtStream& evtData = EvtStream::EMPTY);
+    void sendBcEvent(const std::string& evtName, const EvtStream& evtData = EvtStream::EMPTY);
 
     void subscribeBcEvent(const std::string& evtName);
     void unsubscribeBcEvent(const std::string& evtName);
@@ -98,12 +98,12 @@ protected:
     virtual void onDestroy(const Context& context);
     bool buildStateTree(sid parent);
 
-    virtual bool onEventProc(const std::string& evtName, EvtData& evtData);
+    virtual bool onEventProc(const std::string& evtName, EvtStream& evtData);
 
     sid seekParent(sid sID, int level);
     sid seekCommonParent(sid sID1, sid sID2);
 
-    int dispatchEvent(const std::string& evtName, const EvtData& evtData);
+    int dispatchEvent(const std::string& evtName, const EvtStream& evtData);
 
 private:
     bool createInternal(const std::string& name, Context& context = Context::DEFAULT);

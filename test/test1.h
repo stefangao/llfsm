@@ -58,7 +58,7 @@ public:
         {
             State::onExit();
         }
-        virtual bool onEventProc(const std::string& evtName, EvtData& evtData) override
+        virtual bool onEventProc(const std::string& evtName, EvtStream& evtData) override
         {
             State::onEventProc(evtName, evtData);
             return true;
@@ -78,7 +78,7 @@ public:
         {
             State::onExit();
         }
-        virtual bool onEventProc(const std::string& evtName, EvtData& evtData) override
+        virtual bool onEventProc(const std::string& evtName, EvtStream& evtData) override
         {
             State::onEventProc(evtName, evtData);
             return true;
@@ -98,7 +98,7 @@ public:
         {
             State::onExit();
         }
-        virtual bool onEventProc(const std::string& evtName, EvtData& evtData) override
+        virtual bool onEventProc(const std::string& evtName, EvtStream& evtData) override
         {
             State::onEventProc(evtName, evtData);
             return true;
@@ -120,7 +120,7 @@ public:
         {
             State::onExit();
         }
-        virtual bool onEventProc(const std::string& evtName, EvtData& evtData) override
+        virtual bool onEventProc(const std::string& evtName, EvtStream& evtData) override
         {
             State::onEventProc(evtName, evtData);
             return true;
@@ -142,7 +142,7 @@ public:
         {
             State::onExit();
         }
-        virtual bool onEventProc(const std::string& evtName, EvtData& evtData) override
+        virtual bool onEventProc(const std::string& evtName, EvtStream& evtData) override
         {
             State::onEventProc(evtName, evtData);
 

@@ -65,7 +65,7 @@ typedef struct TransEntry_t
       : from(from), event(event), to(to), flag(flag) {}
 } TransEntry_t;
 
-class EvtData;
+class EvtStream;
 typedef struct _StateNode_t
 {
     const StateEntry_t *stateEntry;
@@ -79,7 +79,7 @@ typedef struct _StateNode_t
 
     unsigned int sopFlag;  //flag indicate on which procedure the state is
 
-    std::queue<std::pair<std::string, const EvtData*>> offlineEvents;
+    std::queue<std::pair<std::string, const EvtStream*>> offlineEvents;
 
 } StateNode_t;
 
