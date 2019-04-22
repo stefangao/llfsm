@@ -24,37 +24,6 @@ bool TestCase2::onInit()
     FSM *fsm = new FSMA();
     fsm->create("fsm2").start();
 
-    EvtStream data_orig;
-    data_orig << 234;
-    int dataLen1 = data_orig.getDataLen();
-    data_orig << 789;
-    int dataLen2 = data_orig.getDataLen();
-
-    int orig_p1 = data_orig.tellp();
-    int orig_g1 = data_orig.tellg();
-
-    EvtStream data = data_orig;
-
-    int orig_p2 = data_orig.tellp();
-    int orig_g2 = data_orig.tellg();
-
-    int p1 = data.tellp();
-    int g1 = data.tellg();
-
-    int a, b;
-    data >> a;
-
-    int p2 = data.tellp();
-    int g2 = data.tellg();
-
-    data >> b;
-
-    int p3 = data.tellp();
-    int g3 = data.tellg();
-
-    char buf[128] = {0};
-    data.std::stringstream::read(buf, 128);
-
     return true;
 }
 

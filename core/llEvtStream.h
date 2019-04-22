@@ -17,7 +17,6 @@
 
 NS_LL_BEGIN
 
-static const int  DATA_BUFFER_INITLEN = 64;
 static const char ZERO = '\0';
 
 class EvtStream : public std::stringstream
