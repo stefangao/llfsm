@@ -126,7 +126,7 @@ public:
     static const unsigned int SOP_EXIT;
 };
 
-#define CREATE_FSM(className, fsmName, context)\
+#define LL_CREATE_FSM(className, fsmName, context)\
 ({\
 	auto fsm = new className();\
 	fsm->create(fsmName, context);\
