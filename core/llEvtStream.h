@@ -86,6 +86,12 @@ public:
         return *this;
     }
 
+    EvtStream& operator << (EvtStream& other)
+    {
+    	*((std::ostream*)this) << other.str();
+        return *this;
+    }
+
     EvtStream& operator >> (char& c)
     {
         char zero;
@@ -149,6 +155,7 @@ public:
         return *this;
     }
 
+    /*
     EvtStream& operator >> (EvtStream& dataBuf)
     {
         int dataLen;
@@ -160,6 +167,11 @@ public:
             seekg(pos + dataLen);
         }
         return *this;
+    }*/
+
+    EvtStream& operator >> (EvtStream& other)
+    {
+    	other << ((std::stringstream*)this)->str();
     }
 
     EvtStream& operator >> (unsigned char* ucs)
