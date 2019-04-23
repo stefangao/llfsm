@@ -320,11 +320,12 @@ bool FSM::exitState(sid sID)
 
 bool FSM::start()
 {
+    onStart();
+
     if (!enterState(S_ROOT, true))
         return false;
 
     mS = S::RUN;
-    onStart();
     return true;
 }
 

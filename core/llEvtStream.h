@@ -155,23 +155,13 @@ public:
         return *this;
     }
 
-    /*
-    EvtStream& operator >> (EvtStream& dataBuf)
-    {
-        int dataLen;
-        *this >> dataLen;
-        if (dataLen > 0)
-        {
-            int pos = (int)tellg();
-            dataBuf.write(str().c_str() + pos, dataLen);
-            seekg(pos + dataLen);
-        }
-        return *this;
-    }*/
-
     EvtStream& operator >> (EvtStream& other)
     {
-    	other << ((std::stringstream*)this)->str();
+        auto pos = getPos();
+        auto len = size();
+        other.write(str().c_str() + pos, len - pos);
+        seekg(len - pos);
+        return *this;
     }
 
     EvtStream& operator >> (unsigned char* ucs)
