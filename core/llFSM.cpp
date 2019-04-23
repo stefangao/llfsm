@@ -42,10 +42,6 @@ FSM& FSM::create(const std::string& name, Context& context)
 
 bool FSM::createInternal(const std::string& name, Context& context)
 {
-    const StateEntry_t* stateEntry = getStateTable();
-    //if (stateEntry == nullptr)
-    //    return false;
-
     mContext = &context;
     mName = name;
 
@@ -54,6 +50,7 @@ bool FSM::createInternal(const std::string& name, Context& context)
     mRootNode.activeChild = S_INVAL;
 
     int stateCount = getStateCount();
+    const StateEntry_t* stateEntry = getStateTable();
     if (stateCount == 0 && stateEntry != nullptr)
     {
         while (stateEntry++->id != S_INVAL)

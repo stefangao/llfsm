@@ -193,16 +193,16 @@ public:
 
     int getPos()
     {
-        return tellg();
+        return (int)tellg();
     }
 
     inline int getDataLen()
     {
+        int pos = getPos();
+        int bufSize = size();
+
         char c;
         int dataLen = 0;
-        int pos = (int)tellg();
-        int bufSize = str().size();
-
         while (pos < bufSize && (c = str().at(pos++)) != EOF && c != ZERO)
         {
             dataLen++;
