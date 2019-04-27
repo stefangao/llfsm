@@ -40,6 +40,12 @@ FSM& FSM::create(const std::string& name, Context& context)
     return *this;
 }
 
+FSM* FSM::create(FSM* fsm, const std::string& name, Context& context)
+{
+    fsm->create(name, context);
+    return fsm;
+}
+
 bool FSM::createInternal(const std::string& name, Context& context)
 {
     mContext = &context;
@@ -296,6 +302,11 @@ bool FSM::exitState(sid sID)
         if (stateNode->stateObject && (stateNode->sopFlag & SOP_EXIT) != SOP_EXIT)
         {
             stateNode->sopFlag |= SOP_EXIT;
+            FSM* fsm = dynamic_cast<FSM*>(stateNode->stateObject);
+            if (fsm)
+            {
+                fsm->exitState(S_ROOT);
+            }
             stateNode->stateObject->onExit();
             if (stateNode->hbTimerID != -1)
             {
@@ -422,49 +433,37 @@ void FSM::sendBcEvent(const std::string& evtName, const EvtStream& evtData)
 }
 void FSM::onCreate(const Context& context)
 {
-    std::string msg;
-    msg = std::string("FSM::onCreate(): ") + getName();
-    LLLOG(msg.c_str());
+    LLLOG("FSM::onCreate() name=%s\n", getName().c_str());;
 }
 
 void FSM::onStart()
 {
-    std::string msg;
-    msg = std::string("FSM::onStart(): ") + getName();
-    LLLOG(msg.c_str());
+    LLLOG("FSM::onStart() name=%s\n", getName().c_str());
 }
 
 void FSM::onPause()
 {
-    std::string msg;
-    msg = getName() + ".onPause";
-    LLLOG(msg.c_str());
+    LLLOG("FSM::onPause() name=%s\n", getName().c_str());
 }
 
 void FSM::onResume()
 {
-    std::string msg;
-    msg = getName() + ".onResume";
-    LLLOG(msg.c_str());
+    LLLOG("FSM::onResume() name=%s\n", getName().c_str());
 }
 
 void FSM::onStop()
 {
-    std::string msg;
-    msg = getName() + ".onStop";
-    LLLOG(msg.c_str());
+    LLLOG("FSM::onStop() name=%s\n", getName().c_str());
 }
 
 void FSM::onDestroy(const Context& context)
 {
-    std::string msg;
-    msg = std::string("FSM::onDestroy(): ") + getName();
-    LLLOG(msg.c_str());
+    LLLOG("FSM::onDestroy() name=%s\n", getName().c_str());
 }
 
 bool FSM::onEventProc(const std::string& evtName, EvtStream& evtData)
 {
-    LLLOG("FSM::onEventProc()");
+    LLLOG("FSM::onEventProc() evtName=%s\n", evtName.c_str());
 	return true;
 }
 
@@ -585,7 +584,7 @@ bool FSM::changeTo(sid dstState)
         deltaLevel--;
     }
 
-    if (!enterState(dstState, false))
+    if (!enterState(dstState, true))
         return false;
 
     return true;
@@ -691,6 +690,11 @@ bool FSM::isBcEventSubscribed(const std::string& evtName)
 {
     auto iter = mBcEventSubscribeMap.find(evtName);
     return iter != mBcEventSubscribeMap.end();
+}
+
+FSM* FSM::getParent() const
+{
+    return mThisFSM;
 }
 
 NS_LL_END

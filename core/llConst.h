@@ -90,8 +90,6 @@ private:\
     virtual const lianli::StateEntry_t* getStateTable() const override;\
     virtual int getStateCount() const override;\
     virtual void setStateCount(int) override;\
-public:\
-    static lianli::State* createInstance();\
 
 #define BEGIN_STATE_TABLE(fsmClass)\
     int fsmClass::mStateCount = 0;\
@@ -101,7 +99,6 @@ public:\
         { mStateCount = stateCount;};\
     const lianli::StateEntry_t* fsmClass::getStateTable() const\
         { return &fsmClass::mStateEntries[0]; }\
-    lianli::State* fsmClass::createInstance() {return new fsmClass();}\
     const lianli::StateEntry_t fsmClass::mStateEntries[] =\
         {
 
@@ -147,8 +144,8 @@ protected:\
 
 #define DECLARE_STATE_FACTORY(stateClass, fsmClass)\
 public:\
-    static lianli::State* createInstance() {return new stateClass();}\
-    inline fsmClass* self() {return (fsmClass*)mThisFSM;};\
+    static lianli::State* createInstance()  {return new stateClass();}\
+    inline fsmClass* self()  {return (fsmClass*)mThisFSM;};\
 
 NS_LL_END
 

@@ -24,46 +24,34 @@ State::~State()
 {
     if (mThisFSM)
     {
-        std::string msg;
-        msg = std::string("State::~State(): ") + mThisFSM->getName() + "." + getName();
-        LLLOG("test:aaa");
+        LLLOG("State::~State(): name=%s.%s\n", mThisFSM->getName().c_str(), getName());
     }
 }
 
 void State::onInit()
 {
-    std::string msg;
-    msg = std::string("State::onInit(): ") + mThisFSM->getName() + "." + getName();
-    LLLOG(msg.c_str());
+    LLLOG("State::onInit(): name=%s.%s\n", mThisFSM->getName().c_str(), getName());
 }
 
 void State::onEnter()
 {
-    std::string msg;
-    msg = std::string("State::onEnter(): ") + mThisFSM->getName() + "." + getName();
-    LLLOG(msg.c_str());
+    LLLOG("State::onEnter(): name=%s.%s\n", mThisFSM->getName().c_str(), getName());
 }
 
 bool State::onEventProc(const std::string& evtName, EvtStream& evtData)
 {
-    std::string msg;
-    msg = std::string("State::onEventProc(): ") + mThisFSM->getName() + "." + getName();
-    LLLOG(msg.c_str());
+    LLLOG("State::onEventProc() : name=%s.%s\n", mThisFSM->getName().c_str(), getName());
     return true;
 }
 
 void State::onHeartBeat()
 {
-    std::string msg;
-    msg = std::string("State::onHeartBeat(): ") + mThisFSM->getName() + "." + getName();
-    LLLOG(msg.c_str());
+    LLLOG("State::onHeartBeat(): name=%s.%s\n", mThisFSM->getName().c_str(), getName());
 }
 
 void State::onExit()
 {
-    std::string msg;
-    msg = std::string("State::onExit(): ") + mThisFSM->getName() + "." + getName();
-    LLLOG(msg.c_str());
+    LLLOG("State::onExit(): name=%s.%s\n", mThisFSM->getName().c_str(), getName());
 }
 
 bool State::sendEvent(const std::string& evtName, const EvtStream& evtData)

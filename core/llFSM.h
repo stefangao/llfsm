@@ -89,6 +89,10 @@ public:
     bool isStateInvalid(sid sID) const;
     bool changeTo(sid dstState);
 
+    static FSM* create(FSM* fsm, const std::string& name, Context& context = Context::DEFAULT);
+
+    FSM* getParent() const;
+
 protected:
     virtual void onCreate(const Context& context);
     virtual void onStart();
@@ -127,11 +131,11 @@ public:
 };
 
 #define LL_CREATE_FSM(className, fsmName, context)\
-({\
-	auto fsm = new className();\
-	fsm->create(fsmName, context);\
-	fsm;\
-})\
+    FSM::create(new className(), fsmName, context)\
+
+#define LL_DESTROY_FSM(fsmObject)\
+    fsmObject->destroy(fsmObject);\
+    fsmObject = nullptr;\
 
 NS_LL_END
 

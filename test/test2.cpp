@@ -35,7 +35,7 @@ BEGIN_STATE_TABLE(FSMA)
 END_STATE_TABLE()
 
 BEGIN_TRANS_TABLE(FSMA, FSM)
-    //TRANS_ENTRY(TEST1, "TestEvt1", TEST2)
+    TRANS_ENTRY(TEST1, "TestEvt1", TEST2)
 END_TRANS_TABLE()
 
 bool FSMA::Test1::onEventProc(const std::string& evtName, EvtStream& evtData)
