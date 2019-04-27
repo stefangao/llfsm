@@ -14,11 +14,6 @@ bool TestCase4::onInit()
     auto dog = LL_CREATE_FSM(Dog, "dog", Context::DEFAULT);
     dog->start();
 
-    EvtStream data;
-    std::string input = "000 hello world! 300 abc123\n";
-    data << 23 << input;
-    dog->postEvent("TestEvt1", data);
-
     return true;
 }
 
@@ -40,7 +35,12 @@ void Dog::Sleep::onEnter()
 {
     State::onEnter();
 
-    startHeartBeat(3000);
+    //startHeartBeat(3000);
+
+    EvtStream data;
+    std::string input = "000 hello world! 300 abc123\n";
+    data << 23 << input;
+    postEvent("TestEvt1", data);
 }
 
 bool Dog::Sleep::onEventProc(const std::string& evtName, EvtStream& evtData)
@@ -100,7 +100,10 @@ void Dog::Walk::onEnter()
 {
     State::onEnter();
 
-    startHeartBeat(2000);
+    //startHeartBeat(2000);
+    auto fsm = dynamic_cast<FSM*>(this);
+    if (fsm)
+        fsm->postEvent("ToTestEvt");
 }
 
 bool Dog::Walk::onEventProc(const std::string& evtName, EvtStream& evtData)
@@ -120,12 +123,13 @@ void Dog::Walk::onExit()
 }
 
 BEGIN_STATE_TABLE(Dog::Walk)
-STATE_ENTRY(WDAEMON, WDaemon, S_ROOT, SFL_ACTIVE)
+STATE_ENTRY(WDAEMON, WDaemon, S_ROOT, 0)
 STATE_ENTRY(WTEST, WTest, WDAEMON, SFL_ACTIVE)
 END_STATE_TABLE()
 
 BEGIN_TRANS_TABLE(Dog::Walk, FSM)
 TRANS_ENTRY(WDAEMON, "TestEvt1", S_NONE)
+TRANS_ENTRY(S_ROOT, "ToTestEvt", WTEST)
 END_TRANS_TABLE()
 
 }

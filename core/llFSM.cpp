@@ -241,27 +241,26 @@ bool FSM::enterState(sid sID, bool enterDefaultActive)
     if (stateNode.stateObject && (stateNode.sopFlag & SOP_ENTER) != SOP_ENTER)
     {
         stateNode.sopFlag |= SOP_ENTER;
-        stateNode.stateObject->onEnter();
-        stateNode.stateObject->processOfflineEvents();
-        stateNode.sopFlag &= ~SOP_ENTER;
-
         FSM* fsm = dynamic_cast<FSM*>(stateNode.stateObject);
         if (fsm)
         {
             switch (fsm->getS())
             {
-                case S::IDLE:
-                    fsm->start();
-                    break;
+            case S::IDLE:
+                fsm->start();
+                break;
 
-                case S::PAUSED:
-                    fsm->resume();
-                    break;
+            case S::PAUSED:
+                fsm->resume();
+                break;
 
-                default:
-                    break;
+            default:
+                break;
             }
         }
+        stateNode.stateObject->onEnter();
+        stateNode.stateObject->processOfflineEvents();
+        stateNode.sopFlag &= ~SOP_ENTER;
     }
 
     if (enterDefaultActive && stateNode.activeChild == S_INVAL)
@@ -331,12 +330,13 @@ bool FSM::exitState(sid sID)
 
 bool FSM::start()
 {
+    mS = S::RUN;
+
     onStart();
 
     if (!enterState(S_ROOT, true))
         return false;
 
-    mS = S::RUN;
     return true;
 }
 
