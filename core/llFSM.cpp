@@ -241,24 +241,29 @@ bool FSM::enterState(sid sID, bool enterDefaultActive)
     if (stateNode.stateObject && (stateNode.sopFlag & SOP_ENTER) != SOP_ENTER)
     {
         stateNode.sopFlag |= SOP_ENTER;
+        /*
+         * 1) start embedded fsm inside the state at first
+         * 2) enter the state
+         * 3) enter default active state inside the embeded fsm
+         */
         FSM* fsm = dynamic_cast<FSM*>(stateNode.stateObject);
         if (fsm)
         {
-            switch (fsm->getS())
+            if (fsm->mS == S::IDLE)
             {
-            case S::IDLE:
-                fsm->start();
-                break;
-
-            case S::PAUSED:
-                fsm->resume();
-                break;
-
-            default:
-                break;
+                fsm->mS = S::RUN;
+                fsm->onStart();
+            }
+            else if (fsm->mS == S::PAUSED)
+            {
+                fsm->mS = S::RUN;
             }
         }
         stateNode.stateObject->onEnter();
+        if (fsm)
+        {
+            fsm->enterState(S_ROOT, true);
+        }
         stateNode.stateObject->processOfflineEvents();
         stateNode.sopFlag &= ~SOP_ENTER;
     }
@@ -548,7 +553,7 @@ sid FSM::seekCommonParent(sid sID1, sid sID2)
     return sID1;
 }
 
-bool FSM::changeTo(sid dstState)
+bool FSM::changeTo(sid dstState, bool enterDefaultActive)
 {
     sid activeLeaf = getActiveLeafState();
     if (activeLeaf == dstState)
@@ -584,7 +589,7 @@ bool FSM::changeTo(sid dstState)
         deltaLevel--;
     }
 
-    if (!enterState(dstState, true))
+    if (!enterState(dstState, enterDefaultActive))
         return false;
 
     return true;

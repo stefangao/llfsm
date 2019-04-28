@@ -87,7 +87,7 @@ public:
     int getStateLevel(sid sID) const;
 
     bool isStateInvalid(sid sID) const;
-    bool changeTo(sid dstState);
+    bool changeTo(sid dstState, bool enterDefaultActive = false);
 
     static FSM* create(FSM* fsm, const std::string& name, Context& context = Context::DEFAULT);
 

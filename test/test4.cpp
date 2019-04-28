@@ -21,13 +21,13 @@ namespace test4 {
   
 BEGIN_STATE_TABLE(Dog)
     STATE_ENTRY(DAEMON, Daemon, S_ROOT,    SFL_ACTIVE)
-    STATE_ENTRY(SLEEP,  Sleep,  DAEMON,    SFL_ACTIVE)
-    STATE_ENTRY(AWAKE,  Awake,  DAEMON,    0)
+    STATE_ENTRY(SLEEP,  Sleep,  DAEMON,    0)
+    STATE_ENTRY(AWAKE,  Awake,  DAEMON,    SFL_ACTIVE)
     STATE_ENTRY(WALK,   Walk,   AWAKE,     SFL_ACTIVE)
 END_STATE_TABLE()
 
 BEGIN_TRANS_TABLE(Dog, FSM)
-    TRANS_ENTRY(SLEEP, "TestEvt1", AWAKE)
+    //TRANS_ENTRY(SLEEP, "TestEvt1", WALK)
     TRANS_ENTRY(WALK, "HelloEvt1", SLEEP)
 END_TRANS_TABLE()
 
@@ -40,7 +40,7 @@ void Dog::Sleep::onEnter()
     EvtStream data;
     std::string input = "000 hello world! 300 abc123\n";
     data << 23 << input;
-    postEvent("TestEvt1", data);
+    //postEvent("TestEvt1", data);
 }
 
 bool Dog::Sleep::onEventProc(const std::string& evtName, EvtStream& evtData)
@@ -50,8 +50,7 @@ bool Dog::Sleep::onEventProc(const std::string& evtName, EvtStream& evtData)
     std::string str;
     evtData >> a;
     evtData >> str;
-    ss << "Sleep Proc: a=" << a << " str=" << str;
-    LLLOG(ss.str().c_str());
+    LLLOG("Dog::Sleep::onEventProc(): a=%d, str=%s\n", a, str.c_str());
     return true;
 }
 
@@ -80,9 +79,7 @@ bool Dog::Awake::onEventProc(const std::string& evtName, EvtStream& evtData)
     int a;
     std::string str;
     evtData >> a >> str;
-    ss << "Awake Proc: a=" << a << " str=" << str;
-    LLLOG(ss.str().c_str());
-
+    LLLOG("Dog::Awake::onEventProc(): a=%d, str=%s\n", a, str.c_str());
     return true;
 }
 
