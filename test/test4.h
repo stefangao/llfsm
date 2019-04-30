@@ -60,7 +60,7 @@ public:
             State::onExit();
         }
 
-        DECLARE_STATE_FACTORY(Daemon, Dog)
+        DEFINE_STATE_FACTORY_OF_FSM(Daemon, Dog)
     };
 
     class Sleep : public State
@@ -71,7 +71,7 @@ public:
         virtual void onHeartBeat() override;
         virtual void onExit() override;
 
-        DECLARE_STATE_FACTORY(Sleep, Dog)
+        DEFINE_STATE_FACTORY_OF_FSM(Sleep, Dog)
     };
 
     class Awake: public State
@@ -82,7 +82,7 @@ public:
         virtual void onHeartBeat() override;
         virtual void onExit() override;
 
-        DECLARE_STATE_FACTORY(Awake, Dog)
+        DEFINE_STATE_FACTORY_OF_FSM(Awake, Dog)
     };
 
     class Walk : public FSM
@@ -93,7 +93,7 @@ public:
         virtual void onHeartBeat() override;
         virtual void onExit() override;
 
-        DECLARE_STATE_FACTORY(Walk, Dog)
+        DEFINE_STATE_FACTORY_OF_FSM(Walk, Dog)
 
     public:
         enum
@@ -120,7 +120,7 @@ public:
                 State::onExit();
             }
 
-            DECLARE_STATE_FACTORY(WDaemon, Walk)
+            DEFINE_STATE_FACTORY_OF_FSM(WDaemon, Walk)
         };
 
         class WTest : public State
@@ -141,7 +141,7 @@ public:
                 State::onExit();
             }
 
-            DECLARE_STATE_FACTORY(WTest, Walk)
+            DEFINE_STATE_FACTORY_OF_FSM(WTest, Walk)
         };
 
         DECLARE_STATE_TABLE()

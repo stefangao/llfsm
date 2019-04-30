@@ -64,7 +64,7 @@ public:
             return true;
         }
 
-        DECLARE_STATE_FACTORY(Daemon, FSMA)
+        DEFINE_STATE_FACTORY_OF_FSM(Daemon, FSMA)
     };
 
     class Test1: public State
@@ -84,7 +84,7 @@ public:
             return true;
         }
 
-        DECLARE_STATE_FACTORY(Test1, FSMA)
+        DEFINE_STATE_FACTORY_OF_FSM(Test1, FSMA)
     };
 
     class Test2: public State
@@ -104,7 +104,7 @@ public:
             return true;
         }
 
-        DECLARE_STATE_FACTORY(Test2, FSMA)
+        DEFINE_STATE_FACTORY_OF_FSM(Test2, FSMA)
     };
 
     class Test3: public State
@@ -126,7 +126,7 @@ public:
             return true;
         }
 
-        DECLARE_STATE_FACTORY(Test3, FSMA)
+        DEFINE_STATE_FACTORY_OF_FSM(Test3, FSMA)
     };
 
     class Test4: public State
@@ -156,7 +156,7 @@ public:
             return true;
         }
 
-        DECLARE_STATE_FACTORY(Test4, FSMA)
+        DEFINE_STATE_FACTORY_OF_FSM(Test4, FSMA)
     };
 };
 

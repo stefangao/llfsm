@@ -22,6 +22,8 @@ State::State()
 
 State::~State()
 {
+    stopHeartBeat();
+
     if (mThisFSM)
     {
         LLLOG("State::~State(): name=%s.%s\n", mThisFSM->getName().c_str(), getName());

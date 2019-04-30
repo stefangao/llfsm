@@ -142,10 +142,14 @@ protected:\
 
 #define TRANS_ENTRY ,lianli::TransEntry_t
 
-#define DECLARE_STATE_FACTORY(stateClass, fsmClass)\
+#define DEFINE_STATE_FACTORY_OF_FSM(stateClass, fsmClass)\
 public:\
     static lianli::State* createInstance()  {return new stateClass();}\
     inline fsmClass* self()  {return (fsmClass*)mThisFSM;};\
+
+#define DEFINE_STATE_FACTORY(stateClass)\
+public:\
+    static lianli::State* createInstance()  {return new stateClass();}\
 
 NS_LL_END
 

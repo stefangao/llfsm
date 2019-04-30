@@ -58,7 +58,7 @@ public:
             State::onExit();
         }
 
-        DECLARE_STATE_FACTORY(Daemon, FSMA)
+        DEFINE_STATE_FACTORY_OF_FSM(Daemon, FSMA)
     };
 
     class Test1: public State
@@ -77,7 +77,7 @@ public:
         virtual bool onEventProc(const std::string& evtName, EvtStream& evtData) override;
         virtual void onHeartBeat() override;
 
-        DECLARE_STATE_FACTORY(Test1, FSMA)
+        DEFINE_STATE_FACTORY_OF_FSM(Test1, FSMA)
     };
 
     class Test2: public State
@@ -96,7 +96,7 @@ public:
         virtual bool onEventProc(const std::string& evtName, EvtStream& evtData) override;
         virtual void onHeartBeat() override;
 
-        DECLARE_STATE_FACTORY(Test2, FSMA)
+        DEFINE_STATE_FACTORY_OF_FSM(Test2, FSMA)
     };
 };
 
