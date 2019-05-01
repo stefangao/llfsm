@@ -17,8 +17,8 @@ NS_LL_BEGIN
 class Utils
 {
 public:
-    static void __log(const char* format,...);
-    static void __assert(const char* file, int lineno, const char* format,...);
+    static void _ll_log(const char* format,...);
+    static void _ll_assert(const char* file, int lineno, const char* format,...);
 };
 
 extern const char* LL_STRING_EMPTY;
@@ -26,13 +26,13 @@ extern const char* LL_STRING_EMPTY;
 #ifdef LL_DEBUG
     #define LLASSERT(x, format, ...)\
         if (!(x))\
-            Utils::__assert(__FILE__, __LINE__, format, ##__VA_ARGS__)
+            Utils::_ll_assert(__FILE__, __LINE__, format, ##__VA_ARGS__)
 #else
     #define LLASSERT(x, msg)
 #endif
 
 #ifdef LL_DEBUG
-#define LLLOG(format,...) lianli::Utils::__log(format, ##__VA_ARGS__)
+#define LLLOG(format,...) lianli::Utils::_ll_log(format, ##__VA_ARGS__)
 #else
 #define LLLOG(format)
 #endif

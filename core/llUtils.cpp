@@ -19,7 +19,7 @@ NS_LL_BEGIN
 
 const char* LL_STRING_EMPTY = "";
 
-void Utils::__log(const char *format,...)
+void Utils::_ll_log(const char *format,...)
 {
     char strBuffer[4096] = { 0 };
     va_list vlArgs;
@@ -34,7 +34,7 @@ void Utils::__log(const char *format,...)
 #endif
 }
 
-void Utils::__assert(const char* file, int lineno, const char* format,...)
+void Utils::_ll_assert(const char* file, int lineno, const char* format,...)
 {
     char strBuffer[4096] = { 0 };
     va_list vlArgs;
