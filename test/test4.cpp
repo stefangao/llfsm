@@ -13,7 +13,6 @@ bool TestCase4::onInit()
 {
     auto dog = LL_CREATE_FSM(Dog, "dog", Context::DEFAULT);
     dog->start();
-
     return true;
 }
 

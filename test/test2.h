@@ -25,11 +25,6 @@ namespace test2 {
 
 class FSMA: public FSM
 {
-public:
-    FSMA()
-    {
-    }
-
 protected:
     void onStart() override
     {

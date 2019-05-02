@@ -269,7 +269,10 @@ static void do_input_thread()
 
 int run_msgloop(const CmdCallbackFunc& cmdCallbackFun)
 {
-    std::cout << "msgloop start\n";
+    std::cout << "msgloop start...\n";
+#ifdef WIN32
+    std::cout << "(Please check output window for the logs)\n";
+#endif
     std::thread timerThread, inputThread;
     timerThread = std::thread(do_timer_thread);
     inputThread = std::thread(do_input_thread);

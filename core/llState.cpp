@@ -104,7 +104,7 @@ bool State::startHeartBeat(int interval, bool atOnce)
 
 void State::stopHeartBeat()
 {
-    if (mStateNode->hbTimerID != -1)
+    if (mStateNode &&mStateNode->hbTimerID != -1)
     {
         killTimer(mStateNode->hbTimerID);
         mStateNode->hbTimerID = -1;

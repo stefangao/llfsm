@@ -42,6 +42,8 @@ private:
     };
 
 protected:
+    FSM();
+    virtual ~FSM();
     static const FSM* __getBuilder() {return nullptr;}
     virtual const FSM* __getSuperBuilder() const {return nullptr;}
     virtual const StateEntry_t* getStateTable() const {return nullptr;}
@@ -59,8 +61,6 @@ protected:
     bool exitState(sid sID);
 
 public:
-    FSM();
-    virtual ~FSM();
     FSM& create(const std::string& name, Context& context = Context::DEFAULT);
     bool start();
     bool pause();
@@ -93,6 +93,13 @@ public:
 
     FSM* getParent() const;
 
+    void* operator new (size_t  t)
+    {
+        FSM* obj = :: new FSM();
+        obj->mHeapFlag = true;
+        return obj;
+    }
+
 protected:
     virtual void onCreate(const Context& context);
     virtual void onStart();
@@ -113,6 +120,8 @@ private:
     bool createInternal(const std::string& name, Context& context = Context::DEFAULT);
     void onCreateInternal(Context& context);
 
+    bool mHeapFlag;
+
 protected:
     std::string mName;
     S mS;
@@ -124,7 +133,6 @@ protected:
 
 public:
     static const StateEntry_t ROOT_ENTRY;
-
     static const unsigned int SOP_ENTER;
     static const unsigned int SOP_BEAT;
     static const unsigned int SOP_EXIT;

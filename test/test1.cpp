@@ -29,14 +29,6 @@ bool TestCase1::onInit()
     EvtStream data;
     data << 123 << "  hello world 56" << 78.5;
     fsm->postEvent("TestEvt1", data);
-
-
-#if 0
-    Utils::log("stop...");
-    fsm->stop();
-    fsm->destroy();
-    Utils::log("destroy end...");
-#endif
     return true;
 }
 

@@ -21,6 +21,7 @@ const StateEntry_t FSM::ROOT_ENTRY = {S_ROOT, nullptr, S_INVAL, SFL_ZERO, "FSM::
 
 FSM::FSM()
 {
+    mHeapFlag = false;
     mContext = nullptr;
     mS = S::INVAL;
     mName = LL_STRING_EMPTY;
@@ -389,7 +390,10 @@ bool FSM::destroy()
     mStateNodeTable.clear();
     mS = S::INVAL;
 
-    release();
+    if (mHeapFlag)
+    {
+        release();
+    }
     return true;
 }
 
