@@ -113,8 +113,6 @@ private:
     bool createInternal(const std::string& name, Context& context = Context::DEFAULT);
     void onCreateInternal(Context& context);
 
-    bool mHeapFlag;
-
 protected:
     std::string mName;
     S mS;
