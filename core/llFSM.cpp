@@ -16,7 +16,6 @@ NS_LL_BEGIN
 const unsigned int FSM::SOP_ENTER = 0x01;
 const unsigned int FSM::SOP_BEAT = 0x02;
 const unsigned int FSM::SOP_EXIT = 0x04;
-
 const StateEntry_t FSM::ROOT_ENTRY = {S_ROOT, nullptr, S_INVAL, SFL_ZERO, "FSM::ROOT"};
 
 FSM::FSM()

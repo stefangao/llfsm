@@ -93,13 +93,6 @@ public:
 
     FSM* getParent() const;
 
-    void* operator new (size_t  t)
-    {
-        FSM* obj = :: new FSM();
-        obj->mHeapFlag = true;
-        return obj;
-    }
-
 protected:
     virtual void onCreate(const Context& context);
     virtual void onStart();
