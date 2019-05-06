@@ -425,6 +425,28 @@ bool FSM::postEvent(const std::string& evtName, const EvtStream& evtData)
     return true;
 }
 
+void FSM::delayPostEvent(float delayTime, const std::string& evtName, const EvtStream& evtData)
+{
+    EvtStream* copyEvtData = nullptr;
+    if (!evtData.empty())
+    {
+        copyEvtData = evtData.clone();
+    }
+
+    setTimer(delayTime, [this, evtName, copyEvtData](int tid, const void* userData) {
+        killTimer(tid);
+        if (copyEvtData)
+        {
+            dispatchEvent(evtName, *copyEvtData);
+            delete copyEvtData;
+        }
+        else
+        {
+            dispatchEvent(evtName, EvtStream::EMPTY);
+        }
+    });
+}
+
 void FSM::postBcEvent(const std::string& evtName, const EvtStream& evtData)
 {
     mContext->postBcEvent(evtName, evtData);

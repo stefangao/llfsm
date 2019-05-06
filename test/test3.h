@@ -63,7 +63,11 @@ public:
         {
             State::onEnter();
 
-            startHeartBeat(3000);
+            //startHeartBeat(3000);
+            EvtStream data;
+            std::string input = "000 hello delay time 999";
+            data << 789 << input;
+            self()->delayPostEvent(2000, "MyDelayEvt", data);
         }
         virtual void onExit() override
         {
