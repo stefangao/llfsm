@@ -61,7 +61,7 @@ protected:
     bool exitState(sid sID);
 
 public:
-    FSM& create(const std::string& name, Context& context = Context::DEFAULT);
+    FSM& create(const std::string& name, Context& context = Context::DEFAULT, void* params = nullptr);
     bool start();
     bool pause();
     bool resume();
@@ -91,17 +91,17 @@ public:
     bool isStateInvalid(sid sID) const;
     bool changeTo(sid dstState, bool enterDefaultActive = false);
 
-    static FSM* create(FSM* fsm, const std::string& name, Context& context = Context::DEFAULT);
+    static FSM* create(FSM* fsm, const std::string& name, Context& context = Context::DEFAULT, void* params = nullptr);
 
     FSM* getParent() const;
 
 protected:
-    virtual void onCreate(const Context& context);
+    virtual void onCreate(void* params);
     virtual void onStart();
     virtual void onPause();
     virtual void onResume();
     virtual void onStop();
-    virtual void onDestroy(const Context& context);
+    virtual void onDestroy();
     bool buildStateTree(sid parent);
 
     virtual bool onEventProc(const std::string& evtName, EvtStream& evtData);
@@ -113,7 +113,7 @@ protected:
 
 private:
     bool createInternal(const std::string& name, Context& context = Context::DEFAULT);
-    void onCreateInternal(Context& context);
+    void onCreateInternal(void* params);
 
 protected:
     std::string mName;

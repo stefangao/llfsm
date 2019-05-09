@@ -30,18 +30,18 @@ FSM::~FSM()
 
 }
 
-FSM& FSM::create(const std::string& name, Context& context)
+FSM& FSM::create(const std::string& name, Context& context, void* params)
 {
     bool ret = createInternal(name, context);
     LLASSERT(ret, "FSM::create failed: %s\n", name.c_str());
 
-    onCreateInternal(context);
+    onCreateInternal(params);
     return *this;
 }
 
-FSM* FSM::create(FSM* fsm, const std::string& name, Context& context)
+FSM* FSM::create(FSM* fsm, const std::string& name, Context& context, void* params)
 {
-    fsm->create(name, context);
+    fsm->create(name, context, params);
     return fsm;
 }
 
@@ -153,7 +153,7 @@ bool FSM::createInternal(const std::string& name, Context& context)
     return true;
 }
 
-void FSM::onCreateInternal(Context& context)
+void FSM::onCreateInternal(void* params)
 {
     int stateCount = getStateCount();
     for (int i = 0; i < stateCount; i++)
@@ -166,11 +166,11 @@ void FSM::onCreateInternal(Context& context)
         FSM* fsm = dynamic_cast<FSM*>(mStateNodeTable[i].stateObject);
         if (fsm)
         {
-            fsm->onCreateInternal(context);
+            fsm->onCreateInternal(params);
         }
     }
 
-    onCreate(context);
+    onCreate(params);
 }
 
 const StateNode_t& FSM::getStateNode(sid sID) const
@@ -369,7 +369,7 @@ bool FSM::destroy()
     if (mS == S::RUN)
         stop();
 
-    onDestroy(*mContext);
+    onDestroy();
 
     mContext->remove(this);
 
@@ -456,7 +456,7 @@ void FSM::sendBcEvent(const std::string& evtName, const EvtStream& evtData)
 {
     mContext->sendBcEvent(evtName, evtData);
 }
-void FSM::onCreate(const Context& context)
+void FSM::onCreate(void* params)
 {
     LLLOG("FSM::onCreate() name=%s\n", getName().c_str());;
 }
@@ -481,7 +481,7 @@ void FSM::onStop()
     LLLOG("FSM::onStop() name=%s\n", getName().c_str());
 }
 
-void FSM::onDestroy(const Context& context)
+void FSM::onDestroy()
 {
     LLLOG("FSM::onDestroy() name=%s\n", getName().c_str());
 }
