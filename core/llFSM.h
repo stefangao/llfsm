@@ -73,7 +73,7 @@ public:
     void postBcEvent(const std::string& evtName, const EvtStream& evtData = EvtStream::EMPTY);
     void sendBcEvent(const std::string& evtName, const EvtStream& evtData = EvtStream::EMPTY);
 
-    void delayPostEvent(float delayTime, const std::string& evtName, const EvtStream& evtData = EvtStream::EMPTY);
+    void delayPostEvent(int delayTime, const std::string& evtName, const EvtStream& evtData = EvtStream::EMPTY);
 
     void subscribeBcEvent(const std::string& evtName);
     void unsubscribeBcEvent(const std::string& evtName);

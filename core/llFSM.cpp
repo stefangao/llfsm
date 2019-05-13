@@ -425,7 +425,7 @@ bool FSM::postEvent(const std::string& evtName, const EvtStream& evtData)
     return true;
 }
 
-void FSM::delayPostEvent(float delayTime, const std::string& evtName, const EvtStream& evtData)
+void FSM::delayPostEvent(int delayTime, const std::string& evtName, const EvtStream& evtData)
 {
     EvtStream* copyEvtData = nullptr;
     if (!evtData.empty())
