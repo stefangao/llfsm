@@ -50,6 +50,12 @@ public:
         return *this;
     }
 
+    EvtStream& operator << (const unsigned int& n)
+    {
+        *((std::ostream*)this) << n << ZERO;
+        return *this;
+    }
+
     EvtStream& operator << (const long& n)
     {
         *((std::ostream*)this) << n << ZERO;
@@ -100,6 +106,13 @@ public:
     }
 
     EvtStream& operator >> (int& n)
+    {
+        char zero;
+        *((std::istream*)this) >> n >> zero;
+        return *this;
+    }
+
+    EvtStream& operator >> (unsigned int& n)
     {
         char zero;
         *((std::istream*)this) >> n >> zero;
