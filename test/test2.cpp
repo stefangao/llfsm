@@ -35,17 +35,39 @@ BEGIN_STATE_TABLE(FSMA)
 END_STATE_TABLE()
 
 BEGIN_TRANS_TABLE(FSMA, FSM)
-    TRANS_ENTRY(TEST1, "TestEvt1", TEST2)
+    TRANS_ENTRY(TEST1, "TestEvt1", S_NONE)
 END_TRANS_TABLE()
 
 bool FSMA::Test1::onEventProc(const std::string& evtName, EvtStream& evtData)
 {
+    int a, b;
+    evtData >> a >> b;
+    LLLOG("FSMA::Test1::onEventProc: %d, %d\n", a, b);
     return true;
 }
 
+bool FSMA::Test1::onRequestProc(const std::string& evtName, EvtStream& evtData, EvtStream& rspData)
+{
+    int a, b;
+    evtData >> a >> b;
+    LLLOG("FSMA::Test1::onRequestProc: %d, %d\n", a, b);
+
+    rspData << 67 << 89;
+    return true;
+}
+
+
 void FSMA::Test1::onHeartBeat()
 {
-    postEvent("TestEvt1");
+    EvtStream req, rsp;
+    req << 23 << 45;
+    sendRequest("TestEvt1", req, rsp);
+
+    int a, b;
+    rsp >> a >> b;
+    LLLOG("FSMA::Test1::onHeartBeat: %d, %d\n", a, b);
+
+    stopHeartBeat();
 }
 
 bool FSMA::Test2::onEventProc(const std::string& evtName, EvtStream& evtData)

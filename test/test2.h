@@ -63,13 +63,14 @@ public:
         {
             State::onEnter();
 
-            startHeartBeat(3000);
+            startHeartBeat(1000);
         }
         virtual void onExit() override
         {
             State::onExit();
         }
         virtual bool onEventProc(const std::string& evtName, EvtStream& evtData) override;
+        virtual bool onRequestProc(const std::string& evtName, EvtStream& evtData, EvtStream& rspData) override;
         virtual void onHeartBeat() override;
 
         DEFINE_STATE_FACTORY_OF_FSM(Test1, FSMA)

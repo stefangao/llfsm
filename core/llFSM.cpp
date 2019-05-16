@@ -400,6 +400,15 @@ bool FSM::sendEvent(const std::string& evtName, const EvtStream& evtData)
     return true;
 }
 
+bool FSM::sendRequest(const std::string& evtName, const EvtStream& reqData, EvtStream& rspData)
+{
+    if (mS != S::RUN)
+        return false;
+
+    dispatchEvent(evtName, reqData, true, rspData);
+    return true;
+}
+
 bool FSM::postEvent(const std::string& evtName, const EvtStream& evtData)
 {
     if (mS != S::RUN)
@@ -615,7 +624,7 @@ bool FSM::changeTo(sid dstState, bool enterDefaultActive)
     return true;
 }
 
-int FSM::dispatchEvent(const std::string& evtName, const EvtStream& evtData)
+int FSM::dispatchEvent(const std::string& evtName, const EvtStream& evtData, bool isRequest, EvtStream& rspData)
 {
     int result = EVTR_UNTOUCHED;
     std::vector<const TransEntry_t*> activeTransEntries;
@@ -648,14 +657,24 @@ int FSM::dispatchEvent(const std::string& evtName, const EvtStream& evtData)
         {
             if (fromSid != S_ROOT)
             {
+                int r = EVTR_UNTOUCHED;
                 auto& stateNode = getStateNode(fromSid);
-                int r = stateNode.stateObject->onEventProc(evtName, (EvtStream&) evtData);
+                if (!isRequest)
+                    r = stateNode.stateObject->onEventProc(evtName, (EvtStream&) evtData);
+                else
+                    r = stateNode.stateObject->onRequestProc(evtName, (EvtStream&) evtData, rspData);
+
                 if (r)
                     result = EVTR_CONTINUE;
             }
             else
             {
-                int r = onEventProc(evtName, (EvtStream&) evtData); //if root state, trigger fsm event proc
+                int r = EVTR_UNTOUCHED;
+                if (!isRequest)
+                    r = onEventProc(evtName, (EvtStream&) evtData); //if root state, trigger fsm event proc
+                else
+                    r = onRequestProc(evtName, (EvtStream&) evtData, rspData);
+
                 if (r)
                     result = EVTR_CONTINUE;
             }
@@ -682,8 +701,13 @@ int FSM::dispatchEvent(const std::string& evtName, const EvtStream& evtData)
             sid toSid = entry->to;
             if (isStateActive(toSid))
             {
+                int r = EVTR_UNTOUCHED;
                 auto& stateNode = getStateNode(toSid);
-                int r = stateNode.stateObject->onEventProc(evtName, (EvtStream&)evtData);
+                if (!isRequest)
+                    r = stateNode.stateObject->onEventProc(evtName, (EvtStream&) evtData);
+                else
+                    r = stateNode.stateObject->onRequestProc(evtName, (EvtStream&) evtData, rspData);
+
                 if (r)
                     result = EVTR_CONTINUE;
             }

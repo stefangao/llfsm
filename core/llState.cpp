@@ -46,6 +46,12 @@ bool State::onEventProc(const std::string& evtName, EvtStream& evtData)
     return true;
 }
 
+bool State::onRequestProc(const std::string& evtName, EvtStream& evtData, EvtStream& rspData)
+{
+    LLLOG("State::onRequestProc() : name=%s.%s\n", mThisFSM->getName().c_str(), getName());
+    return true;
+}
+
 void State::onHeartBeat()
 {
     LLLOG("State::onHeartBeat(): name=%s.%s\n", mThisFSM->getName().c_str(), getName());
@@ -140,6 +146,11 @@ void State::processOfflineEvents()
 
         processOfflineEvents();
     });
+}
+
+bool State::sendRequest(const std::string& evtName, const EvtStream& evtData, EvtStream& rspData)
+{
+    return mThisFSM->sendRequest(evtName, evtData, rspData);
 }
 
 NS_LL_END

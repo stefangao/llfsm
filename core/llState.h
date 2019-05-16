@@ -26,6 +26,8 @@ public:
     bool postEvent(const std::string& evtName, const EvtStream& evtData = EvtStream::EMPTY);
     const char* getName() const;
 
+    bool sendRequest(const std::string& evtName, const EvtStream& evtData, EvtStream& rspData = (EvtStream&)EvtStream::EMPTY);
+
     bool startHeartBeat(int interval, bool atOnce = false);
     void stopHeartBeat();
     bool isHeatBeatOn();
@@ -40,6 +42,7 @@ protected:
     virtual void onEnter();
     virtual void onHeartBeat();
     virtual bool onEventProc(const std::string& evtName, EvtStream& evtData);
+    virtual bool onRequestProc(const std::string& evtName, EvtStream& evtData, EvtStream& rspData);
     virtual void onExit();
 
 protected:

@@ -75,6 +75,8 @@ public:
 
     void delayPostEvent(int delayTime, const std::string& evtName, const EvtStream& evtData = EvtStream::EMPTY);
 
+    bool sendRequest(const std::string& evtName, const EvtStream& reqData, EvtStream& rspData = (EvtStream&)EvtStream::EMPTY);
+
     void subscribeBcEvent(const std::string& evtName);
     void unsubscribeBcEvent(const std::string& evtName);
     bool isBcEventSubscribed(const std::string& evtName);
@@ -109,7 +111,7 @@ protected:
     sid seekParent(sid sID, int level);
     sid seekCommonParent(sid sID1, sid sID2);
 
-    int dispatchEvent(const std::string& evtName, const EvtStream& evtData);
+    int dispatchEvent(const std::string& evtName, const EvtStream& evtData, bool isRequest = false, EvtStream& rspData = (EvtStream&)EvtStream::EMPTY);
 
 private:
     bool createInternal(const std::string& name, Context& context = Context::DEFAULT);
