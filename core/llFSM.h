@@ -60,6 +60,8 @@ protected:
     bool enterState(sid sID, bool enterDefaultActive = false);
     bool exitState(sid sID);
 
+    bool enterDefaultActiveState();
+
 public:
     FSM& create(const std::string& name, Context& context = Context::DEFAULT, void* params = nullptr);
     bool start();
@@ -97,6 +99,12 @@ public:
 
     FSM* getParent() const;
 
+    void setEventHandler(sid sID, const std::string& evtName, const EventHandler& handler);
+    void restoreEventHandler(sid sID, const std::string& evtName);
+
+    void setRequestHandler(sid sID, const std::string& evtName, const RequestHandler& handler);
+    void restoreRequestHandler(sid sID, const std::string& evtName);
+
 protected:
     virtual void onCreate(void* params);
     virtual void onStart();
@@ -106,12 +114,14 @@ protected:
     virtual void onDestroy();
     bool buildStateTree(sid parent);
 
-    virtual bool onEventProc(const std::string& evtName, EvtStream& evtData);
+    virtual bool onEventProc(const std::string& evtName, EvtStream& evtData) override;
+    virtual bool onRequestProc(const std::string& evtName, EvtStream& evtData, EvtStream& rspData) override;
 
     sid seekParent(sid sID, int level);
     sid seekCommonParent(sid sID1, sid sID2);
 
     int dispatchEvent(const std::string& evtName, const EvtStream& evtData, bool isRequest = false, EvtStream& rspData = (EvtStream&)EvtStream::EMPTY);
+    int executeStateEventHandler(sid sID, const std::string& evtName, const EvtStream& evtData, bool isRequest, EvtStream& rspData);
 
 private:
     bool createInternal(const std::string& name, Context& context = Context::DEFAULT);

@@ -11,14 +11,16 @@
 #include "test2.h"
 #include "test3.h"
 #include "test4.h"
+#include "test5.h"
 
 AppDelegate::AppDelegate()
 {
     //run test cases
     //TestCase1::create();
-    TestCase2::create();
+    //TestCase2::create();
     //TestCase3::create();
     //TestCase4::create();
+    TestCase5::create();
 }
 
 AppDelegate::~AppDelegate()

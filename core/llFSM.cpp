@@ -27,7 +27,18 @@ FSM::FSM()
 
 FSM::~FSM()
 {
-
+    for (auto iter = mEventTransMap.begin(); iter != mEventTransMap.end(); iter++)
+    {
+        auto& transVect = iter->second;
+        for (int i = 0; i < transVect.size(); i++)
+        {
+            auto transEntry = transVect[i];
+            if (transEntry->flag & TFL_DYNAMIC == TFL_DYNAMIC)
+            {
+                delete transEntry;
+            }
+        }
+    }
 }
 
 FSM& FSM::create(const std::string& name, Context& context, void* params)
@@ -50,7 +61,7 @@ bool FSM::createInternal(const std::string& name, Context& context)
     mContext = &context;
     mName = name;
 
-    mRootNode.stateObject = nullptr;
+    mRootNode.stateObject = this; //FSM is also a state
     mRootNode.stateEntry = &ROOT_ENTRY;
     mRootNode.activeChild = S_INVAL;
 
@@ -218,6 +229,28 @@ bool FSM::buildStateTree(sid parent)
     return true;
 }
 
+bool FSM::enterDefaultActiveState()
+{
+    LLASSERT(mRootNode.activeChild == S_INVAL, "Root state has been activated");
+
+    if (mRootNode.activeChild == S_INVAL)
+    {
+        sid activeChild = S_INVAL;
+        for (auto childNode : mRootNode.childNodes)
+        {
+            if (childNode->stateEntry->flag & SFL_ACTIVE)
+            {
+                activeChild = childNode->stateEntry->id;
+                break;
+            }
+        }
+        if (activeChild != S_INVAL)
+        {
+            enterState(activeChild, true);
+        }
+    }
+}
+
 bool FSM::enterState(sid sID, bool enterDefaultActive)
 {
     StateNode_t& stateNode = getStateNode(sID);
@@ -225,16 +258,11 @@ bool FSM::enterState(sid sID, bool enterDefaultActive)
     if (parent != S_INVAL)
     {
         StateNode_t& parentNode = getStateNode(parent);
-        if (parentNode.activeChild == sID)
-        {
-            if (!enterDefaultActive)
-                return true;
-            else
-                parentNode.activeChild = S_INVAL;
-        }
-
         LLASSERT(parentNode.activeChild == S_INVAL, "the state must be inactive");
+
         parentNode.activeChild = sID;
+        if (!enterDefaultActive)
+            return true;
     }
 
     if (stateNode.stateObject && (stateNode.sopFlag & SOP_ENTER) != SOP_ENTER)
@@ -261,7 +289,7 @@ bool FSM::enterState(sid sID, bool enterDefaultActive)
         stateNode.stateObject->onEnter();
         if (fsm)
         {
-            fsm->enterState(S_ROOT, true);
+            fsm->enterDefaultActiveState();
         }
         stateNode.stateObject->processOfflineEvents();
         stateNode.sopFlag &= ~SOP_ENTER;
@@ -338,7 +366,7 @@ bool FSM::start()
 
     onStart();
 
-    if (!enterState(S_ROOT, true))
+    if (!enterDefaultActiveState())
         return false;
 
     return true;
@@ -501,6 +529,12 @@ bool FSM::onEventProc(const std::string& evtName, EvtStream& evtData)
 	return true;
 }
 
+bool FSM::onRequestProc(const std::string& evtName, EvtStream& evtData, EvtStream& rspData)
+{
+    LLLOG("FSM::onRequestProc() evtName=%s\n", evtName.c_str());
+    return true;
+}
+
 bool FSM::isInvalid() const
 {
     return getS() == S::INVAL;
@@ -624,6 +658,43 @@ bool FSM::changeTo(sid dstState, bool enterDefaultActive)
     return true;
 }
 
+int FSM::executeStateEventHandler(sid sID, const std::string& evtName, const EvtStream& evtData, bool isRequest, EvtStream& rspData)
+{
+    bool ret = false;
+    auto stateObject = getStateNode(sID).stateObject;
+    if (stateObject)
+    {
+        if (!isRequest)
+        {
+            auto iter = stateObject->mEventHandlerMap.find(evtName);
+            if (iter != stateObject->mEventHandlerMap.end())
+            {
+                auto& eventHandler = iter->second;
+                ret = eventHandler((EvtStream&) evtData);
+            }
+            else
+            {
+                ret = stateObject->onEventProc(evtName, (EvtStream&) evtData);
+            }
+        }
+        else
+        {
+            auto iter = stateObject->mRequestHandlerMap.find(evtName);
+            if (iter != stateObject->mRequestHandlerMap.end())
+            {
+                auto& requestHandler = iter->second;
+                ret = requestHandler((EvtStream&) evtData, rspData);
+            }
+            else
+            {
+                ret = stateObject->onRequestProc(evtName, (EvtStream&) evtData, rspData);
+            }
+        }
+    }
+
+    return ret;
+}
+
 int FSM::dispatchEvent(const std::string& evtName, const EvtStream& evtData, bool isRequest, EvtStream& rspData)
 {
     int result = EVTR_UNTOUCHED;
@@ -655,29 +726,8 @@ int FSM::dispatchEvent(const std::string& evtName, const EvtStream& evtData, boo
         sid fromSid = entry->from;
         if ((entry->flag & TFL_TOPROC) != TFL_TOPROC)
         {
-            if (fromSid != S_ROOT)
-            {
-                int r = EVTR_UNTOUCHED;
-                auto& stateNode = getStateNode(fromSid);
-                if (!isRequest)
-                    r = stateNode.stateObject->onEventProc(evtName, (EvtStream&) evtData);
-                else
-                    r = stateNode.stateObject->onRequestProc(evtName, (EvtStream&) evtData, rspData);
-
-                if (r)
-                    result = EVTR_CONTINUE;
-            }
-            else
-            {
-                int r = EVTR_UNTOUCHED;
-                if (!isRequest)
-                    r = onEventProc(evtName, (EvtStream&) evtData); //if root state, trigger fsm event proc
-                else
-                    r = onRequestProc(evtName, (EvtStream&) evtData, rspData);
-
-                if (r)
-                    result = EVTR_CONTINUE;
-            }
+            if (executeStateEventHandler(fromSid, evtName, evtData, isRequest, rspData))
+                result = EVTR_CONTINUE;
         }
     }
 
@@ -701,14 +751,7 @@ int FSM::dispatchEvent(const std::string& evtName, const EvtStream& evtData, boo
             sid toSid = entry->to;
             if (isStateActive(toSid))
             {
-                int r = EVTR_UNTOUCHED;
-                auto& stateNode = getStateNode(toSid);
-                if (!isRequest)
-                    r = stateNode.stateObject->onEventProc(evtName, (EvtStream&) evtData);
-                else
-                    r = stateNode.stateObject->onRequestProc(evtName, (EvtStream&) evtData, rspData);
-
-                if (r)
+                if (executeStateEventHandler(toSid, evtName, evtData, isRequest, rspData))
                     result = EVTR_CONTINUE;
             }
         }
@@ -744,6 +787,48 @@ bool FSM::isBcEventSubscribed(const std::string& evtName)
 FSM* FSM::getParent() const
 {
     return mThisFSM;
+}
+
+void FSM::setEventHandler(sid sID, const std::string& evtName, const EventHandler& handler)
+{
+    auto& stateNode = getStateNode(sID);
+    stateNode.stateObject->addEventHandler(evtName, handler);
+
+    auto iter = mEventTransMap.find(evtName);
+    if (iter == mEventTransMap.end())
+    {
+        auto transEntry = new TransEntry_t(sID, evtName.c_str(), S_NONE, TFL_DYNAMIC);
+        std::vector<const TransEntry_t*> transVect;
+        transVect.push_back(transEntry);
+        mEventTransMap[evtName] = transVect;
+    }
+}
+
+void FSM::restoreEventHandler(sid sID, const std::string& evtName)
+{
+    auto& stateNode = getStateNode(sID);
+    stateNode.stateObject->removeEventHandler(evtName);
+}
+
+void FSM::setRequestHandler(sid sID, const std::string& evtName, const RequestHandler& handler)
+{
+    auto& stateNode = getStateNode(sID);
+    stateNode.stateObject->addRequestHandler(evtName, handler);
+
+    auto iter = mEventTransMap.find(evtName);
+    if (iter == mEventTransMap.end())
+    {
+        auto transEntry = new TransEntry_t(sID, evtName.c_str(), S_NONE, TFL_DYNAMIC);
+        std::vector<const TransEntry_t*> transVect;
+        transVect.push_back(transEntry);
+        mEventTransMap[evtName] = transVect;
+    }
+}
+
+void FSM::restoreRequestHandler(sid sID, const std::string& evtName)
+{
+    auto& stateNode = getStateNode(sID);
+    stateNode.stateObject->removeRequestHandler(evtName);
 }
 
 NS_LL_END

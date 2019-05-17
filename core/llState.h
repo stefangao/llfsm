@@ -10,6 +10,7 @@
 #define __LL_STATE_H__
 
 #include <string>
+#include <map>
 #include "llConst.h"
 #include "llEvtStream.h"
 
@@ -33,6 +34,12 @@ public:
     bool isHeatBeatOn();
     bool isActive();
 
+    void addEventHandler(const std::string& evtName, const EventHandler& eventHandler);
+    void addRequestHandler(const std::string& evtName, const RequestHandler& requestHandler);
+
+    void removeEventHandler(const std::string& evtName);
+    void removeRequestHandler(const std::string& evtName);
+
 protected:
     virtual ~State();
     static State* createInstance() {return nullptr;}
@@ -49,6 +56,8 @@ protected:
     sid mID;
     FSM* mThisFSM;
     StateNode_t* mStateNode;
+    std::map<std::string, EventHandler> mEventHandlerMap;
+    std::map<std::string, RequestHandler> mRequestHandlerMap;
 };
 
 NS_LL_END

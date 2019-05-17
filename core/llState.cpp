@@ -153,4 +153,32 @@ bool State::sendRequest(const std::string& evtName, const EvtStream& evtData, Ev
     return mThisFSM->sendRequest(evtName, evtData, rspData);
 }
 
+void State::addEventHandler(const std::string& evtName, const EventHandler& eventHandler)
+{
+    mEventHandlerMap.insert(std::make_pair(evtName, eventHandler));
+}
+
+void State::addRequestHandler(const std::string& evtName, const RequestHandler& requestHandler)
+{
+    mRequestHandlerMap.insert(std::make_pair(evtName, requestHandler));
+}
+
+void State::removeEventHandler(const std::string& evtName)
+{
+    auto iter = mEventHandlerMap.find(evtName);
+    if (iter != mEventHandlerMap.end())
+    {
+        mEventHandlerMap.erase(iter);
+    }
+}
+
+void State::removeRequestHandler(const std::string& evtName)
+{
+    auto iter = mRequestHandlerMap.find(evtName);
+    if (iter != mRequestHandlerMap.end())
+    {
+        mRequestHandlerMap.erase(iter);
+    }
+}
+
 NS_LL_END

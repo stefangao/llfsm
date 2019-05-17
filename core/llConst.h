@@ -12,6 +12,7 @@
 #include <vector>
 #include <queue>
 #include <string>
+#include <functional>
 
 #ifdef __cplusplus
     #define NS_LL_BEGIN                     namespace lianli {
@@ -42,6 +43,7 @@ const unsigned int SFL_ACTIVE = 0x0001L;
 const unsigned int TFL_ZERO = 0x0000L;
 const unsigned int TFL_TOPROC = 0x0001L;
 const unsigned int TFL_OFFLINE = 0x0002L;
+const unsigned int TFL_DYNAMIC = 0x1000L;
 
 class State;
 typedef State* (*StateFactoryFunc)();
@@ -150,6 +152,12 @@ public:\
 #define DEFINE_STATE_FACTORY(stateClass)\
 public:\
     static lianli::State* createInstance()  {return new stateClass();}\
+
+typedef std::function<bool(EvtStream& evtData)> EventHandler;
+typedef std::function<bool(EvtStream& evtData, EvtStream& retData)> RequestHandler;
+
+#define LL_BIND_EVENT(__selector__,__target__, ...) std::bind(&__selector__,__target__, std::placeholders::_1, ##__VA_ARGS__)
+#define LL_BIND_REQUEST(__selector__,__target__, ...) std::bind(&__selector__,__target__, std::placeholders::_1, std::placeholders::_2, ##__VA_ARGS__)
 
 NS_LL_END
 
