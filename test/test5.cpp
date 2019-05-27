@@ -17,13 +17,13 @@ protected:
     {
         FSM::onStart();
 
-        setEventHandler(S_ROOT, "TestEvt1", LL_BIND_EVENT(Dog::onEventProc, this));
-        setRequestHandler(S_ROOT, "TestEvt1", LL_BIND_REQUEST(Dog::onRequestProc, this));
+        setEventHandler("TestEvt1", LL_BIND_EVENT(Dog::onEventProc, this));
+        setRequestHandler("TestEvt1", LL_BIND_REQUEST(Dog::onRequestProc, this));
 
         //postEvent("TestEvt1");
 
         EvtStream data, rsp;
-        data << 234;
+        data << 123;
         sendRequest("TestEvt1", data, rsp);
         int value;
         rsp >> value;
@@ -33,7 +33,6 @@ protected:
     bool onEventProc(EvtStream& evtData)
     {
         LLLOG("Dog::onEventProc ===\n");
-
         return true;
     }
 
@@ -42,7 +41,7 @@ protected:
         int req;
         evtData >> req;
         LLLOG("Dog::onRequestProc: req=%d\n", req);
-        rspData << 789;
+        rspData << req + 333;
         return true;
     }
 };

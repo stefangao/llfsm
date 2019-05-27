@@ -16,4 +16,3 @@ protected:
 
     DECLARE_TESTCASE_FACTORY(TestCase5)
 };
-

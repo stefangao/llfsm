@@ -16,7 +16,7 @@
 #include <string.h>
 #include "msgloop.h"
 
-namespace llshell {
+namespace llgeneric {
 
 typedef struct _Msg
 {

@@ -13,7 +13,7 @@
 #include <vector>
 #include <string>
 
-namespace llshell {
+namespace llgeneric {
 
 typedef std::function<void(int id, const void*)> MsgCallbackFunc;
 typedef std::function<void(const std::string& cmd, std::vector<std::string>& params)> CmdCallbackFunc;

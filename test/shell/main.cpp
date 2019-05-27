@@ -6,7 +6,7 @@
 // Description :
 //============================================================================
 #include "lianli.h"
-#include "platform/shell/msgloop.h"
+#include "platform/generic/msgloop.h"
 #include "../AppDelegate.h"
 
 static AppDelegate* gAppDelegate = nullptr;
@@ -15,7 +15,7 @@ int main(int argc, const char * argv[])
     lianli::postCallback([](const void* userData) {
         gAppDelegate = new AppDelegate();
     });
-    llshell::run_msgloop([](const std::string& cmd, std::vector<std::string>& params)
+    llgeneric::run_msgloop([](const std::string& cmd, std::vector<std::string>& params)
         {
             if (gAppDelegate)
             {

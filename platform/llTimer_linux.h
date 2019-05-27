@@ -5,23 +5,23 @@
 // Copyright   : Your copyright notice
 // Description :
 //============================================================================
-#include "shell/msgloop.h"
+#include "generic/msgloop.h"
 
 NS_LL_BEGIN
 
 int setTimer(int interval, const std::function<void(int tid, const void* userData)>& func, const void* userData)
 {
-    return llshell::setTimer(interval, func, userData, false);
+    return llgeneric::setTimer(interval, func, userData, false);
 }
 
 bool killTimer(int tid)
 {
-    return llshell::killTimer(tid);
+    return llgeneric::killTimer(tid);
 }
 
 void postCallback(const std::function<void(const void* userData)>& func, const void* userData)
 {
-    llshell::postCallback(userData, [func](int, const void* userData) {
+    llgeneric::postCallback(userData, [func](int, const void* userData) {
         func(userData);
     });
 }

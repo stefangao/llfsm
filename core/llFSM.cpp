@@ -789,7 +789,7 @@ FSM* FSM::getParent() const
     return mThisFSM;
 }
 
-void FSM::setEventHandler(sid sID, const std::string& evtName, const EventHandler& handler)
+void FSM::setEventHandler(const std::string& evtName, const EventHandler& handler, sid sID)
 {
     auto& stateNode = getStateNode(sID);
     stateNode.stateObject->addEventHandler(evtName, handler);
@@ -804,13 +804,13 @@ void FSM::setEventHandler(sid sID, const std::string& evtName, const EventHandle
     }
 }
 
-void FSM::restoreEventHandler(sid sID, const std::string& evtName)
+void FSM::restoreEventHandler(const std::string& evtName, sid sID)
 {
     auto& stateNode = getStateNode(sID);
     stateNode.stateObject->removeEventHandler(evtName);
 }
 
-void FSM::setRequestHandler(sid sID, const std::string& evtName, const RequestHandler& handler)
+void FSM::setRequestHandler(const std::string& evtName, const RequestHandler& handler, sid sID)
 {
     auto& stateNode = getStateNode(sID);
     stateNode.stateObject->addRequestHandler(evtName, handler);
@@ -825,7 +825,7 @@ void FSM::setRequestHandler(sid sID, const std::string& evtName, const RequestHa
     }
 }
 
-void FSM::restoreRequestHandler(sid sID, const std::string& evtName)
+void FSM::restoreRequestHandler(const std::string& evtName, sid sID)
 {
     auto& stateNode = getStateNode(sID);
     stateNode.stateObject->removeRequestHandler(evtName);

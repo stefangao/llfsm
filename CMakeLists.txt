@@ -13,6 +13,6 @@ source_group("Include" FILES ${DIR_HEADERS})
 
 aux_source_directory(core DIR_LIB_SRCS)
 aux_source_directory(platform DIR_LIB_SRCS)
-aux_source_directory(platform/shell DIR_LIB_SRCS)
+aux_source_directory(platform/generic DIR_LIB_SRCS)
 
 add_library (${PROJECT_NAME} ${DIR_LIB_SRCS} ${DIR_HEADERS})
