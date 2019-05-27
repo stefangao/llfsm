@@ -96,15 +96,22 @@ bool State::startHeartBeat(int interval, bool atOnce)
     {
         postCallback([this](const void* userData) {
             if (isActive())
+            {
+                mStateNode->hbCount++;
                 onHeartBeat();
+            }
         });
     }
 
     mStateNode->hbTimerID = setTimer(interval, [this](int tid, const void* userData) {
         if (isActive())
+        {
+            mStateNode->hbCount++;
             onHeartBeat();
+        }
     });
-
+    mStateNode->hbInterval = interval;
+    mStateNode->hbCount = 0;
     return true;
 }
 
@@ -114,12 +121,24 @@ void State::stopHeartBeat()
     {
         killTimer(mStateNode->hbTimerID);
         mStateNode->hbTimerID = -1;
+        mStateNode->hbInterval = -1;
+        mStateNode->hbCount = 0;
     }
 }
 
-bool State::isHeatBeatOn()
+bool State::isHeartBeatOn()
 {
     return mStateNode->hbTimerID != -1;
+}
+
+int State::getHeartBeatCount()
+{
+    return mStateNode->hbCount;
+}
+
+int State::getHeartBeatInterval()
+{
+    return mStateNode->hbInterval;
 }
 
 bool State::isActive()

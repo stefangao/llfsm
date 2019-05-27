@@ -79,5 +79,4 @@ void FSMA::Test2::onHeartBeat()
 {
     self()->stop();
 }
-
 }

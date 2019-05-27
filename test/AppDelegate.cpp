@@ -16,11 +16,11 @@
 AppDelegate::AppDelegate()
 {
     //run test cases
-    //TestCase1::create();
+    TestCase1::create();
     //TestCase2::create();
     //TestCase3::create();
     //TestCase4::create();
-    TestCase5::create();
+    //TestCase5::create();
 }
 
 AppDelegate::~AppDelegate()

@@ -260,9 +260,10 @@ bool FSM::enterState(sid sID, bool enterDefaultActive)
         StateNode_t& parentNode = getStateNode(parent);
         LLASSERT(parentNode.activeChild == S_INVAL, "the state must be inactive");
 
-        parentNode.activeChild = sID;
-        if (!enterDefaultActive)
+        if (parentNode.activeChild == sID && !enterDefaultActive)
             return true;
+
+        parentNode.activeChild = sID;
     }
 
     if (stateNode.stateObject && (stateNode.sopFlag & SOP_ENTER) != SOP_ENTER)
@@ -789,7 +790,7 @@ FSM* FSM::getParent() const
     return mThisFSM;
 }
 
-void FSM::setEventHandler(const std::string& evtName, const EventHandler& handler, sid sID)
+void FSM::inteceptEventHandler(const std::string& evtName, const EventHandler& handler, sid sID)
 {
     auto& stateNode = getStateNode(sID);
     stateNode.stateObject->addEventHandler(evtName, handler);
@@ -810,7 +811,7 @@ void FSM::restoreEventHandler(const std::string& evtName, sid sID)
     stateNode.stateObject->removeEventHandler(evtName);
 }
 
-void FSM::setRequestHandler(const std::string& evtName, const RequestHandler& handler, sid sID)
+void FSM::inteceptRequestHandler(const std::string& evtName, const RequestHandler& handler, sid sID)
 {
     auto& stateNode = getStateNode(sID);
     stateNode.stateObject->addRequestHandler(evtName, handler);

@@ -13,12 +13,16 @@ namespace test5
 class Dog: public FSM
 {
 protected:
+    ~Dog()
+    {
+        LLLOG("~Dog()\n");
+    }
     void onStart() override
     {
         FSM::onStart();
 
-        setEventHandler("TestEvt1", LL_BIND_EVENT(Dog::onEventProc, this));
-        setRequestHandler("TestEvt1", LL_BIND_REQUEST(Dog::onRequestProc, this));
+        inteceptEventHandler("TestEvt1", LL_BIND_EVENT(Dog::onEventProc, this));
+        inteceptRequestHandler("TestEvt1", LL_BIND_REQUEST(Dog::onRequestProc, this));
 
         //postEvent("TestEvt1");
 
@@ -51,5 +55,6 @@ bool TestCase5::onInit()
 {
     FSM* fsm = LL_CREATE_FSM(test5::Dog, "dog", Context::DEFAULT);
     fsm->start();
+    fsm->destroy();
     return true;
 }

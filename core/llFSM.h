@@ -99,10 +99,10 @@ public:
 
     FSM* getParent() const;
 
-    void setEventHandler(const std::string& evtName, const EventHandler& handler, sid sID = S_ROOT);
+    void inteceptEventHandler(const std::string& evtName, const EventHandler& handler, sid sID = S_ROOT);
     void restoreEventHandler(const std::string& evtName, sid sID = S_ROOT);
 
-    void setRequestHandler(const std::string& evtName, const RequestHandler& handler, sid sID = S_ROOT);
+    void inteceptRequestHandler(const std::string& evtName, const RequestHandler& handler, sid sID = S_ROOT);
     void restoreRequestHandler(const std::string& evtName, sid sID);
 
 protected:

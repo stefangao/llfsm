@@ -78,6 +78,7 @@ typedef struct _StateNode_t
 
     int hbInterval;        //time interval every two successive heartbeat
     int hbTimerID;
+    int hbCount;           //count of heart beat
 
     unsigned int sopFlag;  //flag indicate on which procedure the state is
 

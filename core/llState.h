@@ -31,7 +31,10 @@ public:
 
     bool startHeartBeat(int interval, bool atOnce = false);
     void stopHeartBeat();
-    bool isHeatBeatOn();
+    bool isHeartBeatOn();
+    int  getHeartBeatCount();
+    int  getHeartBeatInterval();
+
     bool isActive();
 
     void addEventHandler(const std::string& evtName, const EventHandler& eventHandler);

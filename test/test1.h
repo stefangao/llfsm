@@ -6,153 +6,64 @@
 // Description :
 //============================================================================
 
-#include <sstream>
 #include "TestCase.h"
 USING_NS_LL;
 
 class TestCase1 : public TestCase
 {
-public:
-    TestCase1();
-
 protected:
-    virtual ~TestCase1();
     virtual bool onInit();
 
     DECLARE_TESTCASE_FACTORY(TestCase1)
 };
 
 namespace test1 {
-
-class FSMA: public FSM
+class Dog: public FSM
 {
-protected:
-    void onStart() override
+public:
+    void snore()
     {
-        FSM::onStart();
+        LLLOG("z~~Z~~~\n");
     }
 
-    DECLARE_STATE_TABLE()
-    DECLARE_TRANS_TABLE()
+    void bark()
+    {
+        LLLOG("wang wang ~~\n");
+    }
+
+    void walk()
+    {
+        LLLOG("walk..\n");
+    }
+
+DECLARE_STATE_TABLE()
+DECLARE_TRANS_TABLE()
 
 public:
     enum
     {
-        DAEMON, TEST1, TEST2, TEST3, TEST4
+        AWAKE, SLEEP
     };
 
-    class Daemon: public State
+    class Awake: public State
     {
     protected:
-        virtual void onEnter() override
-        {
-            State::onEnter();
+        virtual void onEnter() override;
+        virtual void onExit() override;
+        virtual bool onEventProc(const std::string& evtName, EvtStream& evtData) override;
+        virtual void onHeartBeat() override;
 
-        }
-        virtual void onExit() override
-        {
-            State::onExit();
-        }
-        virtual bool onEventProc(const std::string& evtName, EvtStream& evtData) override
-        {
-            State::onEventProc(evtName, evtData);
-            return true;
-        }
-
-        DEFINE_STATE_FACTORY_OF_FSM(Daemon, FSMA)
+    DEFINE_STATE_FACTORY_OF_FSM(Awake, Dog)
     };
 
-    class Test1: public State
+    class Sleep: public State
     {
     protected:
-        virtual void onEnter() override
-        {
-            State::onEnter();
-        }
-        virtual void onExit() override
-        {
-            State::onExit();
-        }
-        virtual bool onEventProc(const std::string& evtName, EvtStream& evtData) override
-        {
-            State::onEventProc(evtName, evtData);
-            return true;
-        }
+        virtual void onEnter() override;
+        virtual void onExit() override;
+        virtual void onHeartBeat() override;
 
-        DEFINE_STATE_FACTORY_OF_FSM(Test1, FSMA)
-    };
-
-    class Test2: public State
-    {
-    protected:
-        virtual void onEnter() override
-        {
-            State::onEnter();
-        }
-        virtual void onExit() override
-        {
-            State::onExit();
-        }
-        virtual bool onEventProc(const std::string& evtName, EvtStream& evtData) override
-        {
-            State::onEventProc(evtName, evtData);
-            return true;
-        }
-
-        DEFINE_STATE_FACTORY_OF_FSM(Test2, FSMA)
-    };
-
-    class Test3: public State
-    {
-    protected:
-        virtual void onEnter() override
-        {
-            State::onEnter();
-
-            //startHeartBeat(2000);
-        }
-        virtual void onExit() override
-        {
-            State::onExit();
-        }
-        virtual bool onEventProc(const std::string& evtName, EvtStream& evtData) override
-        {
-            State::onEventProc(evtName, evtData);
-            return true;
-        }
-
-        DEFINE_STATE_FACTORY_OF_FSM(Test3, FSMA)
-    };
-
-    class Test4: public State
-    {
-    protected:
-        virtual void onEnter() override
-        {
-            State::onEnter();
-
-            //startHeartBeat(3000, true);
-        }
-        virtual void onExit() override
-        {
-            State::onExit();
-        }
-        virtual bool onEventProc(const std::string& evtName, EvtStream& evtData) override
-        {
-            State::onEventProc(evtName, evtData);
-
-            int x;
-            float f;
-            std::string str;
-            evtData >> x >> str >> f;
-            std::stringstream msg;
-            msg << "Test4::onEventProc x=" << x << " f=" << f << " str=" << str <<  std::endl;
-            LLLOG(msg.str().c_str());
-            return true;
-        }
-
-        DEFINE_STATE_FACTORY_OF_FSM(Test4, FSMA)
+    DEFINE_STATE_FACTORY_OF_FSM(Sleep, Dog)
     };
 };
-
-} //namespace
+};
