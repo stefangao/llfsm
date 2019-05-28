@@ -22,15 +22,8 @@ TestCase3::~TestCase3()
 bool TestCase3::onInit()
 {
     FSM *fsm = new FSMA();
-    fsm->create("fsm3").start();
-    fsm->subscribeBcEvent("TestEvt1");
-
-
-    EvtStream data;
-    std::string input = "000 hello world! 300 abc123";
-    data << 23 << input;
-    fsm->sendBcEvent("TestEvt1", data);
-
+    fsm->create("fsm3");
+    mMainFSM = fsm;
     return true;
 }
 

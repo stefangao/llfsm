@@ -22,7 +22,7 @@ FSM::FSM()
 {
     mContext = nullptr;
     mS = S::INVAL;
-    mName = LL_STRING_EMPTY;
+    mName = LL_STR_EMPTY;
 }
 
 FSM::~FSM()
@@ -363,6 +363,8 @@ bool FSM::exitState(sid sID)
 
 bool FSM::start()
 {
+    LLASSERT(mS == S::IDLE, "FSM state must be IDLE for start.");
+
     mS = S::RUN;
 
     onStart();
@@ -375,18 +377,24 @@ bool FSM::start()
 
 bool FSM::pause()
 {
+    LLASSERT(mS == S::RUN, "FSM state must be RUN for pause.");
+
     mS = S::PAUSED;
     return true;
 }
 
 bool FSM::resume()
 {
+    LLASSERT(mS == S::PAUSED, "FSM state must be PAUSED for resume.");
+
     mS = S::RUN;
     return true;
 }
 
 bool FSM::stop()
 {
+    LLASSERT(mS != S::IDLE, "FSM state must not be IDLE for stop.");
+
     exitState(S_ROOT);
     onStop();
     mS = S::IDLE;

@@ -22,7 +22,7 @@ TestCase2::~TestCase2()
 bool TestCase2::onInit()
 {
     FSM* fsm = LL_CREATE_FSM(FSMA, "fsm2", Context::DEFAULT);
-    fsm->start();
+    mMainFSM = fsm;
     return true;
 }
 

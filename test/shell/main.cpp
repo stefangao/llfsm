@@ -23,9 +23,17 @@ int main(int argc, const char * argv[])
                 {
                     std::string fsm = cmd;
                     std::string evtName = params[0];
-                    std::vector<std::string> evtParams;
-                    evtParams.assign(params.begin() + 1, params.end());
-                    gAppDelegate->onUserEvent(fsm, evtName, evtParams);
+
+                    lianli::EvtStream evtData;
+                    for (auto iter = params.begin() + 1; iter != params.end(); iter++)
+                    {
+                        evtData << *iter;
+                    }
+                    gAppDelegate->onUserEvent(fsm, evtName, evtData);
+                }
+                else
+                {
+                    gAppDelegate->onUserEvent(cmd, LL_STR_EMPTY, (lianli::EvtStream&)lianli::EvtStream::EMPTY);
                 }
             }
         });

@@ -28,10 +28,15 @@ class TestCase
 {
 public:
     TestCase();
+    virtual ~TestCase();
+
+    virtual void start();
+    virtual void stop();
 
 protected:
-    virtual ~TestCase();
     virtual bool onInit();
+
+    lianli::FSM* mMainFSM;
 
     DECLARE_TESTCASE_FACTORY(TestCase)
 };

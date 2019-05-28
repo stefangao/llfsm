@@ -19,12 +19,8 @@ protected:
     }
     void onStart() override
     {
-        FSM::onStart();
-
         inteceptEventHandler("TestEvt1", LL_BIND_EVENT(Dog::onEventProc, this));
         inteceptRequestHandler("TestEvt1", LL_BIND_REQUEST(Dog::onRequestProc, this));
-
-        //postEvent("TestEvt1");
 
         EvtStream data, rsp;
         data << 123;
@@ -54,7 +50,8 @@ protected:
 bool TestCase5::onInit()
 {
     FSM* fsm = LL_CREATE_FSM(test5::Dog, "dog", Context::DEFAULT);
-    fsm->start();
-    fsm->destroy();
+    //fsm->start();
+    //fsm->destroy();
+    mMainFSM = fsm;
     return true;
 }

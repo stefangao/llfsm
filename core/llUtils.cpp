@@ -17,7 +17,7 @@
 
 NS_LL_BEGIN
 
-const char* LL_STRING_EMPTY = "";
+const char* LL_STR_EMPTY = "";
 
 void Utils::_ll_log(const char *format,...)
 {

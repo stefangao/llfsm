@@ -15,30 +15,53 @@
 
 AppDelegate::AppDelegate()
 {
-    //run test cases
-    TestCase1::create();
-    //TestCase2::create();
-    //TestCase3::create();
-    //TestCase4::create();
-    //TestCase5::create();
+    mCurrTestCase = nullptr;
+    //create test cases
+    mTestSuite.push_back(TestCase1::create());
+    mTestSuite.push_back(TestCase2::create());
+    mTestSuite.push_back(TestCase3::create());
+    mTestSuite.push_back(TestCase4::create());
+    mTestSuite.push_back(TestCase5::create());
 }
 
 AppDelegate::~AppDelegate()
 {
-
+    for (auto iter = mTestSuite.begin(); iter != mTestSuite.end(); iter++)
+    {
+        auto testCase = *iter;
+        delete testCase;
+    }
+    mTestSuite.clear();
 }
 
-void AppDelegate::onUserEvent(const std::string& fsmName, const std::string& evtName, std::vector<std::string>& evtParams)
+void AppDelegate::onUserEvent(const std::string& fsmName, const std::string& evtName, lianli::EvtStream& evtData)
 {
     auto defaultContext = Context::getDefault();
-    auto fsm = defaultContext.find(fsmName);
-    if (fsm)
+    if (!evtName.empty())
     {
-        EvtStream evtData;
-        for (auto& param : evtParams)
+        auto fsm = defaultContext.find(fsmName);
+        if (fsm)
         {
-            //evtData.DataBuf::write(param); //TBD
+            fsm->postEvent(evtName, evtData);
         }
-        fsm->postEvent(evtName, evtData);
+    }
+    else
+    {
+        int index = atoi(fsmName.c_str());
+        if (index >= 0 && index <= mTestSuite.size())
+        {
+            if (mCurrTestCase)
+            {
+                mCurrTestCase->stop();
+                mCurrTestCase = nullptr;
+            }
+
+            if (index > 0)
+            {
+                auto testCase = mTestSuite[index - 1];
+                testCase->start();
+                mCurrTestCase = testCase;
+            }
+        }
     }
 }

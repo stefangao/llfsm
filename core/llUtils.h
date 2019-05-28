@@ -21,7 +21,7 @@ public:
     static void _ll_assert(const char* file, int lineno, const char* format,...);
 };
 
-extern const char* LL_STRING_EMPTY;
+extern const char* LL_STR_EMPTY;
 
 #ifdef LL_DEBUG
     #define LLASSERT(x, format, ...)\

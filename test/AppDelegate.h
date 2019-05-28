@@ -10,6 +10,7 @@
 #define __LL_APPDELEGATE_H__
 
 #include "lianli.h"
+#include "TestCase.h"
 USING_NS_LL;
 
 class AppDelegate
@@ -18,7 +19,11 @@ public:
     AppDelegate();
     virtual ~AppDelegate();
 
-    virtual void onUserEvent(const std::string& fsmName, const std::string& evtName, std::vector<std::string>& evtParams);
+    virtual void onUserEvent(const std::string& fsmName, const std::string& evtName, lianli::EvtStream& evtData);
+
+protected:
+    std::vector<TestCase*> mTestSuite;
+    TestCase* mCurrTestCase;
 };
 
 #endif

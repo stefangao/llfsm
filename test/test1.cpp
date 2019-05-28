@@ -11,9 +11,7 @@
 bool TestCase1::onInit()
 {
     FSM* fsm = LL_CREATE_FSM(test1::Dog, "dog", Context::DEFAULT);
-    fsm->start();
-
-    fsm->delayPostEvent(3000, "SoundEvt");
+    mMainFSM = fsm;
     return true;
 }
 
@@ -28,9 +26,14 @@ BEGIN_TRANS_TABLE(Dog, FSM)
     TRANS_ENTRY(AWAKE, "SleepEvt", SLEEP)
 END_TRANS_TABLE()
 
+void Dog::onStart()
+{
+    delayPostEvent(3000, "SoundEvt");
+}
+
 void Dog::Awake::onEnter()
 {
-    LLLOG("AWAKE enter\n");
+    LLLOG("[AWAKE enter]\n");
     startHeartBeat(2000);
 }
 
@@ -59,7 +62,7 @@ void Dog::Awake::onExit()
 
 void Dog::Sleep::onEnter()
 {
-    LLLOG("SLEEP enter\n");
+    LLLOG("[SLEEP enter]\n");
     startHeartBeat(1000);
 }
 

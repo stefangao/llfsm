@@ -20,6 +20,9 @@ protected:
 namespace test1 {
 class Dog: public FSM
 {
+protected:
+    virtual void onStart() override;
+
 public:
     void snore()
     {

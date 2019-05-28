@@ -77,7 +77,7 @@ const char* State::getName() const
     if (mStateNode)
         return mStateNode->stateEntry->name;
 
-    return LL_STRING_EMPTY;
+    return LL_STR_EMPTY;
 }
 
 bool State::startHeartBeat(int interval, bool atOnce)
@@ -150,6 +150,9 @@ bool State::isActive()
 
 void State::processOfflineEvents()
 {
+    if (!isActive())
+        return;
+
     auto& events = mStateNode->offlineEvents;
     if (events.empty())
         return;

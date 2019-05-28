@@ -10,7 +10,7 @@
 
 TestCase::TestCase()
 {
-
+    mMainFSM = nullptr;
 }
 
 TestCase::~TestCase()
@@ -21,4 +21,20 @@ TestCase::~TestCase()
 bool TestCase::onInit()
 {
     return true;
+}
+
+void TestCase::start()
+{
+    if (mMainFSM)
+    {
+        mMainFSM->start();
+    }
+}
+
+void TestCase::stop()
+{
+    if (mMainFSM)
+    {
+        mMainFSM->stop();
+    }
 }
