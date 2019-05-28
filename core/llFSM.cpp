@@ -16,7 +16,7 @@ NS_LL_BEGIN
 const unsigned int FSM::SOP_ENTER = 0x01;
 const unsigned int FSM::SOP_BEAT = 0x02;
 const unsigned int FSM::SOP_EXIT = 0x04;
-const StateEntry_t FSM::ROOT_ENTRY = {S_ROOT, nullptr, S_INVAL, SFL_ZERO, "FSM::ROOT"};
+const StateEntry_t FSM::ROOT_ENTRY = { S_ROOT, nullptr, S_INVAL, SFL_ZERO, "FSM::ROOT" };
 
 FSM::FSM()
 {
@@ -30,10 +30,10 @@ FSM::~FSM()
     for (auto iter = mEventTransMap.begin(); iter != mEventTransMap.end(); iter++)
     {
         auto& transVect = iter->second;
-        for (int i = 0; i < transVect.size(); i++)
+        for (int i = 0; i < (int)transVect.size(); i++)
         {
             auto transEntry = transVect[i];
-            if (transEntry->flag & TFL_DYNAMIC == TFL_DYNAMIC)
+            if ((transEntry->flag & TFL_DYNAMIC) == TFL_DYNAMIC)
             {
                 delete transEntry;
             }
@@ -138,10 +138,10 @@ bool FSM::createInternal(const std::string& name, Context& context)
         for (auto iter = mEventTransMap.begin(); iter != mEventTransMap.end(); iter++)
         {
             auto& transVect = iter->second;
-            std::sort(transVect.begin(), transVect.end(), [this](const TransEntry_t* t1,const TransEntry_t* t2)->bool
-                {
-                    return getStateLevel(t1->from) > getStateLevel(t2->from);
-                });
+            std::sort(transVect.begin(), transVect.end(), [this](const TransEntry_t* t1, const TransEntry_t* t2)->bool
+            {
+                return getStateLevel(t1->from) > getStateLevel(t2->from);
+            });
         }
     }
 
@@ -216,7 +216,7 @@ bool FSM::buildStateTree(sid parent)
 {
     StateNode_t& parentNode = getStateNode(parent);
     parentNode.activeChild = S_INVAL;
-    for (int i = 0; i < (int) mStateNodeTable.size(); i++)
+    for (int i = 0; i < (int)mStateNodeTable.size(); i++)
     {
         StateNode_t& stateNode = mStateNodeTable[i];
         if (stateNode.stateEntry->parent == parent)
@@ -246,9 +246,10 @@ bool FSM::enterDefaultActiveState()
         }
         if (activeChild != S_INVAL)
         {
-            enterState(activeChild, true);
+            return enterState(activeChild, true);
         }
     }
+    return true;
 }
 
 bool FSM::enterState(sid sID, bool enterDefaultActive)
@@ -403,27 +404,31 @@ bool FSM::stop()
 
 bool FSM::destroy()
 {
-    if (mS == S::RUN)
-        stop();
-
-    onDestroy();
-
-    mContext->remove(this);
-
-    for (auto &stateNode : mStateNodeTable)
+    if (mContext)
     {
-        FSM* fsm = dynamic_cast<FSM*>(stateNode.stateObject);
-        if (!fsm)
+        if (mS == S::RUN)
+            stop();
+
+        onDestroy();
+
+        mContext->remove(this);
+
+        for (auto &stateNode : mStateNodeTable)
         {
-            delete stateNode.stateObject;
+            FSM* fsm = dynamic_cast<FSM*>(stateNode.stateObject);
+            if (!fsm)
+            {
+                delete stateNode.stateObject;
+            }
+            else
+            {
+                fsm->destroy();
+            }
         }
-        else
-        {
-            fsm->destroy();
-        }
+        mStateNodeTable.clear();
+        mS = S::INVAL;
+        mContext = nullptr;
     }
-    mStateNodeTable.clear();
-    mS = S::INVAL;
     release();
     return true;
 }
@@ -535,7 +540,7 @@ void FSM::onDestroy()
 bool FSM::onEventProc(const std::string& evtName, EvtStream& evtData)
 {
     LLLOG("FSM::onEventProc() evtName=%s\n", evtName.c_str());
-	return true;
+    return true;
 }
 
 bool FSM::onRequestProc(const std::string& evtName, EvtStream& evtData, EvtStream& rspData)
@@ -613,9 +618,9 @@ sid FSM::seekCommonParent(sid sID1, sid sID2)
     int level1 = getStateLevel(sID1);
     int level2 = getStateLevel(sID2);
     if (level1 < level2)
-        sID2 = seekParent(sID2, level2-level1);
+        sID2 = seekParent(sID2, level2 - level1);
     else if (level1 > level2)
-        sID1 = seekParent(sID1, level1-level2);
+        sID1 = seekParent(sID1, level1 - level2);
 
     while (sID1 != sID2)
     {
@@ -679,11 +684,11 @@ int FSM::executeStateEventHandler(sid sID, const std::string& evtName, const Evt
             if (iter != stateObject->mEventHandlerMap.end())
             {
                 auto& eventHandler = iter->second;
-                ret = eventHandler((EvtStream&) evtData);
+                ret = eventHandler((EvtStream&)evtData);
             }
             else
             {
-                ret = stateObject->onEventProc(evtName, (EvtStream&) evtData);
+                ret = stateObject->onEventProc(evtName, (EvtStream&)evtData);
             }
         }
         else
@@ -692,11 +697,11 @@ int FSM::executeStateEventHandler(sid sID, const std::string& evtName, const Evt
             if (iter != stateObject->mRequestHandlerMap.end())
             {
                 auto& requestHandler = iter->second;
-                ret = requestHandler((EvtStream&) evtData, rspData);
+                ret = requestHandler((EvtStream&)evtData, rspData);
             }
             else
             {
-                ret = stateObject->onRequestProc(evtName, (EvtStream&) evtData, rspData);
+                ret = stateObject->onRequestProc(evtName, (EvtStream&)evtData, rspData);
             }
         }
     }
