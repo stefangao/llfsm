@@ -43,10 +43,7 @@ DECLARE_STATE_TABLE()
 DECLARE_TRANS_TABLE()
 
 public:
-    enum
-    {
-        AWAKE, SLEEP
-    };
+    enum {AWAKE, SLEEP};
 
     class Awake: public State
     {

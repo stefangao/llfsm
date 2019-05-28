@@ -24,17 +24,18 @@ END_STATE_TABLE()
 BEGIN_TRANS_TABLE(Dog, FSM)
     TRANS_ENTRY(SLEEP, "SoundEvt", AWAKE, TFL_TOPROC)
     TRANS_ENTRY(AWAKE, "SleepEvt", SLEEP)
+    TRANS_ENTRY(AWAKE, "SoundEvt", S_NONE)
 END_TRANS_TABLE()
 
 void Dog::onStart()
 {
-    delayPostEvent(3000, "SoundEvt");
+    delayPostEvent(5000, "SoundEvt");
 }
 
 void Dog::Awake::onEnter()
 {
     LLLOG("[AWAKE enter]\n");
-    startHeartBeat(2000);
+    startHeartBeat(1000);
 }
 
 bool Dog::Awake::onEventProc(const std::string& evtName, EvtStream& evtData)
@@ -63,7 +64,7 @@ void Dog::Awake::onExit()
 void Dog::Sleep::onEnter()
 {
     LLLOG("[SLEEP enter]\n");
-    startHeartBeat(1000);
+    startHeartBeat(2000);
 }
 
 void Dog::Sleep::onHeartBeat()
