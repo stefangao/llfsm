@@ -21,6 +21,8 @@ public:
 
     virtual void onUserEvent(const std::string& fsmName, const std::string& evtName, lianli::EvtStream& evtData);
 
+    void prompt();
+
 protected:
     std::vector<TestCase*> mTestSuite;
     TestCase* mCurrTestCase;

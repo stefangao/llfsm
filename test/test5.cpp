@@ -50,8 +50,6 @@ protected:
 bool TestCase5::onInit()
 {
     FSM* fsm = LL_CREATE_FSM(test5::Dog, "dog", Context::DEFAULT);
-    //fsm->start();
-    //fsm->destroy();
     mMainFSM = fsm;
     return true;
 }

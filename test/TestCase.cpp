@@ -11,6 +11,7 @@
 TestCase::TestCase()
 {
     mMainFSM = nullptr;
+    mTitle = "";
 }
 
 TestCase::~TestCase()

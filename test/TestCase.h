@@ -16,6 +16,7 @@ public:\
 static testCaseClass* create()\
 {\
     auto testCase = new testCaseClass();\
+    testCase->mTitle = #testCaseClass;\
     if (!testCase->onInit())\
     {\
         delete testCase;\
@@ -32,6 +33,8 @@ public:
 
     virtual void start();
     virtual void stop();
+
+    std::string mTitle;
 
 protected:
     virtual bool onInit();
