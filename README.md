@@ -65,6 +65,6 @@ Now the executable program will be created in the folder test/bin and llfsm.a wi
   4) cmake -G "Eclipse CDT4 - Unix Makefiles" -DCMAKE_BUILD_TYPE=debug ../test
   5) make
 
- The you can open the project from eclipse and edit the code.
+ Then you can open the project from eclipse and edit the code.
 
 
