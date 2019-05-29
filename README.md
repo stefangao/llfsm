@@ -49,14 +49,14 @@ Now the executable program will be created in the folder test/bin and llfsm.a wi
  
  You will see the output logs that show the fsm's progress.
  
- 2. If you don't want generate test project, you just only do like this,
+ 2. If you don't want generate test project, you just need to do as follows,
   1) open terminal
   2) enter root directory
   3) cd build
   4) cmake ..
   5) make
  
- Now only llfsm.a will be created in lib folder.
+ Now only llfsm.a is created in lib folder.
  
  3. How to generate test project for eclipse? Please see the following steps,
   1) open terminal
