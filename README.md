@@ -1,4 +1,4 @@
-# llfsm
+# llfsm (连理状态机）
 It is a fsm whose states are tree structure.
 A fsm has states which are composed by hierarchy format.
 A fsm is also a state type, which can be a part of another fsm.
